@@ -1,19 +1,23 @@
 // components/layout/TabNavigation.tsx
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../stores/useGameStore';
 import type { TabIdType } from '../../types/enums';
 
-const TabNavigation: React.FC = () => {
+const TabNavigation: React.FC = React.memo(() => {
   const { currentTab, switchTab } = useGameStore();
 
-  const tabs = [
+  const tabs = useMemo(() => [
     { id: 'dashboard' as TabIdType, label: 'Dashboard' },
     { id: 'ship-builder' as TabIdType, label: 'Ship Builder' },
     { id: 'crew-quarters' as TabIdType, label: 'Crew Quarters' },
     { id: 'galaxy-map' as TabIdType, label: 'Galaxy Map' },
     { id: 'market' as TabIdType, label: 'Market' },
     { id: 'legacy' as TabIdType, label: 'Legacy' }
-  ];
+  ], []);
+
+  const handleTabSwitch = useCallback((tabId: TabIdType) => {
+    switchTab(tabId);
+  }, [switchTab]);
 
   return (
     <nav className="bg-slate-800 border-b border-slate-700 px-6">
@@ -21,7 +25,7 @@ const TabNavigation: React.FC = () => {
         {tabs.map(tab => (
           <button
             key={tab.id}
-            onClick={() => switchTab(tab.id)}
+            onClick={() => handleTabSwitch(tab.id)}
             className={`px-4 py-3 text-sm font-medium transition-colors ${
               currentTab === tab.id
                 ? 'bg-teal-600 text-white border-b-2 border-teal-400'
@@ -34,6 +38,8 @@ const TabNavigation: React.FC = () => {
       </div>
     </nav>
   );
-};
+});
+
+TabNavigation.displayName = 'TabNavigation';
 
 export default TabNavigation;

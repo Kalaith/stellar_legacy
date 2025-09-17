@@ -1,31 +1,37 @@
 // components/game/dashboard/EmpireOverview.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
+import Card from '../../ui/Card';
+import { GameEngine } from '../../../services/GameEngine';
 
-const EmpireOverview: React.FC = () => {
+const EmpireOverview: React.FC = React.memo(() => {
   const { starSystems, legacy } = useGameStore();
   const captain = useGameStore(state => state.crew.find(c => c.role === 'Captain'));
 
-  const exploredSystems = starSystems.filter(s => s.status === 'explored').length;
-  const activeColonies = starSystems.reduce((acc, sys) =>
-    acc + sys.planets.filter(p => p.developed).length, 0
-  );
-  const tradeRoutes = starSystems.reduce((acc, sys) => acc + sys.tradeRoutes.length, 0);
+  const stats = useMemo(() => {
+    const empireStats = GameEngine.calculateEmpireStats(starSystems, legacy);
+    return {
+      ...empireStats,
+      captainAge: captain?.age || 0,
+    };
+  }, [starSystems, legacy.generation, captain?.age]);
 
   return (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <h3 className="text-lg font-bold text-white mb-4">Empire Overview</h3>
-
+    <Card title="Empire Overview">
       <div className="space-y-3">
-        <StatItem label="Systems Explored" value={exploredSystems} />
-        <StatItem label="Active Colonies" value={activeColonies} />
-        <StatItem label="Trade Routes" value={tradeRoutes} />
-        <StatItem label="Captain Age" value={captain?.age || 0} />
-        <StatItem label="Generation" value={legacy.generation} />
+        <StatItem label="Systems Explored" value={stats.exploredSystems} />
+        <StatItem label="Active Colonies" value={stats.activeColonies} />
+        <StatItem label="Trade Routes" value={stats.tradeRoutes} />
+        <StatItem label="Captain Age" value={stats.captainAge} />
+        <StatItem label="Generation" value={stats.generation} />
       </div>
-    </div>
+    </Card>
   );
-};
+});
+
+EmpireOverview.displayName = 'EmpireOverview';
+
+EmpireOverview.displayName = 'EmpireOverview';
 
 interface StatItemProps {
   label: string;

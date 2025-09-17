@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 
-const Market: React.FC = () => {
+const Market: React.FC = React.memo(() => {
   const { resources, market, tradeResource } = useGameStore();
 
   const getTrendIcon = useMemo(() => (trend: string) => {
@@ -144,6 +144,8 @@ const Market: React.FC = () => {
       </div>
     </div>
   );
-};
+});
+
+Market.displayName = 'Market';
 
 export default Market;

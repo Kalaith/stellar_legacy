@@ -1,29 +1,30 @@
 // components/game/dashboard/ShipStatus.tsx
 import React from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
+import Card from '../../ui/Card';
+import Grid from '../../ui/Grid';
 
-const ShipStatus: React.FC = () => {
+const ShipStatus: React.FC = React.memo(() => {
   const { ship } = useGameStore();
 
   return (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <h3 className="text-xl font-bold text-white mb-4">Ship Status: {ship.name}</h3>
-
-      <div className="flex items-center justify-center mb-6">
-        <div className="w-32 h-32 bg-slate-700 rounded-lg flex items-center justify-center">
+    <Card title={`Ship Status: ${ship.name}`}>
+      <div className="text-center">
+        <div className="w-32 h-32 bg-slate-700 rounded-lg flex items-center justify-center mx-auto mb-4">
           <div className="text-6xl">🚀</div>
         </div>
+        <h4 className="text-lg text-white font-semibold">{ship.name}</h4>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <Grid columns={2} gap={4} className="mb-6">
         <StatItem label="Speed" value={ship.stats.speed} />
         <StatItem label="Cargo" value={ship.stats.cargo} />
         <StatItem label="Combat" value={ship.stats.combat} />
         <StatItem label="Research" value={ship.stats.research} />
         <StatItem label="Crew Capacity" value={ship.stats.crewCapacity} />
-      </div>
+      </Grid>
 
-      <div className="mt-6 pt-4 border-t border-slate-700">
+      <div className="border-t border-slate-700 pt-4">
         <h4 className="text-lg font-semibold text-white mb-3">Components</h4>
         <div className="space-y-2">
           <ComponentItem label="Hull" value={ship.hull} />
@@ -34,9 +35,11 @@ const ShipStatus: React.FC = () => {
           <ComponentItem label="Quarters" value={ship.components.quarters} />
         </div>
       </div>
-    </div>
+    </Card>
   );
-};
+});
+
+ShipStatus.displayName = 'ShipStatus';
 
 interface StatItemProps {
   label: string;

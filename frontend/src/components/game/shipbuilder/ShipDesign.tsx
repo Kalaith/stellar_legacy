@@ -2,7 +2,7 @@
 import React from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 
-const ShipDesign: React.FC = () => {
+const ShipDesign: React.FC = React.memo(() => {
   const { ship } = useGameStore();
 
   return (
@@ -57,6 +57,8 @@ const ShipDesign: React.FC = () => {
       </div>
     </div>
   );
-};
+});
+
+ShipDesign.displayName = 'ShipDesign';
 
 export default ShipDesign;

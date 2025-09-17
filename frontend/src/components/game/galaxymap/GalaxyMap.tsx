@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 import type { StarSystem } from '../../../types/game';
 
-const GalaxyMap: React.FC = () => {
+const GalaxyMap: React.FC = React.memo(() => {
   const {
     starSystems,
     selectedSystem,
@@ -150,5 +150,7 @@ const GalaxyMap: React.FC = () => {
     </div>
   );
 };
+
+GalaxyMap.displayName = 'GalaxyMap';
 
 export default GalaxyMap;

@@ -1,22 +1,32 @@
 // components/game/dashboard/CrewSummary.tsx
 import React, { useMemo } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
+import Card from '../../ui/Card';
 
-const CrewSummary: React.FC = () => {
+const CrewSummary: React.FC = React.memo(() => {
   const { crew } = useGameStore();
 
+  const totalMorale = useMemo(() =>
+    crew.reduce((sum, member) => sum + member.morale, 0) / crew.length,
+    [crew]
+  );
+
   return (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <h3 className="text-lg font-bold text-white mb-4">Active Crew</h3>
+    <Card title="Active Crew">
+      <div className="text-slate-300 text-sm mb-4">
+        Average Morale: {totalMorale.toFixed(1)}%
+      </div>
 
       <div className="space-y-3">
         {crew.map(member => (
           <CrewMemberItem key={member.id} member={member} />
         ))}
       </div>
-    </div>
+    </Card>
   );
-};
+});
+
+CrewSummary.displayName = 'CrewSummary';CrewSummary.displayName = 'CrewSummary';
 
 interface CrewMemberItemProps {
   member: {

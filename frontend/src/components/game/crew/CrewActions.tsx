@@ -1,46 +1,50 @@
 // components/game/crew/CrewActions.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 import { useGameActions } from '../../../hooks/useGameActions';
+import Card from '../../ui/Card';
+import Button from '../../ui/Button';
 
-const CrewActions: React.FC = () => {
+const CrewActions: React.FC = React.memo(() => {
   const { resources, crew, ship } = useGameStore();
   const { handleTrainCrew, handleBoostMorale, handleRecruitCrew } = useGameActions();
 
-  const canTrain = resources.credits >= 100;
-  const canBoostMorale = resources.credits >= 50;
-  const canRecruit = resources.credits >= 200 && crew.length < ship.stats.crewCapacity;
+  const actionStates = useMemo(() => {
+    const canTrain = resources.credits >= 100;
+    const canBoostMorale = resources.credits >= 50;
+    const canRecruit = resources.credits >= 200 && crew.length < ship.stats.crewCapacity;
+
+    return { canTrain, canBoostMorale, canRecruit };
+  }, [resources.credits, crew.length, ship.stats.crewCapacity]);
 
   return (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <h3 className="text-xl font-bold text-white mb-6">Crew Actions</h3>
-
+    <Card title="Crew Actions">
       <div className="space-y-4">
         <ActionButton
           onClick={handleTrainCrew}
-          disabled={!canTrain}
+          disabled={!actionStates.canTrain}
           title="Train Crew"
           description="Improve random crew member's skills"
           cost="100 Credits"
-          canAfford={canTrain}
+          canAfford={actionStates.canTrain}
         />
 
         <ActionButton
           onClick={handleBoostMorale}
-          disabled={!canBoostMorale}
+          disabled={!actionStates.canBoostMorale}
           title="Boost Morale"
           description="Increase all crew morale by 10"
           cost="50 Credits"
-          canAfford={canBoostMorale}
+          canAfford={actionStates.canBoostMorale}
         />
 
         <ActionButton
           onClick={handleRecruitCrew}
-          disabled={!canRecruit}
+          disabled={!actionStates.canRecruit}
           title="Recruit New Member"
           description="Add a new crew member to your ship"
           cost="200 Credits"
-          canAfford={canRecruit}
+          canAfford={actionStates.canRecruit}
         />
 
         {crew.length >= ship.stats.crewCapacity && (
@@ -51,9 +55,11 @@ const CrewActions: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
-};
+});
+
+CrewActions.displayName = 'CrewActions';
 
 interface ActionButtonProps {
   onClick: () => void;
@@ -78,17 +84,14 @@ const ActionButton: React.FC<ActionButtonProps> = ({
       <span className="text-slate-400 text-sm">{cost}</span>
     </div>
     <p className="text-slate-300 text-sm mb-3">{description}</p>
-    <button
+    <Button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full py-2 px-4 rounded font-medium transition-colors ${
-        canAfford
-          ? 'bg-teal-600 hover:bg-teal-700 text-white'
-          : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-      }`}
+      variant={canAfford ? 'primary' : 'secondary'}
+      className="w-full"
     >
       {canAfford ? title : 'Cannot Afford'}
-    </button>
+    </Button>
   </div>
 );
 

@@ -1,10 +1,12 @@
 // components/layout/Header.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGameStore } from '../../stores/useGameStore';
 
-const Header: React.FC = () => {
+const Header: React.FC = React.memo(() => {
   const { resources, legacy } = useGameStore();
   const captain = useGameStore(state => state.crew.find(c => c.role === 'Captain'));
+
+  const captainName = useMemo(() => captain?.name.split(' ')[1] || 'Unknown', [captain?.name]);
 
   return (
     <header className="bg-slate-900 border-b border-slate-700 px-6 py-4">
@@ -13,7 +15,7 @@ const Header: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-white">Stellar Legacy</h1>
             <p className="text-sm text-slate-400">
-              Generation {legacy.generation} - Captain {captain?.name.split(' ')[1] || 'Unknown'}
+              Generation {legacy.generation} - Captain {captainName}
             </p>
           </div>
         </div>
@@ -30,7 +32,9 @@ const Header: React.FC = () => {
       </div>
     </header>
   );
-};
+});
+
+Header.displayName = 'Header';
 
 interface ResourceItemProps {
   icon: string;

@@ -1,8 +1,8 @@
 // components/ui/NotificationSystem.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGameStore } from '../../stores/useGameStore';
 
-const NotificationSystem: React.FC = () => {
+const NotificationSystem: React.FC = React.memo(() => {
   const { notifications, clearNotification } = useGameStore();
 
   if (notifications.length === 0) return null;
@@ -18,7 +18,9 @@ const NotificationSystem: React.FC = () => {
       ))}
     </div>
   );
-};
+});
+
+NotificationSystem.displayName = 'NotificationSystem';
 
 interface NotificationItemProps {
   notification: {
@@ -29,18 +31,18 @@ interface NotificationItemProps {
   onClose: () => void;
 }
 
-const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClose }) => {
-  const getBgColor = () => {
+const NotificationItem: React.FC<NotificationItemProps> = React.memo(({ notification, onClose }) => {
+  const bgColor = useMemo(() => {
     switch (notification.type) {
       case 'success': return 'bg-green-600';
       case 'error': return 'bg-red-600';
       case 'warning': return 'bg-yellow-600';
       default: return 'bg-slate-600';
     }
-  };
+  }, [notification.type]);
 
   return (
-    <div className={`${getBgColor()} text-white px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right`}>
+    <div className={`${bgColor} text-white px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right`}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium">{notification.message}</p>
         <button
@@ -52,6 +54,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClo
       </div>
     </div>
   );
-};
+});
+
+NotificationItem.displayName = 'NotificationItem';
 
 export default NotificationSystem;

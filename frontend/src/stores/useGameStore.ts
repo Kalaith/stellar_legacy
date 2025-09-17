@@ -8,6 +8,7 @@ import { ResourceService } from '../services/ResourceService';
 import { ValidationService } from '../services/ValidationService';
 import gameConfig from '../config/gameConfig';
 import Logger from '../utils/logger';
+import { GameEngine } from '../services/GameEngine';
 
 const initialGameData: GameData = {
   resources: {
@@ -173,6 +174,9 @@ interface GameStore extends GameState {
 
   // Cleanup
   cleanup: () => void;
+
+  // Internal state
+  resourceIntervalId: number | null;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -190,6 +194,7 @@ export const useGameStore = create<GameStore>()(
       },
       currentTab: 'dashboard',
       notifications: [],
+      resourceIntervalId: null,
 
       initializeGame: () => {
         Logger.info('Initializing game store');
@@ -198,9 +203,8 @@ export const useGameStore = create<GameStore>()(
           get().generateResources();
         };
         generateResources();
-        const interval = setInterval(generateResources, gameConfig.intervals.resourceGeneration);
-        // Store interval ID for cleanup if needed
-        (window as any).resourceInterval = interval;
+        const intervalId = setInterval(generateResources, gameConfig.intervals.resourceGeneration);
+        set({ resourceIntervalId: intervalId });
         Logger.info('Game initialized successfully');
       },
 
@@ -221,87 +225,71 @@ export const useGameStore = create<GameStore>()(
       },
 
       trainCrew: () => {
-        const { resources, crew } = get();
-        const validation = ValidationService.validateCrewTraining(resources.credits);
+        try {
+          const { resources, crew } = get();
+          const result = GameEngine.processCrewTraining(resources, crew);
 
-        if (!validation.isValid) {
-          get().showNotification(validation.message!, 'error');
-          return;
+          if (!result) {
+            get().showNotification('Cannot afford crew training!', 'error');
+            return;
+          }
+
+          const { newResources, result: { updatedCrew, trainedMember, skill } } = result;
+
+          set({ resources: newResources, crew: updatedCrew });
+          get().showNotification(`${trainedMember.name} improved their ${skill} skill!`, 'success');
+          Logger.crewAction('skill_training', trainedMember.name, { skill, newLevel: updatedCrew.find(c => c.id === trainedMember.id)?.skills[skill as keyof typeof trainedMember.skills] });
+        } catch (error) {
+          Logger.error('Crew training failed', error);
+          get().showNotification('An error occurred during crew training.', 'error');
         }
-
-        const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.CREW_TRAINING });
-        const randomCrew = crew[Math.floor(Math.random() * crew.length)];
-        const skills = Object.keys(randomCrew.skills) as (keyof typeof randomCrew.skills)[];
-        const randomSkill = skills[Math.floor(Math.random() * skills.length)];
-
-        const updatedCrew = crew.map(member =>
-          member.id === randomCrew.id
-            ? { ...member, skills: { ...member.skills, [randomSkill]: Math.min(GAME_CONSTANTS.LIMITS.MAX_SKILL_LEVEL, member.skills[randomSkill] + 1) } }
-            : member
-        );
-
-        set({ resources: newResources, crew: updatedCrew });
-        get().showNotification(`${randomCrew.name} improved their ${randomSkill} skill!`, 'success');
-        Logger.crewAction('skill_training', randomCrew.name, { skill: randomSkill, newLevel: updatedCrew.find(c => c.id === randomCrew.id)?.skills[randomSkill] });
       },
 
       boostMorale: () => {
-        const { resources, crew } = get();
-        const validation = ValidationService.validateMoraleBoost(resources.credits);
+        try {
+          const { resources, crew } = get();
+          const result = GameEngine.processMoraleBoost(resources, crew);
 
-        if (!validation.isValid) {
-          get().showNotification(validation.message!, 'error');
-          return;
+          if (!result) {
+            get().showNotification('Cannot afford morale boost!', 'error');
+            return;
+          }
+
+          const { newResources, updatedCrew } = result;
+
+          set({ resources: newResources, crew: updatedCrew });
+          get().showNotification('Crew morale improved!', 'success');
+          Logger.gameAction('morale_boost', { affectedCrew: updatedCrew.length });
+        } catch (error) {
+          Logger.error('Morale boost failed', error);
+          get().showNotification('An error occurred during morale boost.', 'error');
         }
-
-        const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.MORALE_BOOST });
-        const updatedCrew = crew.map(member => ({ ...member, morale: Math.min(GAME_CONSTANTS.LIMITS.MAX_MORALE, member.morale + GAME_CONSTANTS.LIMITS.CREW_MORALE_BOOST) }));
-
-        set({ resources: newResources, crew: updatedCrew });
-        get().showNotification('Crew morale improved!', 'success');
-        Logger.gameAction('morale_boost', { affectedCrew: updatedCrew.length });
       },
 
       recruitCrew: () => {
-        const { resources, crew, ship } = get();
-        const validation = ValidationService.validateCrewRecruitment(resources.credits, crew, ship);
+        try {
+          const { resources, crew, ship } = get();
+          const result = GameEngine.processCrewRecruitment(resources, crew, ship);
 
-        if (!validation.isValid) {
-          get().showNotification(validation.message!, 'error');
-          return;
+          if (!result) {
+            get().showNotification('Cannot recruit crew!', 'error');
+            return;
+          }
+
+          const { newResources, newCrew } = result;
+          const updatedCrew = [...crew, newCrew];
+
+          set({ resources: newResources, crew: updatedCrew });
+          get().showNotification(`Recruited ${newCrew.name}!`, 'success');
+          Logger.crewAction('recruitment', newCrew.name, { role: newCrew.role });
+        } catch (error) {
+          Logger.error('Crew recruitment failed', error);
+          get().showNotification('An error occurred during crew recruitment.', 'error');
         }
-
-        const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.CREW_RECRUITMENT });
-        const newCrew = get().generateRandomCrew();
-        const updatedCrew = [...crew, newCrew];
-
-        set({ resources: newResources, crew: updatedCrew });
-        get().showNotification(`Recruited ${newCrew.name}!`, 'success');
-        Logger.crewAction('recruitment', newCrew.name, { role: newCrew.role });
       },
 
       generateRandomCrew: () => {
-        // Memoized constant arrays to avoid recreation on each call
-        const names = GAME_CONSTANTS.RANDOM_NAMES.CREW_FIRST_NAMES;
-        const roles = GAME_CONSTANTS.CREW_ROLES;
-        const backgrounds = GAME_CONSTANTS.CREW_BACKGROUNDS;
-
-        return {
-          id: Date.now(),
-          name: names[Math.floor(Math.random() * names.length)],
-          role: roles[Math.floor(Math.random() * roles.length)],
-          skills: {
-            engineering: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-            navigation: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-            combat: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-            diplomacy: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-            trade: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL
-          },
-          morale: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_CREW_MORALE - GAME_CONSTANTS.LIMITS.MIN_CREW_MORALE + 1)) + GAME_CONSTANTS.LIMITS.MIN_CREW_MORALE,
-          background: backgrounds[Math.floor(Math.random() * backgrounds.length)],
-          age: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_CREW_AGE - GAME_CONSTANTS.LIMITS.MIN_CREW_AGE + 1)) + GAME_CONSTANTS.LIMITS.MIN_CREW_AGE,
-          isHeir: false
-        };
+        return GameEngine.generateRandomCrew();
       },
 
       selectSystem: (system: StarSystem) => {
@@ -309,56 +297,49 @@ export const useGameStore = create<GameStore>()(
       },
 
       exploreSystem: () => {
-        const { selectedSystem, resources } = get();
-        const validation = ValidationService.validateSystemExploration(resources.energy);
+        try {
+          const { selectedSystem, resources } = get();
+          const result = GameEngine.processSystemExploration(resources, selectedSystem);
 
-        if (!validation.isValid) {
-          get().showNotification(validation.message!, 'error');
-          return;
-        }
+          if (!result) {
+            get().showNotification('Cannot explore system!', 'error');
+            return;
+          }
 
-        if (selectedSystem) {
-          const newResources = ResourceService.deductCost(resources, { energy: GAME_CONSTANTS.COSTS.EXPLORATION.energy });
-          const planets = get().generatePlanets();
-          const updatedSystem = { ...selectedSystem, status: 'explored' as const, planets };
+          const { newResources, planets } = result;
 
-          const updatedSystems = get().starSystems.map(sys =>
-            sys.name === selectedSystem.name ? updatedSystem : sys
-          );
+          if (selectedSystem) {
+            const updatedSystem = { ...selectedSystem, status: 'explored' as const, planets };
+            const updatedSystems = get().starSystems.map(sys =>
+              sys.name === selectedSystem.name ? updatedSystem : sys
+            );
 
-          set({ resources: newResources, starSystems: updatedSystems, selectedSystem: updatedSystem });
-          get().showNotification(`Explored ${selectedSystem.name}! Discovered ${planets.length} planets.`, 'success');
-          Logger.systemEvent('exploration', selectedSystem.name, { planetsDiscovered: planets.length });
+            set({ resources: newResources, starSystems: updatedSystems, selectedSystem: updatedSystem });
+            get().showNotification(`Explored ${selectedSystem.name}! Discovered ${planets.length} planets.`, 'success');
+            Logger.systemEvent('exploration', selectedSystem.name, { planetsDiscovered: planets.length });
+          }
+        } catch (error) {
+          Logger.error('System exploration failed', error);
+          get().showNotification('An error occurred during system exploration.', 'error');
         }
       },
 
       establishColony: () => {
-        const { selectedSystem, resources, resourceGenerationRate } = get();
-        const validation = ValidationService.validateColonyEstablishment(resources);
+        try {
+          const { selectedSystem, resources, resourceGenerationRate } = get();
+          const result = GameEngine.processColonyEstablishment(resources, selectedSystem);
 
-        if (!validation.isValid) {
-          get().showNotification(validation.message!, 'error');
-          return;
-        }
+          if (!result) {
+            get().showNotification('Cannot establish colony!', 'error');
+            return;
+          }
 
-        if (selectedSystem) {
-          const newResources = ResourceService.deductCost(resources, {
-            credits: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.credits,
-            minerals: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.minerals
-          });
+          const { newResources, colonyPlanet, newGenerationRate } = result;
 
-          const undevelopedPlanet = selectedSystem.planets.find(p => !p.developed);
-          if (undevelopedPlanet) {
+          if (selectedSystem) {
             const updatedPlanets = selectedSystem.planets.map(p =>
-              p.name === undevelopedPlanet.name ? { ...p, developed: true } : p
+              p.name === colonyPlanet.name ? { ...p, developed: true } : p
             );
-
-            const newGenerationRate = { ...resourceGenerationRate };
-            undevelopedPlanet.resources.forEach(resource => {
-              if (newGenerationRate[resource as keyof typeof newGenerationRate] !== undefined) {
-                newGenerationRate[resource as keyof typeof newGenerationRate]! += GAME_CONSTANTS.RESOURCE_GENERATION.COLONY_BOOST;
-              }
-            });
 
             const updatedSystem = { ...selectedSystem, planets: updatedPlanets };
             const updatedSystems = get().starSystems.map(sys =>
@@ -369,43 +350,20 @@ export const useGameStore = create<GameStore>()(
               resources: newResources,
               starSystems: updatedSystems,
               selectedSystem: updatedSystem,
-              resourceGenerationRate: newGenerationRate
+              resourceGenerationRate: { ...resourceGenerationRate, ...newGenerationRate }
             });
 
-            get().showNotification(`Established colony on ${undevelopedPlanet.name}!`, 'success');
-            Logger.systemEvent('colony_established', selectedSystem.name, { planet: undevelopedPlanet.name });
+            get().showNotification(`Established colony on ${colonyPlanet.name}!`, 'success');
+            Logger.systemEvent('colony_established', selectedSystem.name, { planet: colonyPlanet.name });
           }
+        } catch (error) {
+          Logger.error('Colony establishment failed', error);
+          get().showNotification('An error occurred during colony establishment.', 'error');
         }
       },
 
       generatePlanets: () => {
-        // Memoized constant arrays to avoid recreation on each call
-        const planetTypes = GAME_CONSTANTS.PLANET_TYPES;
-        const resourceTypes = GAME_CONSTANTS.RESOURCE_TYPES;
-        const planetCount = Math.floor(Math.random() * (GAME_CONSTANTS.WORLD_GENERATION.MAX_PLANETS_PER_SYSTEM - GAME_CONSTANTS.WORLD_GENERATION.MIN_PLANETS_PER_SYSTEM + 1)) + GAME_CONSTANTS.WORLD_GENERATION.MIN_PLANETS_PER_SYSTEM;
-        const planets: Planet[] = [];
-
-        for (let i = 0; i < planetCount; i++) {
-          const type = planetTypes[Math.floor(Math.random() * planetTypes.length)];
-          const resourceCount = Math.floor(Math.random() * (GAME_CONSTANTS.WORLD_GENERATION.MAX_RESOURCES_PER_PLANET - GAME_CONSTANTS.WORLD_GENERATION.MIN_RESOURCES_PER_PLANET + 1)) + GAME_CONSTANTS.WORLD_GENERATION.MIN_RESOURCES_PER_PLANET;
-          const resources: string[] = [];
-
-          for (let j = 0; j < resourceCount; j++) {
-            const resource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
-            if (!resources.includes(resource)) {
-              resources.push(resource);
-            }
-          }
-
-          planets.push({
-            name: `Planet ${String.fromCharCode(65 + i)}`,
-            type,
-            resources,
-            developed: false
-          });
-        }
-
-        return planets;
+        return GameEngine.generatePlanets();
       },
 
       switchComponentCategory: (category) => {
@@ -418,39 +376,44 @@ export const useGameStore = create<GameStore>()(
       },
 
       purchaseComponent: (category: string, componentName: string) => {
-        const { shipComponents, resources, ship } = get();
-        const component = shipComponents[category as keyof typeof shipComponents].find(c => c.name === componentName);
+        try {
+          const { shipComponents, resources, ship } = get();
+          const component = shipComponents[category as keyof typeof shipComponents].find(c => c.name === componentName);
 
-        if (component && get().canAffordComponent(component.cost)) {
-          // Deduct cost using ResourceService
-          const newResources = ResourceService.deductCost(resources, component.cost);
+          if (component && get().canAffordComponent(component.cost)) {
+            // Deduct cost using ResourceService
+            const newResources = ResourceService.deductCost(resources, component.cost);
 
-          let updatedShip = { ...ship };
+            let updatedShip = { ...ship };
 
-          if (category === 'hulls') {
-            updatedShip = {
-              ...updatedShip,
-              hull: component.name,
-              stats: { ...component.stats } as ShipStats // Hull replaces all stats
-            };
-          } else {
-            const componentType = category.slice(0, -1); // Remove 's' from plural
-            updatedShip.components = {
-              ...updatedShip.components,
-              [componentType]: component.name
-            };
+            if (category === 'hulls') {
+              updatedShip = {
+                ...updatedShip,
+                hull: component.name,
+                stats: { ...component.stats } as ShipStats // Hull replaces all stats
+              };
+            } else {
+              const componentType = category.slice(0, -1); // Remove 's' from plural
+              updatedShip.components = {
+                ...updatedShip.components,
+                [componentType]: component.name
+              };
 
-            // Add component stats to ship
-            updatedShip.stats = { ...updatedShip.stats };
-            Object.entries(component.stats).forEach(([stat, value]) => {
-              if (updatedShip.stats[stat as keyof typeof updatedShip.stats] !== undefined) {
-                updatedShip.stats[stat as keyof typeof updatedShip.stats] += value as number;
-              }
-            });
+              // Add component stats to ship
+              updatedShip.stats = { ...updatedShip.stats };
+              Object.entries(component.stats).forEach(([stat, value]) => {
+                if (updatedShip.stats[stat as keyof typeof updatedShip.stats] !== undefined) {
+                  updatedShip.stats[stat as keyof typeof updatedShip.stats] += value as number;
+                }
+              });
+            }
+
+            set({ resources: newResources, ship: updatedShip });
+            get().showNotification(`Installed ${component.name}!`, 'success');
           }
-
-          set({ resources: newResources, ship: updatedShip });
-          get().showNotification(`Installed ${component.name}!`, 'success');
+        } catch (error) {
+          Logger.error('Component purchase failed', error);
+          get().showNotification('An error occurred during component purchase.', 'error');
         }
       },
 
@@ -488,29 +451,35 @@ export const useGameStore = create<GameStore>()(
       },
 
       tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: TradeActionType) => {
-        const { resources, market } = get();
-        const price = market.prices[resource];
-        const validation = ValidationService.validateTrade(resources, resource, action, price);
+        try {
+          const { resources, market } = get();
+          const price = market.prices[resource];
+          const validation = ValidationService.validateTrade(resources, resource, action, price);
 
-        if (!validation.isValid) {
-          get().showNotification(validation.message!, 'error');
-          return;
+          if (!validation.isValid) {
+            get().showNotification(validation.message!, 'error');
+            return;
+          }
+
+          const amount = GAME_CONSTANTS.TRADE.DEFAULT_AMOUNT;
+          const cost = ResourceService.calculateTradeCost(price, amount);
+          const isBuying = action === 'buy';
+          const newResources = ResourceService.processTrade(resources, cost, resource, amount, isBuying);
+
+          set({ resources: newResources });
+          get().showNotification(`${isBuying ? 'Bought' : 'Sold'} ${amount} ${resource} for ${cost} credits`, 'success');
+          Logger.gameAction('trade', { resource, action: isBuying ? 'buy' : 'sell', amount, cost });
+        } catch (error) {
+          Logger.error('Resource trade failed', error);
+          get().showNotification('An error occurred during resource trade.', 'error');
         }
-
-        const amount = GAME_CONSTANTS.TRADE.DEFAULT_AMOUNT;
-        const cost = ResourceService.calculateTradeCost(price, amount);
-        const isBuying = action === 'buy';
-        const newResources = ResourceService.processTrade(resources, cost, resource, amount, isBuying);
-
-        set({ resources: newResources });
-        get().showNotification(`${isBuying ? 'Bought' : 'Sold'} ${amount} ${resource} for ${cost} credits`, 'success');
-        Logger.gameAction('trade', { resource, action: isBuying ? 'buy' : 'sell', amount, cost });
       },
 
       cleanup: () => {
-        if ((window as any).resourceInterval) {
-          clearInterval((window as any).resourceInterval);
-          (window as any).resourceInterval = null;
+        const { resourceIntervalId } = get();
+        if (resourceIntervalId) {
+          clearInterval(resourceIntervalId);
+          set({ resourceIntervalId: null });
           Logger.info('Game store cleanup completed');
         }
       }
@@ -519,7 +488,8 @@ export const useGameStore = create<GameStore>()(
       name: 'stellar-legacy-storage',
       partialize: (state) => ({
         ...state,
-        notifications: [] // Don't persist notifications
+        notifications: [], // Don't persist notifications
+        resourceIntervalId: null, // Don't persist interval ID
       })
     }
   )
@@ -527,8 +497,5 @@ export const useGameStore = create<GameStore>()(
 
 // Cleanup function to clear intervals and prevent memory leaks
 export const cleanupGameStore = () => {
-  if ((window as any).resourceInterval) {
-    clearInterval((window as any).resourceInterval);
-    (window as any).resourceInterval = null;
-  }
+  useGameStore.getState().cleanup();
 };
