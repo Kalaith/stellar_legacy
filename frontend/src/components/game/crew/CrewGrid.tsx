@@ -1,5 +1,5 @@
 // components/game/crew/CrewGrid.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 
 const CrewGrid: React.FC = () => {
@@ -37,14 +37,19 @@ interface CrewCardProps {
   };
 }
 
-const CrewCard: React.FC<CrewCardProps> = ({ member }) => {
-  const getMoraleColor = (morale: number) => {
+const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
+  const getMoraleColor = useMemo(() => (morale: number) => {
     if (morale > 70) return 'bg-green-500';
     if (morale > 50) return 'bg-yellow-500';
     return 'bg-red-500';
-  };
+  }, []);
 
-  const getSkillBarWidth = (level: number) => `${(level / 10) * 100}%`;
+  const getSkillBarWidth = useMemo(() => (level: number) => `${(level / 10) * 100}%`, []);
+
+  const skillEntries = useMemo(() =>
+    Object.entries(member.skills),
+    [member.skills]
+  );
 
   return (
     <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
@@ -66,7 +71,7 @@ const CrewCard: React.FC<CrewCardProps> = ({ member }) => {
       </div>
 
       <div className="space-y-2 mb-3">
-        {Object.entries(member.skills).map(([skill, level]) => (
+        {skillEntries.map(([skill, level]) => (
           <div key={skill} className="flex items-center justify-between">
             <span className="text-slate-300 text-sm capitalize w-20">{skill}</span>
             <div className="flex-1 mx-2">
@@ -98,6 +103,8 @@ const CrewCard: React.FC<CrewCardProps> = ({ member }) => {
       <p className="text-slate-400 text-xs leading-relaxed">{member.background}</p>
     </div>
   );
-};
+});
+
+CrewCard.displayName = 'CrewCard';
 
 export default CrewGrid;

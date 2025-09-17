@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 import type { StarSystem } from '../../../types/game';
 
@@ -12,28 +12,35 @@ const GalaxyMap: React.FC = () => {
     selectSystem
   } = useGameStore();
 
-  const handleSystemClick = (system: StarSystem) => {
+  const handleSystemClick = useCallback((system: StarSystem) => {
     selectSystem(system);
-  };
+  }, [selectSystem]);
 
-  const handleExplore = () => {
+  const handleExplore = useCallback(() => {
     if (selectedSystem && resources.energy >= 50) {
       exploreSystem();
     }
-  };
+  }, [selectedSystem, resources.energy, exploreSystem]);
 
-  const handleEstablishColony = () => {
+  const handleEstablishColony = useCallback(() => {
     if (selectedSystem && resources.credits >= 200 && resources.minerals >= 100) {
       establishColony();
     }
-  };
+  }, [selectedSystem, resources.credits, resources.minerals, establishColony]);
 
-  const canExplore = selectedSystem && selectedSystem.status === 'unexplored' && resources.energy >= 50;
-  const canEstablishColony = selectedSystem &&
+  const canExplore = useMemo(() =>
+    selectedSystem && selectedSystem.status === 'unexplored' && resources.energy >= 50,
+    [selectedSystem, resources.energy]
+  );
+
+  const canEstablishColony = useMemo(() =>
+    selectedSystem &&
     selectedSystem.status === 'explored' &&
     selectedSystem.planets.some(p => !p.developed) &&
     resources.credits >= 200 &&
-    resources.minerals >= 100;
+    resources.minerals >= 100,
+    [selectedSystem, resources.credits, resources.minerals]
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 
 const Market: React.FC = () => {
   const { resources, market, tradeResource } = useGameStore();
 
-  const getTrendIcon = (trend: string) => {
+  const getTrendIcon = useMemo(() => (trend: string) => {
     switch (trend) {
       case 'rising':
         return '↗️';
@@ -13,9 +13,9 @@ const Market: React.FC = () => {
       default:
         return '➡️';
     }
-  };
+  }, []);
 
-  const getTrendColor = (trend: string) => {
+  const getTrendColor = useMemo(() => (trend: string) => {
     switch (trend) {
       case 'rising':
         return 'text-red-400';
@@ -24,26 +24,26 @@ const Market: React.FC = () => {
       default:
         return 'text-gray-400';
     }
-  };
+  }, []);
 
-  const handleTrade = (resource: 'minerals' | 'energy' | 'food' | 'influence', action: 'buy' | 'sell') => {
+  const handleTrade = useCallback((resource: 'minerals' | 'energy' | 'food' | 'influence', action: 'buy' | 'sell') => {
     tradeResource(resource, action);
-  };
+  }, [tradeResource]);
 
-  const canBuy = (resource: 'minerals' | 'energy' | 'food' | 'influence') => {
+  const canBuy = useCallback((resource: 'minerals' | 'energy' | 'food' | 'influence') => {
     const price = market.prices[resource];
     return resources.credits >= price * 10;
-  };
+  }, [market.prices, resources.credits]);
 
-  const canSell = (resource: 'minerals' | 'energy' | 'food' | 'influence') => {
+  const canSell = useCallback((resource: 'minerals' | 'energy' | 'food' | 'influence') => {
     return resources[resource] >= 10;
-  };
+  }, [resources]);
 
-  const marketItems = [
+  const marketItems = useMemo(() => [
     { key: 'minerals' as const, name: 'Minerals', icon: '⛏️' },
     { key: 'energy' as const, name: 'Energy', icon: '⚡' },
     { key: 'food' as const, name: 'Food', icon: '🍎' },
-  ];
+  ], []);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">

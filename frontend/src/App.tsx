@@ -10,12 +10,18 @@ import GalaxyMap from './components/game/galaxymap/GalaxyMap';
 import Market from './components/game/market/Market';
 import Legacy from './components/game/legacy/Legacy';
 import NotificationSystem from './components/ui/NotificationSystem';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 const App: React.FC = () => {
   const { currentTab, initializeGame } = useGameStore();
 
   useEffect(() => {
     initializeGame();
+    
+    return () => {
+      // Cleanup on unmount
+      useGameStore.getState().cleanup();
+    };
   }, [initializeGame]);
 
   const renderCurrentTab = () => {
@@ -38,14 +44,16 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      <Header />
-      <TabNavigation />
-      <main className="container mx-auto">
-        {renderCurrentTab()}
-      </main>
-      <NotificationSystem />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-slate-900 text-white">
+        <Header />
+        <TabNavigation />
+        <main className="container mx-auto">
+          {renderCurrentTab()}
+        </main>
+        <NotificationSystem />
+      </div>
+    </ErrorBoundary>
   );
 };
 

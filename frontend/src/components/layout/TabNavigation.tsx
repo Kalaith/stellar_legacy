@@ -1,17 +1,18 @@
 // components/layout/TabNavigation.tsx
 import React from 'react';
 import { useGameStore } from '../../stores/useGameStore';
+import type { TabIdType } from '../../types/enums';
 
 const TabNavigation: React.FC = () => {
   const { currentTab, switchTab } = useGameStore();
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'ship-builder', label: 'Ship Builder' },
-    { id: 'crew-quarters', label: 'Crew Quarters' },
-    { id: 'galaxy-map', label: 'Galaxy Map' },
-    { id: 'market', label: 'Market' },
-    { id: 'legacy', label: 'Legacy' }
+    { id: 'dashboard' as TabIdType, label: 'Dashboard' },
+    { id: 'ship-builder' as TabIdType, label: 'Ship Builder' },
+    { id: 'crew-quarters' as TabIdType, label: 'Crew Quarters' },
+    { id: 'galaxy-map' as TabIdType, label: 'Galaxy Map' },
+    { id: 'market' as TabIdType, label: 'Market' },
+    { id: 'legacy' as TabIdType, label: 'Legacy' }
   ];
 
   return (

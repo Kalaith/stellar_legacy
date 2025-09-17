@@ -43,23 +43,25 @@ interface StatItemProps {
   value: number;
 }
 
-const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
+const StatItem: React.FC<StatItemProps> = React.memo(({ label, value }) => (
   <div className="bg-slate-700 rounded p-3">
     <div className="text-xs text-slate-400 uppercase tracking-wide">{label}</div>
     <div className="text-lg font-semibold text-white">{value}</div>
   </div>
-);
+));
+StatItem.displayName = 'StatItem';
 
 interface ComponentItemProps {
   label: string;
   value: string;
 }
 
-const ComponentItem: React.FC<ComponentItemProps> = ({ label, value }) => (
+const ComponentItem: React.FC<ComponentItemProps> = React.memo(({ label, value }) => (
   <div className="flex justify-between items-center py-1">
     <span className="text-slate-300">{label}:</span>
     <span className="text-white font-medium">{value}</span>
   </div>
-);
+));
+ComponentItem.displayName = 'ComponentItem';
 
 export default ShipStatus;

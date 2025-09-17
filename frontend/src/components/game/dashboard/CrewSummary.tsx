@@ -1,5 +1,5 @@
 // components/game/dashboard/CrewSummary.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 
 const CrewSummary: React.FC = () => {
@@ -27,12 +27,12 @@ interface CrewMemberItemProps {
   };
 }
 
-const CrewMemberItem: React.FC<CrewMemberItemProps> = ({ member }) => {
-  const getMoraleColor = (morale: number) => {
+const CrewMemberItem: React.FC<CrewMemberItemProps> = React.memo(({ member }) => {
+  const getMoraleColor = useMemo(() => (morale: number) => {
     if (morale > 70) return 'bg-green-500';
     if (morale > 50) return 'bg-yellow-500';
     return 'bg-red-500';
-  };
+  }, []);
 
   return (
     <div className="flex items-center justify-between bg-slate-700 rounded p-3">
@@ -43,6 +43,8 @@ const CrewMemberItem: React.FC<CrewMemberItemProps> = ({ member }) => {
       <div className={`w-3 h-3 rounded-full ${getMoraleColor(member.morale)}`} />
     </div>
   );
-};
+});
+
+CrewMemberItem.displayName = 'CrewMemberItem';
 
 export default CrewSummary;

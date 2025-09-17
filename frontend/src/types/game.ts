@@ -1,4 +1,5 @@
 // types/game.ts
+import type { TabIdType, SystemStatusType, NotificationTypeType, PlanetTypeType, CrewRoleType, ComponentCategoryType } from './enums';
 export interface Resources {
   credits: number;
   energy: number;
@@ -33,7 +34,7 @@ export interface Ship {
 export interface CrewMember {
   id: number;
   name: string;
-  role: string;
+  role: CrewRoleType;
   skills: {
     engineering: number;
     navigation: number;
@@ -49,14 +50,14 @@ export interface CrewMember {
 
 export interface Planet {
   name: string;
-  type: string;
+  type: PlanetTypeType;
   resources: string[];
   developed: boolean;
 }
 
 export interface StarSystem {
   name: string;
-  status: 'explored' | 'unexplored';
+  status: SystemStatusType;
   planets: Planet[];
   tradeRoutes: any[]; // TODO: Define trade route type
   coordinates: {
@@ -131,15 +132,15 @@ export interface GameData {
 
 export interface GameState extends GameData {
   selectedSystem: StarSystem | null;
-  currentComponentCategory: keyof ShipComponentsData;
+  currentComponentCategory: ComponentCategoryType;
   resourceGenerationRate: Partial<Resources>;
-  currentTab: string;
+  currentTab: TabIdType;
   notifications: Notification[];
 }
 
 export interface Notification {
   id: string;
   message: string;
-  type: 'success' | 'error' | 'warning' | 'info';
+  type: NotificationTypeType;
   timestamp: number;
 }
