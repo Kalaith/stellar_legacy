@@ -99,7 +99,7 @@ export default {
       brown: {
         600: 'var(--color-brown-600)',
       },
-      
+
       // Semantic design system colors
       primary: 'var(--color-primary)',
       'primary-hover': 'var(--color-primary-hover)',
@@ -114,7 +114,7 @@ export default {
       success: 'var(--color-success)',
       warning: 'var(--color-warning)',
       info: 'var(--color-info)',
-      
+
       // Contextual background utilities
       'bg-1': 'var(--color-bg-1)',
       'bg-2': 'var(--color-bg-2)',

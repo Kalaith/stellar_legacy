@@ -55,7 +55,9 @@ const CrewCard: React.FC<CrewCardProps> = ({ member }) => {
           </div>
           <div>
             <h4 className="text-white font-semibold">{member.name}</h4>
-            <p className="text-slate-400 text-sm">{member.role} • Age {member.age}</p>
+            <p className="text-slate-400 text-sm">
+              {member.role} • Age {member.age}
+            </p>
           </div>
         </div>
         {member.isHeir && (
@@ -68,7 +70,9 @@ const CrewCard: React.FC<CrewCardProps> = ({ member }) => {
       <div className="space-y-2 mb-3">
         {Object.entries(member.skills).map(([skill, level]) => (
           <div key={skill} className="flex items-center justify-between">
-            <span className="text-slate-300 text-sm capitalize w-20">{skill}</span>
+            <span className="text-slate-300 text-sm capitalize w-20">
+              {skill}
+            </span>
             <div className="flex-1 mx-2">
               <div className="w-full bg-slate-600 rounded-full h-2">
                 <div
@@ -91,11 +95,15 @@ const CrewCard: React.FC<CrewCardProps> = ({ member }) => {
               style={{ width: `${member.morale}%` }}
             />
           </div>
-          <span className="text-white text-sm w-8 text-right">{member.morale}</span>
+          <span className="text-white text-sm w-8 text-right">
+            {member.morale}
+          </span>
         </div>
       </div>
 
-      <p className="text-slate-400 text-xs leading-relaxed">{member.background}</p>
+      <p className="text-slate-400 text-xs leading-relaxed">
+        {member.background}
+      </p>
     </div>
   );
 };

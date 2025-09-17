@@ -2,32 +2,40 @@
 import React from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 import { useGameActions } from '../../../hooks/useGameActions';
+import type { ComponentCost } from '../../../types/game';
 
 const ComponentShop: React.FC = () => {
-  const { shipComponents, currentComponentCategory, resources } = useGameStore();
-  const { handlePurchaseComponent, handleSwitchComponentCategory } = useGameActions();
+  const { shipComponents, currentComponentCategory, resources } =
+    useGameStore();
+  const { handlePurchaseComponent, handleSwitchComponentCategory } =
+    useGameActions();
 
   const categories = [
     { id: 'hulls', label: 'Hulls' },
     { id: 'engines', label: 'Engines' },
-    { id: 'weapons', label: 'Weapons' }
+    { id: 'weapons', label: 'Weapons' },
   ] as const;
 
   const currentComponents = shipComponents[currentComponentCategory];
 
-  const canAfford = (cost: any) => {
-    return Object.entries(cost).every(([resource, amount]: [string, any]) =>
-      resources[resource as keyof typeof resources] >= amount
+  const canAfford = (cost: ComponentCost) => {
+    return Object.entries(cost).every(
+      ([resource, amount]: [string, number]) =>
+        resources[resource as keyof typeof resources] >= amount
     );
   };
 
-  const formatCost = (cost: any) => {
-    return Object.entries(cost).map(([resource, amount]) => `${amount} ${resource}`).join(', ');
+  const formatCost = (cost: ComponentCost) => {
+    return Object.entries(cost)
+      .map(([resource, amount]) => `${amount} ${resource}`)
+      .join(', ');
   };
 
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <h3 className="text-xl font-bold text-white mb-4">Available Components</h3>
+      <h3 className="text-xl font-bold text-white mb-4">
+        Available Components
+      </h3>
 
       {/* Category Tabs */}
       <div className="flex space-x-2 mb-6">
@@ -53,7 +61,12 @@ const ComponentShop: React.FC = () => {
             <div className="flex justify-between items-start mb-2">
               <h4 className="text-white font-semibold">{component.name}</h4>
               <button
-                onClick={() => handlePurchaseComponent(currentComponentCategory, component.name)}
+                onClick={() =>
+                  handlePurchaseComponent(
+                    currentComponentCategory,
+                    component.name
+                  )
+                }
                 disabled={!canAfford(component.cost)}
                 className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                   canAfford(component.cost)
@@ -71,9 +84,10 @@ const ComponentShop: React.FC = () => {
 
             {component.stats && Object.keys(component.stats).length > 0 && (
               <div className="text-sm text-slate-300">
-                Stats: {Object.entries(component.stats).map(([stat, value]) =>
-                  `${stat}: +${value}`
-                ).join(', ')}
+                Stats:{' '}
+                {Object.entries(component.stats)
+                  .map(([stat, value]) => `${stat}: +${value}`)
+                  .join(', ')}
               </div>
             )}
           </div>

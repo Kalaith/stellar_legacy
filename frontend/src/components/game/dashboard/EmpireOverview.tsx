@@ -4,13 +4,21 @@ import { useGameStore } from '../../../stores/useGameStore';
 
 const EmpireOverview: React.FC = () => {
   const { starSystems, legacy } = useGameStore();
-  const captain = useGameStore(state => state.crew.find(c => c.role === 'Captain'));
-
-  const exploredSystems = starSystems.filter(s => s.status === 'explored').length;
-  const activeColonies = starSystems.reduce((acc, sys) =>
-    acc + sys.planets.filter(p => p.developed).length, 0
+  const captain = useGameStore(state =>
+    state.crew.find(c => c.role === 'Captain')
   );
-  const tradeRoutes = starSystems.reduce((acc, sys) => acc + sys.tradeRoutes.length, 0);
+
+  const exploredSystems = starSystems.filter(
+    s => s.status === 'explored'
+  ).length;
+  const activeColonies = starSystems.reduce(
+    (acc, sys) => acc + sys.planets.filter(p => p.developed).length,
+    0
+  );
+  const tradeRoutes = starSystems.reduce(
+    (acc, sys) => acc + sys.tradeRoutes.length,
+    0
+  );
 
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">

@@ -40,7 +40,9 @@ const CrewMemberItem: React.FC<CrewMemberItemProps> = ({ member }) => {
         <div className="text-white font-medium">{member.name}</div>
         <div className="text-slate-400 text-sm">{member.role}</div>
       </div>
-      <div className={`w-3 h-3 rounded-full ${getMoraleColor(member.morale)}`} />
+      <div
+        className={`w-3 h-3 rounded-full ${getMoraleColor(member.morale)}`}
+      />
     </div>
   );
 };

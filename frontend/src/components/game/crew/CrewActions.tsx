@@ -5,11 +5,13 @@ import { useGameActions } from '../../../hooks/useGameActions';
 
 const CrewActions: React.FC = () => {
   const { resources, crew, ship } = useGameStore();
-  const { handleTrainCrew, handleBoostMorale, handleRecruitCrew } = useGameActions();
+  const { handleTrainCrew, handleBoostMorale, handleRecruitCrew } =
+    useGameActions();
 
   const canTrain = resources.credits >= 100;
   const canBoostMorale = resources.credits >= 50;
-  const canRecruit = resources.credits >= 200 && crew.length < ship.stats.crewCapacity;
+  const canRecruit =
+    resources.credits >= 200 && crew.length < ship.stats.crewCapacity;
 
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
@@ -46,7 +48,8 @@ const CrewActions: React.FC = () => {
         {crew.length >= ship.stats.crewCapacity && (
           <div className="bg-yellow-900 border border-yellow-700 rounded p-3">
             <p className="text-yellow-200 text-sm">
-              Ship at maximum crew capacity. Upgrade living quarters to recruit more crew.
+              Ship at maximum crew capacity. Upgrade living quarters to recruit
+              more crew.
             </p>
           </div>
         )}
@@ -70,7 +73,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   title,
   description,
   cost,
-  canAfford
+  canAfford,
 }) => (
   <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
     <div className="flex justify-between items-start mb-2">

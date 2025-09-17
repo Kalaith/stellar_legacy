@@ -26,7 +26,10 @@ const Market: React.FC = () => {
     }
   };
 
-  const handleTrade = (resource: 'minerals' | 'energy' | 'food' | 'influence', action: 'buy' | 'sell') => {
+  const handleTrade = (
+    resource: 'minerals' | 'energy' | 'food' | 'influence',
+    action: 'buy' | 'sell'
+  ) => {
     tradeResource(resource, action);
   };
 
@@ -49,10 +52,15 @@ const Market: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
       {/* Market Prices */}
       <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-lg font-semibold mb-4 text-white">Galactic Market</h3>
+        <h3 className="text-lg font-semibold mb-4 text-white">
+          Galactic Market
+        </h3>
         <div className="space-y-4">
-          {marketItems.map((item) => (
-            <div key={item.key} className="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+          {marketItems.map(item => (
+            <div
+              key={item.key}
+              className="flex items-center justify-between p-4 bg-slate-700 rounded-lg"
+            >
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">{item.icon}</span>
                 <div>
@@ -64,8 +72,11 @@ const Market: React.FC = () => {
               </div>
 
               <div className="flex items-center space-x-2">
-                <span className={`text-sm ${getTrendColor(market.trends[item.key])}`}>
-                  {getTrendIcon(market.trends[item.key])} {market.trends[item.key]}
+                <span
+                  className={`text-sm ${getTrendColor(market.trends[item.key])}`}
+                >
+                  {getTrendIcon(market.trends[item.key])}{' '}
+                  {market.trends[item.key]}
                 </span>
               </div>
 
@@ -100,7 +111,9 @@ const Market: React.FC = () => {
 
       {/* Available Contracts */}
       <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-lg font-semibold mb-4 text-white">Available Contracts</h3>
+        <h3 className="text-lg font-semibold mb-4 text-white">
+          Available Contracts
+        </h3>
         <div className="space-y-4">
           <div className="p-4 bg-slate-700 rounded-lg">
             <h4 className="font-medium mb-2 text-white">Mining Survey</h4>
