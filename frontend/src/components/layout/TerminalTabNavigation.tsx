@@ -21,11 +21,87 @@ const TerminalTabNavigation: React.FC = React.memo(() => {
     { id: 'cultural-evolution' as TabIdType, label: 'CULTURAL EVOLUTION', category: 'GENERATIONAL' }
   ], [activeMissions.length]);
 
-  const handleTabSwitch = useCallback((tabId: TabIdType) => {\n    switchTab(tabId);\n  }, [switchTab]);
+  const handleTabSwitch = useCallback((tabId: TabIdType) => {
+    switchTab(tabId);
+  }, [switchTab]);
 
-  const coreTabsWidth = 50;\n  const genTabsWidth = 60;
+  const coreTabsWidth = 50;
+  const genTabsWidth = 60;
 
-  return (\n    <nav className=\"terminal-navigation\">\n      {/* Core Systems Section */}\n      <div className=\"terminal-nav-section\">\n        <div className=\"terminal-nav-header\">\n          ┌─[CORE SYSTEMS]{\"─\".repeat(coreTabsWidth - 15)}┐\n        </div>\n        <div className=\"terminal-nav-content\">\n          <div className=\"terminal-nav-grid\">\n            {tabs.filter(tab => tab.category === 'CORE').map((tab, index) => {\n              const isActive = currentTab === tab.id;\n              const tabDisplay = tab.label.padEnd(15);\n              \n              return (\n                <button\n                  key={tab.id}\n                  onClick={() => handleTabSwitch(tab.id)}\n                  className={`terminal-nav-item ${\n                    isActive ? 'active' : 'inactive'\n                  }`}\n                >\n                  │ {isActive ? '►' : ' '} {tabDisplay} │\n                </button>\n              );\n            })}\n          </div>\n        </div>\n        <div className=\"terminal-nav-footer\">\n          └{\"─\".repeat(coreTabsWidth)}┘\n        </div>\n      </div>\n\n      {/* Generational Systems Section */}\n      <div className=\"terminal-nav-section\">\n        <div className=\"terminal-nav-header\">\n          ┌─[GENERATIONAL SYSTEMS]{\"─\".repeat(genTabsWidth - 23)}┐\n        </div>\n        <div className=\"terminal-nav-content\">\n          <div className=\"terminal-nav-grid\">\n            {tabs.filter(tab => tab.category === 'GENERATIONAL').map((tab, index) => {\n              const isActive = currentTab === tab.id;\n              const hasAlert = tab.alert;\n              const tabDisplay = tab.label.padEnd(20);\n              \n              return (\n                <button\n                  key={tab.id}\n                  onClick={() => handleTabSwitch(tab.id)}\n                  className={`terminal-nav-item ${\n                    isActive ? 'active' : 'inactive'\n                  } ${\n                    hasAlert ? 'alert' : ''\n                  }`}\n                >\n                  │ {isActive ? '►' : ' '} {tabDisplay} {hasAlert ? '[!]' : '   '} │\n                </button>\n              );\n            })}\n          </div>\n        </div>\n        <div className=\"terminal-nav-footer\">\n          └{\"─\".repeat(genTabsWidth)}┘\n        </div>\n      </div>\n\n      {/* Command Line Indicator */}\n      <div className=\"terminal-command-line\">\n        <div className=\"terminal-text dim\">\n          CURRENT SYSTEM: [{currentTab.toUpperCase().replace('-', '_')}] │ AWAITING COMMANDS...\n        </div>\n      </div>\n    </nav>\n  );\n});
+  return (
+    <nav className="terminal-navigation">
+      {/* Core Systems Section */}
+      <div className="terminal-nav-section">
+        <div className="terminal-nav-header">
+          ┌─[CORE SYSTEMS]{"─".repeat(coreTabsWidth - 15)}┐
+        </div>
+        <div className="terminal-nav-content">
+          <div className="terminal-nav-grid">
+            {tabs.filter(tab => tab.category === 'CORE').map((tab, index) => {
+              const isActive = currentTab === tab.id;
+              const tabDisplay = tab.label.padEnd(15);
+
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabSwitch(tab.id)}
+                  className={`terminal-nav-item ${
+                    isActive ? 'active' : 'inactive'
+                  }`}
+                >
+                  │ {isActive ? '►' : ' '} {tabDisplay} │
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="terminal-nav-footer">
+          └{"─".repeat(coreTabsWidth)}┘
+        </div>
+      </div>
+
+      {/* Generational Systems Section */}
+      <div className="terminal-nav-section">
+        <div className="terminal-nav-header">
+          ┌─[GENERATIONAL SYSTEMS]{"─".repeat(genTabsWidth - 23)}┐
+        </div>
+        <div className="terminal-nav-content">
+          <div className="terminal-nav-grid">
+            {tabs.filter(tab => tab.category === 'GENERATIONAL').map((tab, index) => {
+              const isActive = currentTab === tab.id;
+              const hasAlert = tab.alert;
+              const tabDisplay = tab.label.padEnd(20);
+
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabSwitch(tab.id)}
+                  className={`terminal-nav-item ${
+                    isActive ? 'active' : 'inactive'
+                  } ${
+                    hasAlert ? 'alert' : ''
+                  }`}
+                >
+                  │ {isActive ? '►' : ' '} {tabDisplay} {hasAlert ? '[!]' : '   '} │
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="terminal-nav-footer">
+          └{"─".repeat(genTabsWidth)}┘
+        </div>
+      </div>
+
+      {/* Command Line Indicator */}
+      <div className="terminal-command-line">
+        <div className="terminal-text dim">
+          CURRENT SYSTEM: [{currentTab.toUpperCase().replace('-', '_')}] │ AWAITING COMMANDS...
+        </div>
+      </div>
+    </nav>
+  );
+});
 
 TerminalTabNavigation.displayName = 'TerminalTabNavigation';
 
