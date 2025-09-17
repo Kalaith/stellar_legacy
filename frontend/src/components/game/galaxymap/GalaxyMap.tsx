@@ -149,7 +149,7 @@ const GalaxyMap: React.FC = React.memo(() => {
       </div>
     </div>
   );
-};
+});
 
 GalaxyMap.displayName = 'GalaxyMap';
 
