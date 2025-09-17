@@ -28,17 +28,6 @@ const GalaxyMap: React.FC = () => {
     }
   };
 
-  const getSystemStatusColor = (status: string) => {
-    switch (status) {
-      case 'explored':
-        return 'text-green-400';
-      case 'unexplored':
-        return 'text-blue-400';
-      default:
-        return 'text-gray-400';
-    }
-  };
-
   const canExplore = selectedSystem && selectedSystem.status === 'unexplored' && resources.energy >= 50;
   const canEstablishColony = selectedSystem &&
     selectedSystem.status === 'explored' &&
@@ -47,20 +36,20 @@ const GalaxyMap: React.FC = () => {
     resources.minerals >= 100;
 
   return (
-    <div className="galaxy-interface grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
       {/* Galaxy Map View */}
       <div className="lg:col-span-2">
-        <div className="card">
-          <h3 className="text-lg font-semibold mb-4">Galaxy Map</h3>
-          <div className="galaxy-container relative bg-slate-900 rounded-lg p-4 min-h-[400px] overflow-hidden">
-            <div className="galaxy-grid absolute inset-0">
+        <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+          <h3 className="text-lg font-semibold mb-4 text-white">Galaxy Map</h3>
+          <div className="relative bg-slate-900 rounded-lg p-4 min-h-[400px] overflow-hidden">
+            <div className="absolute inset-0">
               {starSystems.map((system, index) => (
                 <div
                   key={index}
-                  className={`star-system absolute cursor-pointer transition-all duration-200 hover:scale-125 ${
+                  className={`absolute cursor-pointer transition-all duration-200 hover:scale-125 ${
                     system.status === 'explored' ? 'text-yellow-400' : 'text-blue-400'
                   } ${
-                    selectedSystem?.name === system.name ? 'selected scale-125 ring-2 ring-teal-400' : ''
+                    selectedSystem?.name === system.name ? 'scale-125 ring-2 ring-teal-400' : ''
                   }`}
                   style={{
                     left: `${system.coordinates.x}px`,
@@ -79,28 +68,30 @@ const GalaxyMap: React.FC = () => {
 
       {/* System Details */}
       <div className="space-y-4">
-        <div className="card">
-          <h3 className="text-lg font-semibold mb-4">System Details</h3>
+        <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+          <h3 className="text-lg font-semibold mb-4 text-white">System Details</h3>
           {selectedSystem ? (
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-lg">{selectedSystem.name}</h4>
-                <p className="text-sm">
-                  Status: <span className={`status ${getSystemStatusColor(selectedSystem.status)}`}>
+                <h4 className="font-medium text-lg text-white">{selectedSystem.name}</h4>
+                <p className="text-sm text-slate-300">
+                  Status: <span className={`font-medium ${
+                    selectedSystem.status === 'explored' ? 'text-green-400' : 'text-blue-400'
+                  }`}>
                     {selectedSystem.status}
                   </span>
                 </p>
               </div>
 
               <div>
-                <h5 className="font-medium mb-2">Planets:</h5>
+                <h5 className="font-medium mb-2 text-white">Planets:</h5>
                 <div className="space-y-2">
                   {selectedSystem.planets.map((planet, index) => (
                     <div
                       key={index}
                       className="flex justify-between items-center p-2 bg-slate-700 rounded"
                     >
-                      <span className="text-sm">
+                      <span className="text-sm text-slate-300">
                         {planet.name} ({planet.type})
                       </span>
                       <span className={`text-xs px-2 py-1 rounded ${
@@ -121,18 +112,26 @@ const GalaxyMap: React.FC = () => {
         </div>
 
         {/* System Actions */}
-        <div className="card">
-          <h3 className="text-lg font-semibold mb-4">Actions</h3>
+        <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+          <h3 className="text-lg font-semibold mb-4 text-white">Actions</h3>
           <div className="space-y-2">
             <button
-              className={`btn btn--primary w-full ${!canExplore ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full py-2 px-4 rounded font-medium transition-colors ${
+                canExplore
+                  ? 'bg-teal-600 hover:bg-teal-700 text-white'
+                  : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+              }`}
               onClick={handleExplore}
               disabled={!canExplore}
             >
               Explore System (50 Energy)
             </button>
             <button
-              className={`btn btn--secondary w-full ${!canEstablishColony ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full py-2 px-4 rounded font-medium transition-colors ${
+                canEstablishColony
+                  ? 'bg-slate-600 hover:bg-slate-700 text-white'
+                  : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+              }`}
               onClick={handleEstablishColony}
               disabled={!canEstablishColony}
             >

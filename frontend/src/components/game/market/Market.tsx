@@ -46,18 +46,18 @@ const Market: React.FC = () => {
   ];
 
   return (
-    <div className="market-interface grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
       {/* Market Prices */}
-      <div className="card">
-        <h3 className="text-lg font-semibold mb-4">Galactic Market</h3>
+      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+        <h3 className="text-lg font-semibold mb-4 text-white">Galactic Market</h3>
         <div className="space-y-4">
           {marketItems.map((item) => (
-            <div key={item.key} className="market-item flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+            <div key={item.key} className="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">{item.icon}</span>
                 <div>
-                  <div className="font-medium">{item.name}</div>
-                  <div className="text-sm text-gray-300">
+                  <div className="font-medium text-white">{item.name}</div>
+                  <div className="text-sm text-slate-300">
                     {market.prices[item.key]} Credits
                   </div>
                 </div>
@@ -71,14 +71,22 @@ const Market: React.FC = () => {
 
               <div className="flex space-x-2">
                 <button
-                  className={`btn btn--sm ${canBuy(item.key) ? 'btn--primary' : 'btn--outline opacity-50 cursor-not-allowed'}`}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    canBuy(item.key)
+                      ? 'bg-teal-600 hover:bg-teal-700 text-white'
+                      : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                  }`}
                   onClick={() => handleTrade(item.key, 'buy')}
                   disabled={!canBuy(item.key)}
                 >
                   Buy 10
                 </button>
                 <button
-                  className={`btn btn--sm ${canSell(item.key) ? 'btn--secondary' : 'btn--outline opacity-50 cursor-not-allowed'}`}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    canSell(item.key)
+                      ? 'bg-slate-600 hover:bg-slate-700 text-white'
+                      : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                  }`}
                   onClick={() => handleTrade(item.key, 'sell')}
                   disabled={!canSell(item.key)}
                 >
@@ -91,44 +99,44 @@ const Market: React.FC = () => {
       </div>
 
       {/* Available Contracts */}
-      <div className="card">
-        <h3 className="text-lg font-semibold mb-4">Available Contracts</h3>
+      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+        <h3 className="text-lg font-semibold mb-4 text-white">Available Contracts</h3>
         <div className="space-y-4">
-          <div className="contract-item p-4 bg-slate-700 rounded-lg">
-            <h4 className="font-medium mb-2">Mining Survey</h4>
-            <p className="text-sm text-gray-300 mb-3">
+          <div className="p-4 bg-slate-700 rounded-lg">
+            <h4 className="font-medium mb-2 text-white">Mining Survey</h4>
+            <p className="text-sm text-slate-300 mb-3">
               Survey asteroid belt for rare minerals
             </p>
-            <div className="contract-reward text-sm text-green-400 mb-3">
+            <div className="text-sm text-green-400 mb-3">
               Reward: 300 Credits, 50 Minerals
             </div>
-            <button className="btn btn--primary btn--sm w-full">
+            <button className="w-full px-3 py-2 rounded text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors">
               Accept Contract
             </button>
           </div>
 
-          <div className="contract-item p-4 bg-slate-700 rounded-lg">
-            <h4 className="font-medium mb-2">Trade Escort</h4>
-            <p className="text-sm text-gray-300 mb-3">
+          <div className="p-4 bg-slate-700 rounded-lg">
+            <h4 className="font-medium mb-2 text-white">Trade Escort</h4>
+            <p className="text-sm text-slate-300 mb-3">
               Escort merchant vessel through pirate territory
             </p>
-            <div className="contract-reward text-sm text-green-400 mb-3">
+            <div className="text-sm text-green-400 mb-3">
               Reward: 500 Credits, +10 Military Rep
             </div>
-            <button className="btn btn--primary btn--sm w-full">
+            <button className="w-full px-3 py-2 rounded text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors">
               Accept Contract
             </button>
           </div>
 
-          <div className="contract-item p-4 bg-slate-700 rounded-lg">
-            <h4 className="font-medium mb-2">Research Mission</h4>
-            <p className="text-sm text-gray-300 mb-3">
+          <div className="p-4 bg-slate-700 rounded-lg">
+            <h4 className="font-medium mb-2 text-white">Research Mission</h4>
+            <p className="text-sm text-slate-300 mb-3">
               Study ancient alien artifacts
             </p>
-            <div className="contract-reward text-sm text-green-400 mb-3">
+            <div className="text-sm text-green-400 mb-3">
               Reward: 400 Credits, +15 Science Rep
             </div>
-            <button className="btn btn--primary btn--sm w-full">
+            <button className="w-full px-3 py-2 rounded text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors">
               Accept Contract
             </button>
           </div>
