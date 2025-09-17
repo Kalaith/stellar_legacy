@@ -1,7 +1,16 @@
 // stores/useGameStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameState, GameData, CrewMember, StarSystem, Planet, Notification } from '../types/game';
+import type {
+  GameState,
+  GameData,
+  CrewMember,
+  StarSystem,
+  Planet,
+  Notification,
+  ComponentCost,
+  ShipStats,
+} from '../types/game';
 
 const initialGameData: GameData = {
   resources: {
@@ -9,136 +18,212 @@ const initialGameData: GameData = {
     energy: 100,
     minerals: 50,
     food: 80,
-    influence: 25
+    influence: 25,
   },
   ship: {
     name: "Pioneer's Dream",
-    hull: "Light Corvette",
+    hull: 'Light Corvette',
     components: {
-      engine: "Basic Thruster",
-      cargo: "Standard Bay",
-      weapons: "Light Laser",
-      research: "Basic Scanner",
-      quarters: "Crew Quarters"
+      engine: 'Basic Thruster',
+      cargo: 'Standard Bay',
+      weapons: 'Light Laser',
+      research: 'Basic Scanner',
+      quarters: 'Crew Quarters',
     },
     stats: {
       speed: 3,
       cargo: 100,
       combat: 2,
       research: 1,
-      crewCapacity: 6
-    }
+      crewCapacity: 6,
+    },
   },
   crew: [
     {
       id: 1,
-      name: "Captain Elena Voss",
-      role: "Captain",
-      skills: {engineering: 6, navigation: 8, combat: 7, diplomacy: 9, trade: 5},
+      name: 'Captain Elena Voss',
+      role: 'Captain',
+      skills: {
+        engineering: 6,
+        navigation: 8,
+        combat: 7,
+        diplomacy: 9,
+        trade: 5,
+      },
       morale: 85,
-      background: "Former military officer turned explorer",
+      background: 'Former military officer turned explorer',
       age: 35,
-      isHeir: false
+      isHeir: false,
     },
     {
       id: 2,
-      name: "Chief Engineer Marcus Cole",
-      role: "Engineer",
-      skills: {engineering: 9, navigation: 4, combat: 5, diplomacy: 3, trade: 2},
+      name: 'Chief Engineer Marcus Cole',
+      role: 'Engineer',
+      skills: {
+        engineering: 9,
+        navigation: 4,
+        combat: 5,
+        diplomacy: 3,
+        trade: 2,
+      },
       morale: 90,
-      background: "Shipyard veteran with decades of experience",
+      background: 'Shipyard veteran with decades of experience',
       age: 28,
-      isHeir: false
+      isHeir: false,
     },
     {
       id: 3,
-      name: "Navigator Zara Chen",
-      role: "Pilot",
-      skills: {engineering: 3, navigation: 9, combat: 6, diplomacy: 5, trade: 4},
+      name: 'Navigator Zara Chen',
+      role: 'Pilot',
+      skills: {
+        engineering: 3,
+        navigation: 9,
+        combat: 6,
+        diplomacy: 5,
+        trade: 4,
+      },
       morale: 80,
-      background: "Ace pilot from the outer colonies",
+      background: 'Ace pilot from the outer colonies',
       age: 26,
-      isHeir: false
+      isHeir: false,
     },
     {
       id: 4,
-      name: "Trader Kex Thorne",
-      role: "Diplomat",
-      skills: {engineering: 2, navigation: 3, combat: 4, diplomacy: 8, trade: 9},
+      name: 'Trader Kex Thorne',
+      role: 'Diplomat',
+      skills: {
+        engineering: 2,
+        navigation: 3,
+        combat: 4,
+        diplomacy: 8,
+        trade: 9,
+      },
       morale: 75,
-      background: "Smooth-talking merchant with connections",
+      background: 'Smooth-talking merchant with connections',
       age: 32,
-      isHeir: false
-    }
+      isHeir: false,
+    },
   ],
   starSystems: [
     {
-      name: "Sol Alpha",
-      status: "explored",
+      name: 'Sol Alpha',
+      status: 'explored',
       planets: [
-        {name: "Terra Prime", type: "Rocky", resources: ["minerals", "energy"], developed: true},
-        {name: "Gas Giant Beta", type: "Gas Giant", resources: ["energy", "food"], developed: false}
+        {
+          name: 'Terra Prime',
+          type: 'Rocky',
+          resources: ['minerals', 'energy'],
+          developed: true,
+        },
+        {
+          name: 'Gas Giant Beta',
+          type: 'Gas Giant',
+          resources: ['energy', 'food'],
+          developed: false,
+        },
       ],
       tradeRoutes: [],
-      coordinates: {x: 100, y: 100}
+      coordinates: { x: 100, y: 100 },
     },
     {
-      name: "Kepler Station",
-      status: "unexplored",
-      planets: [{name: "Unknown", type: "Unknown", resources: ["unknown"], developed: false}],
+      name: 'Kepler Station',
+      status: 'unexplored',
+      planets: [
+        {
+          name: 'Unknown',
+          type: 'Unknown',
+          resources: ['unknown'],
+          developed: false,
+        },
+      ],
       tradeRoutes: [],
-      coordinates: {x: 200, y: 150}
+      coordinates: { x: 200, y: 150 },
     },
     {
-      name: "Vega Outpost",
-      status: "unexplored",
-      planets: [{name: "Unknown", type: "Unknown", resources: ["unknown"], developed: false}],
+      name: 'Vega Outpost',
+      status: 'unexplored',
+      planets: [
+        {
+          name: 'Unknown',
+          type: 'Unknown',
+          resources: ['unknown'],
+          developed: false,
+        },
+      ],
       tradeRoutes: [],
-      coordinates: {x: 150, y: 250}
-    }
+      coordinates: { x: 150, y: 250 },
+    },
   ],
   market: {
     prices: {
       minerals: 15,
       energy: 12,
       food: 8,
-      influence: 25
+      influence: 25,
     },
     trends: {
-      minerals: "rising",
-      energy: "stable",
-      food: "falling",
-      influence: "rising"
-    }
+      minerals: 'rising',
+      energy: 'stable',
+      food: 'falling',
+      influence: 'rising',
+    },
   },
   legacy: {
     generation: 1,
-    familyName: "Voss",
-    achievements: ["First Command", "System Explorer"],
-    traits: ["Natural Leader", "Tech Savvy"],
+    familyName: 'Voss',
+    achievements: ['First Command', 'System Explorer'],
+    traits: ['Natural Leader', 'Tech Savvy'],
     reputation: {
       military: 20,
       traders: 15,
-      scientists: 10
-    }
+      scientists: 10,
+    },
   },
   shipComponents: {
     hulls: [
-      {name: "Light Corvette", cost: {credits: 500}, stats: {speed: 3, cargo: 100, combat: 2}},
-      {name: "Heavy Frigate", cost: {credits: 1500, minerals: 200}, stats: {speed: 2, cargo: 200, combat: 5}},
-      {name: "Exploration Vessel", cost: {credits: 1200, energy: 150}, stats: {speed: 4, cargo: 150, research: 3}}
+      {
+        name: 'Light Corvette',
+        cost: { credits: 500 },
+        stats: { speed: 3, cargo: 100, combat: 2 },
+      },
+      {
+        name: 'Heavy Frigate',
+        cost: { credits: 1500, minerals: 200 },
+        stats: { speed: 2, cargo: 200, combat: 5 },
+      },
+      {
+        name: 'Exploration Vessel',
+        cost: { credits: 1200, energy: 150 },
+        stats: { speed: 4, cargo: 150, research: 3 },
+      },
     ],
     engines: [
-      {name: "Basic Thruster", cost: {credits: 200}, stats: {speed: 1}},
-      {name: "Ion Drive", cost: {credits: 800, energy: 100}, stats: {speed: 3}},
-      {name: "Warp Core", cost: {credits: 2000, energy: 300, minerals: 100}, stats: {speed: 5}}
+      { name: 'Basic Thruster', cost: { credits: 200 }, stats: { speed: 1 } },
+      {
+        name: 'Ion Drive',
+        cost: { credits: 800, energy: 100 },
+        stats: { speed: 3 },
+      },
+      {
+        name: 'Warp Core',
+        cost: { credits: 2000, energy: 300, minerals: 100 },
+        stats: { speed: 5 },
+      },
     ],
     weapons: [
-      {name: "Light Laser", cost: {credits: 300}, stats: {combat: 2}},
-      {name: "Pulse Cannon", cost: {credits: 800, minerals: 50}, stats: {combat: 4}},
-      {name: "Plasma Artillery", cost: {credits: 1500, minerals: 150, energy: 100}, stats: {combat: 7}}
-    ]
-  }
+      { name: 'Light Laser', cost: { credits: 300 }, stats: { combat: 2 } },
+      {
+        name: 'Pulse Cannon',
+        cost: { credits: 800, minerals: 50 },
+        stats: { combat: 4 },
+      },
+      {
+        name: 'Plasma Artillery',
+        cost: { credits: 1500, minerals: 150, energy: 100 },
+        stats: { combat: 7 },
+      },
+    ],
+  },
 };
 
 interface GameStore extends GameState {
@@ -153,15 +238,20 @@ interface GameStore extends GameState {
   selectSystem: (system: StarSystem) => void;
   exploreSystem: () => void;
   establishColony: () => void;
-  switchComponentCategory: (category: keyof typeof initialGameData.shipComponents) => void;
+  switchComponentCategory: (
+    category: keyof typeof initialGameData.shipComponents
+  ) => void;
   purchaseComponent: (category: string, componentName: string) => void;
   selectHeir: (heirId: number) => void;
   showNotification: (message: string, type?: Notification['type']) => void;
   clearNotification: (id: string) => void;
-  tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: 'buy' | 'sell') => void;
+  tradeResource: (
+    resource: 'minerals' | 'energy' | 'food' | 'influence',
+    action: 'buy' | 'sell'
+  ) => void;
 
   // Helper methods
-  canAffordComponent: (cost: any) => boolean;
+  canAffordComponent: (cost: ComponentCost) => boolean;
   generateRandomCrew: () => CrewMember;
   generatePlanets: () => Planet[];
 }
@@ -177,7 +267,7 @@ export const useGameStore = create<GameStore>()(
         energy: 1,
         minerals: 1,
         food: 1,
-        influence: 0.2
+        influence: 0.2,
       },
       currentTab: 'dashboard',
       notifications: [],
@@ -190,7 +280,8 @@ export const useGameStore = create<GameStore>()(
         generateResources();
         const interval = setInterval(generateResources, 3000);
         // Store interval ID for cleanup if needed
-        (window as any).resourceInterval = interval;
+        (window as Window & { resourceInterval?: number }).resourceInterval =
+          interval as unknown as number;
       },
 
       switchTab: (tabName: string) => {
@@ -207,7 +298,9 @@ export const useGameStore = create<GameStore>()(
         const newResources = { ...resources };
 
         Object.entries(resourceGenerationRate).forEach(([resource, rate]) => {
-          if (newResources[resource as keyof typeof newResources] !== undefined) {
+          if (
+            newResources[resource as keyof typeof newResources] !== undefined
+          ) {
             newResources[resource as keyof typeof newResources] += rate;
           }
         });
@@ -218,19 +311,33 @@ export const useGameStore = create<GameStore>()(
       trainCrew: () => {
         const { resources, crew } = get();
         if (resources.credits >= 100) {
-          const newResources = { ...resources, credits: resources.credits - 100 };
+          const newResources = {
+            ...resources,
+            credits: resources.credits - 100,
+          };
           const randomCrew = crew[Math.floor(Math.random() * crew.length)];
-          const skills = Object.keys(randomCrew.skills) as (keyof typeof randomCrew.skills)[];
+          const skills = Object.keys(
+            randomCrew.skills
+          ) as (keyof typeof randomCrew.skills)[];
           const randomSkill = skills[Math.floor(Math.random() * skills.length)];
 
           const updatedCrew = crew.map(member =>
             member.id === randomCrew.id
-              ? { ...member, skills: { ...member.skills, [randomSkill]: Math.min(10, member.skills[randomSkill] + 1) } }
+              ? {
+                  ...member,
+                  skills: {
+                    ...member.skills,
+                    [randomSkill]: Math.min(10, member.skills[randomSkill] + 1),
+                  },
+                }
               : member
           );
 
           set({ resources: newResources, crew: updatedCrew });
-          get().showNotification(`${randomCrew.name} improved their ${randomSkill} skill!`, 'success');
+          get().showNotification(
+            `${randomCrew.name} improved their ${randomSkill} skill!`,
+            'success'
+          );
         } else {
           get().showNotification('Not enough credits for training!', 'error');
         }
@@ -239,40 +346,64 @@ export const useGameStore = create<GameStore>()(
       boostMorale: () => {
         const { resources, crew } = get();
         if (resources.credits >= 50) {
-          const newResources = { ...resources, credits: resources.credits - 50 };
-          const updatedCrew = crew.map(member => ({ ...member, morale: Math.min(100, member.morale + 10) }));
+          const newResources = {
+            ...resources,
+            credits: resources.credits - 50,
+          };
+          const updatedCrew = crew.map(member => ({
+            ...member,
+            morale: Math.min(100, member.morale + 10),
+          }));
 
           set({ resources: newResources, crew: updatedCrew });
           get().showNotification('Crew morale improved!', 'success');
         } else {
-          get().showNotification('Not enough credits to boost morale!', 'error');
+          get().showNotification(
+            'Not enough credits to boost morale!',
+            'error'
+          );
         }
       },
 
       recruitCrew: () => {
         const { resources, crew, ship } = get();
         if (resources.credits >= 200 && crew.length < ship.stats.crewCapacity) {
-          const newResources = { ...resources, credits: resources.credits - 200 };
+          const newResources = {
+            ...resources,
+            credits: resources.credits - 200,
+          };
           const newCrew = get().generateRandomCrew();
           const updatedCrew = [...crew, newCrew];
 
           set({ resources: newResources, crew: updatedCrew });
           get().showNotification(`Recruited ${newCrew.name}!`, 'success');
         } else if (crew.length >= ship.stats.crewCapacity) {
-          get().showNotification('Ship at crew capacity! Upgrade living quarters.', 'warning');
+          get().showNotification(
+            'Ship at crew capacity! Upgrade living quarters.',
+            'warning'
+          );
         } else {
-          get().showNotification('Not enough credits to recruit crew!', 'error');
+          get().showNotification(
+            'Not enough credits to recruit crew!',
+            'error'
+          );
         }
       },
 
       generateRandomCrew: () => {
-        const names = ['Alex Rivera', 'Sam Johnson', 'Taylor Kim', 'Jordan Smith', 'Casey Wu'];
+        const names = [
+          'Alex Rivera',
+          'Sam Johnson',
+          'Taylor Kim',
+          'Jordan Smith',
+          'Casey Wu',
+        ];
         const roles = ['Engineer', 'Pilot', 'Gunner', 'Scientist', 'Medic'];
         const backgrounds = [
           'Academy graduate seeking adventure',
           'Veteran spacer with mysterious past',
           'Talented rookie with natural abilities',
-          'Former corporate employee turned explorer'
+          'Former corporate employee turned explorer',
         ];
 
         return {
@@ -284,12 +415,13 @@ export const useGameStore = create<GameStore>()(
             navigation: Math.floor(Math.random() * 8) + 2,
             combat: Math.floor(Math.random() * 8) + 2,
             diplomacy: Math.floor(Math.random() * 8) + 2,
-            trade: Math.floor(Math.random() * 8) + 2
+            trade: Math.floor(Math.random() * 8) + 2,
           },
           morale: Math.floor(Math.random() * 30) + 60,
-          background: backgrounds[Math.floor(Math.random() * backgrounds.length)],
+          background:
+            backgrounds[Math.floor(Math.random() * backgrounds.length)],
           age: Math.floor(Math.random() * 20) + 25,
-          isHeir: false
+          isHeir: false,
         };
       },
 
@@ -302,14 +434,25 @@ export const useGameStore = create<GameStore>()(
         if (selectedSystem && resources.energy >= 50) {
           const newResources = { ...resources, energy: resources.energy - 50 };
           const planets = get().generatePlanets();
-          const updatedSystem = { ...selectedSystem, status: 'explored' as const, planets };
+          const updatedSystem = {
+            ...selectedSystem,
+            status: 'explored' as const,
+            planets,
+          };
 
           const updatedSystems = get().starSystems.map(sys =>
             sys.name === selectedSystem.name ? updatedSystem : sys
           );
 
-          set({ resources: newResources, starSystems: updatedSystems, selectedSystem: updatedSystem });
-          get().showNotification(`Explored ${selectedSystem.name}! Discovered ${planets.length} planets.`, 'success');
+          set({
+            resources: newResources,
+            starSystems: updatedSystems,
+            selectedSystem: updatedSystem,
+          });
+          get().showNotification(
+            `Explored ${selectedSystem.name}! Discovered ${planets.length} planets.`,
+            'success'
+          );
         } else {
           get().showNotification('Not enough energy to explore!', 'error');
         }
@@ -317,14 +460,20 @@ export const useGameStore = create<GameStore>()(
 
       establishColony: () => {
         const { selectedSystem, resources, resourceGenerationRate } = get();
-        if (selectedSystem && resources.credits >= 200 && resources.minerals >= 100) {
+        if (
+          selectedSystem &&
+          resources.credits >= 200 &&
+          resources.minerals >= 100
+        ) {
           const newResources = {
             ...resources,
             credits: resources.credits - 200,
-            minerals: resources.minerals - 100
+            minerals: resources.minerals - 100,
           };
 
-          const undevelopedPlanet = selectedSystem.planets.find(p => !p.developed);
+          const undevelopedPlanet = selectedSystem.planets.find(
+            p => !p.developed
+          );
           if (undevelopedPlanet) {
             const updatedPlanets = selectedSystem.planets.map(p =>
               p.name === undevelopedPlanet.name ? { ...p, developed: true } : p
@@ -332,12 +481,21 @@ export const useGameStore = create<GameStore>()(
 
             const newGenerationRate = { ...resourceGenerationRate };
             undevelopedPlanet.resources.forEach(resource => {
-              if (newGenerationRate[resource as keyof typeof newGenerationRate] !== undefined) {
-                newGenerationRate[resource as keyof typeof newGenerationRate]! += 0.5;
+              if (
+                newGenerationRate[
+                  resource as keyof typeof newGenerationRate
+                ] !== undefined
+              ) {
+                newGenerationRate[
+                  resource as keyof typeof newGenerationRate
+                ]! += 0.5;
               }
             });
 
-            const updatedSystem = { ...selectedSystem, planets: updatedPlanets };
+            const updatedSystem = {
+              ...selectedSystem,
+              planets: updatedPlanets,
+            };
             const updatedSystems = get().starSystems.map(sys =>
               sys.name === selectedSystem.name ? updatedSystem : sys
             );
@@ -346,13 +504,19 @@ export const useGameStore = create<GameStore>()(
               resources: newResources,
               starSystems: updatedSystems,
               selectedSystem: updatedSystem,
-              resourceGenerationRate: newGenerationRate
+              resourceGenerationRate: newGenerationRate,
             });
 
-            get().showNotification(`Established colony on ${undevelopedPlanet.name}!`, 'success');
+            get().showNotification(
+              `Established colony on ${undevelopedPlanet.name}!`,
+              'success'
+            );
           }
         } else {
-          get().showNotification('Not enough resources to establish colony!', 'error');
+          get().showNotification(
+            'Not enough resources to establish colony!',
+            'error'
+          );
         }
       },
 
@@ -363,12 +527,14 @@ export const useGameStore = create<GameStore>()(
         const planets: Planet[] = [];
 
         for (let i = 0; i < planetCount; i++) {
-          const type = planetTypes[Math.floor(Math.random() * planetTypes.length)];
+          const type =
+            planetTypes[Math.floor(Math.random() * planetTypes.length)];
           const resourceCount = Math.floor(Math.random() * 2) + 1;
           const resources: string[] = [];
 
           for (let j = 0; j < resourceCount; j++) {
-            const resource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
+            const resource =
+              resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
             if (!resources.includes(resource)) {
               resources.push(resource);
             }
@@ -378,33 +544,37 @@ export const useGameStore = create<GameStore>()(
             name: `Planet ${String.fromCharCode(65 + i)}`,
             type,
             resources,
-            developed: false
+            developed: false,
           });
         }
 
         return planets;
       },
 
-      switchComponentCategory: (category) => {
+      switchComponentCategory: category => {
         set({ currentComponentCategory: category });
       },
 
-      canAffordComponent: (cost: any) => {
+      canAffordComponent: (cost: ComponentCost) => {
         const { resources } = get();
-        return Object.entries(cost).every(([resource, amount]) =>
-          resources[resource as keyof typeof resources] >= (amount as number)
+        return Object.entries(cost).every(
+          ([resource, amount]) =>
+            resources[resource as keyof typeof resources] >= (amount as number)
         );
       },
 
       purchaseComponent: (category: string, componentName: string) => {
         const { shipComponents, resources, ship } = get();
-        const component = shipComponents[category as keyof typeof shipComponents].find(c => c.name === componentName);
+        const component = shipComponents[
+          category as keyof typeof shipComponents
+        ].find(c => c.name === componentName);
 
         if (component && get().canAffordComponent(component.cost)) {
           // Deduct cost
           const newResources = { ...resources };
           Object.entries(component.cost).forEach(([resource, amount]) => {
-            newResources[resource as keyof typeof newResources] -= amount as number;
+            newResources[resource as keyof typeof newResources] -=
+              amount as number;
           });
 
           let updatedShip = { ...ship };
@@ -413,20 +583,24 @@ export const useGameStore = create<GameStore>()(
             updatedShip = {
               ...updatedShip,
               hull: component.name,
-              stats: { ...component.stats } as any // Hull replaces all stats
+              stats: { ...component.stats } as ShipStats, // Hull replaces all stats
             };
           } else {
             const componentType = category.slice(0, -1); // Remove 's' from plural
             updatedShip.components = {
               ...updatedShip.components,
-              [componentType]: component.name
+              [componentType]: component.name,
             };
 
             // Add component stats to ship
             updatedShip.stats = { ...updatedShip.stats };
             Object.entries(component.stats).forEach(([stat, value]) => {
-              if (updatedShip.stats[stat as keyof typeof updatedShip.stats] !== undefined) {
-                updatedShip.stats[stat as keyof typeof updatedShip.stats] += value as number;
+              if (
+                updatedShip.stats[stat as keyof typeof updatedShip.stats] !==
+                undefined
+              ) {
+                updatedShip.stats[stat as keyof typeof updatedShip.stats] +=
+                  value as number;
               }
             });
           }
@@ -438,7 +612,10 @@ export const useGameStore = create<GameStore>()(
 
       selectHeir: (heirId: number) => {
         const { crew } = get();
-        const updatedCrew = crew.map(member => ({ ...member, isHeir: member.id === heirId }));
+        const updatedCrew = crew.map(member => ({
+          ...member,
+          isHeir: member.id === heirId,
+        }));
         const heir = updatedCrew.find(m => m.id === heirId);
 
         set({ crew: updatedCrew });
@@ -447,15 +624,20 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      showNotification: (message: string, type: Notification['type'] = 'info') => {
+      showNotification: (
+        message: string,
+        type: Notification['type'] = 'info'
+      ) => {
         const notification: Notification = {
           id: Date.now().toString(),
           message,
           type,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
 
-        set(state => ({ notifications: [...state.notifications, notification] }));
+        set(state => ({
+          notifications: [...state.notifications, notification],
+        }));
 
         // Auto-remove after 3 seconds
         setTimeout(() => {
@@ -465,11 +647,14 @@ export const useGameStore = create<GameStore>()(
 
       clearNotification: (id: string) => {
         set(state => ({
-          notifications: state.notifications.filter(n => n.id !== id)
+          notifications: state.notifications.filter(n => n.id !== id),
         }));
       },
 
-      tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: 'buy' | 'sell') => {
+      tradeResource: (
+        resource: 'minerals' | 'energy' | 'food' | 'influence',
+        action: 'buy' | 'sell'
+      ) => {
         const { resources, market } = get();
         const price = market.prices[resource];
         const amount = 10;
@@ -480,10 +665,13 @@ export const useGameStore = create<GameStore>()(
             const newResources = {
               ...resources,
               credits: resources.credits - cost,
-              [resource]: resources[resource] + amount
+              [resource]: resources[resource] + amount,
             };
             set({ resources: newResources });
-            get().showNotification(`Bought ${amount} ${resource} for ${cost} credits`, 'success');
+            get().showNotification(
+              `Bought ${amount} ${resource} for ${cost} credits`,
+              'success'
+            );
           } else {
             get().showNotification('Not enough credits!', 'error');
           }
@@ -493,22 +681,25 @@ export const useGameStore = create<GameStore>()(
             const newResources = {
               ...resources,
               credits: resources.credits + earnings,
-              [resource]: resources[resource] - amount
+              [resource]: resources[resource] - amount,
             };
             set({ resources: newResources });
-            get().showNotification(`Sold ${amount} ${resource} for ${earnings} credits`, 'success');
+            get().showNotification(
+              `Sold ${amount} ${resource} for ${earnings} credits`,
+              'success'
+            );
           } else {
             get().showNotification(`Not enough ${resource}!`, 'error');
           }
         }
-      }
+      },
     }),
     {
       name: 'stellar-legacy-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         ...state,
-        notifications: [] // Don't persist notifications
-      })
+        notifications: [], // Don't persist notifications
+      }),
     }
   )
 );

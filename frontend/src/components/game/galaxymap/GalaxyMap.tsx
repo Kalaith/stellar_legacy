@@ -9,7 +9,7 @@ const GalaxyMap: React.FC = () => {
     resources,
     exploreSystem,
     establishColony,
-    selectSystem
+    selectSystem,
   } = useGameStore();
 
   const handleSystemClick = (system: StarSystem) => {
@@ -23,13 +23,21 @@ const GalaxyMap: React.FC = () => {
   };
 
   const handleEstablishColony = () => {
-    if (selectedSystem && resources.credits >= 200 && resources.minerals >= 100) {
+    if (
+      selectedSystem &&
+      resources.credits >= 200 &&
+      resources.minerals >= 100
+    ) {
       establishColony();
     }
   };
 
-  const canExplore = selectedSystem && selectedSystem.status === 'unexplored' && resources.energy >= 50;
-  const canEstablishColony = selectedSystem &&
+  const canExplore =
+    selectedSystem &&
+    selectedSystem.status === 'unexplored' &&
+    resources.energy >= 50;
+  const canEstablishColony =
+    selectedSystem &&
     selectedSystem.status === 'explored' &&
     selectedSystem.planets.some(p => !p.developed) &&
     resources.credits >= 200 &&
@@ -47,9 +55,13 @@ const GalaxyMap: React.FC = () => {
                 <div
                   key={index}
                   className={`absolute cursor-pointer transition-all duration-200 hover:scale-125 ${
-                    system.status === 'explored' ? 'text-yellow-400' : 'text-blue-400'
+                    system.status === 'explored'
+                      ? 'text-yellow-400'
+                      : 'text-blue-400'
                   } ${
-                    selectedSystem?.name === system.name ? 'scale-125 ring-2 ring-teal-400' : ''
+                    selectedSystem?.name === system.name
+                      ? 'scale-125 ring-2 ring-teal-400'
+                      : ''
                   }`}
                   style={{
                     left: `${system.coordinates.x}px`,
@@ -69,15 +81,24 @@ const GalaxyMap: React.FC = () => {
       {/* System Details */}
       <div className="space-y-4">
         <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-          <h3 className="text-lg font-semibold mb-4 text-white">System Details</h3>
+          <h3 className="text-lg font-semibold mb-4 text-white">
+            System Details
+          </h3>
           {selectedSystem ? (
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-lg text-white">{selectedSystem.name}</h4>
+                <h4 className="font-medium text-lg text-white">
+                  {selectedSystem.name}
+                </h4>
                 <p className="text-sm text-slate-300">
-                  Status: <span className={`font-medium ${
-                    selectedSystem.status === 'explored' ? 'text-green-400' : 'text-blue-400'
-                  }`}>
+                  Status:{' '}
+                  <span
+                    className={`font-medium ${
+                      selectedSystem.status === 'explored'
+                        ? 'text-green-400'
+                        : 'text-blue-400'
+                    }`}
+                  >
                     {selectedSystem.status}
                   </span>
                 </p>
@@ -94,11 +115,13 @@ const GalaxyMap: React.FC = () => {
                       <span className="text-sm text-slate-300">
                         {planet.name} ({planet.type})
                       </span>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        planet.developed
-                          ? 'bg-green-600 text-green-100'
-                          : 'bg-blue-600 text-blue-100'
-                      }`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${
+                          planet.developed
+                            ? 'bg-green-600 text-green-100'
+                            : 'bg-blue-600 text-blue-100'
+                        }`}
+                      >
                         {planet.developed ? 'Developed' : 'Undeveloped'}
                       </span>
                     </div>

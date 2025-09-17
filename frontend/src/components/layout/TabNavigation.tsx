@@ -11,7 +11,7 @@ const TabNavigation: React.FC = () => {
     { id: 'crew-quarters', label: 'Crew Quarters' },
     { id: 'galaxy-map', label: 'Galaxy Map' },
     { id: 'market', label: 'Market' },
-    { id: 'legacy', label: 'Legacy' }
+    { id: 'legacy', label: 'Legacy' },
   ];
 
   return (

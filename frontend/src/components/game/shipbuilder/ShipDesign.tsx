@@ -24,34 +24,56 @@ const ShipDesign: React.FC = () => {
           </div>
           <div className="bg-slate-700 rounded p-4">
             <div className="text-sm text-slate-400">Engine</div>
-            <div className="text-white font-medium">{ship.components.engine}</div>
+            <div className="text-white font-medium">
+              {ship.components.engine}
+            </div>
           </div>
           <div className="bg-slate-700 rounded p-4">
             <div className="text-sm text-slate-400">Cargo</div>
-            <div className="text-white font-medium">{ship.components.cargo}</div>
+            <div className="text-white font-medium">
+              {ship.components.cargo}
+            </div>
           </div>
           <div className="bg-slate-700 rounded p-4">
             <div className="text-sm text-slate-400">Weapons</div>
-            <div className="text-white font-medium">{ship.components.weapons}</div>
+            <div className="text-white font-medium">
+              {ship.components.weapons}
+            </div>
           </div>
           <div className="bg-slate-700 rounded p-4">
             <div className="text-sm text-slate-400">Research</div>
-            <div className="text-white font-medium">{ship.components.research}</div>
+            <div className="text-white font-medium">
+              {ship.components.research}
+            </div>
           </div>
           <div className="bg-slate-700 rounded p-4">
             <div className="text-sm text-slate-400">Quarters</div>
-            <div className="text-white font-medium">{ship.components.quarters}</div>
+            <div className="text-white font-medium">
+              {ship.components.quarters}
+            </div>
           </div>
         </div>
 
         <div className="bg-slate-700 rounded p-4">
           <h4 className="text-white font-semibold mb-2">Ship Statistics</h4>
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div>Speed: <span className="text-teal-400">{ship.stats.speed}</span></div>
-            <div>Cargo: <span className="text-teal-400">{ship.stats.cargo}</span></div>
-            <div>Combat: <span className="text-teal-400">{ship.stats.combat}</span></div>
-            <div>Research: <span className="text-teal-400">{ship.stats.research}</span></div>
-            <div>Crew Capacity: <span className="text-teal-400">{ship.stats.crewCapacity}</span></div>
+            <div>
+              Speed: <span className="text-teal-400">{ship.stats.speed}</span>
+            </div>
+            <div>
+              Cargo: <span className="text-teal-400">{ship.stats.cargo}</span>
+            </div>
+            <div>
+              Combat: <span className="text-teal-400">{ship.stats.combat}</span>
+            </div>
+            <div>
+              Research:{' '}
+              <span className="text-teal-400">{ship.stats.research}</span>
+            </div>
+            <div>
+              Crew Capacity:{' '}
+              <span className="text-teal-400">{ship.stats.crewCapacity}</span>
+            </div>
           </div>
         </div>
       </div>

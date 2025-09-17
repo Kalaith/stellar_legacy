@@ -29,18 +29,27 @@ interface NotificationItemProps {
   onClose: () => void;
 }
 
-const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClose }) => {
+const NotificationItem: React.FC<NotificationItemProps> = ({
+  notification,
+  onClose,
+}) => {
   const getBgColor = () => {
     switch (notification.type) {
-      case 'success': return 'bg-green-600';
-      case 'error': return 'bg-red-600';
-      case 'warning': return 'bg-yellow-600';
-      default: return 'bg-slate-600';
+      case 'success':
+        return 'bg-green-600';
+      case 'error':
+        return 'bg-red-600';
+      case 'warning':
+        return 'bg-yellow-600';
+      default:
+        return 'bg-slate-600';
     }
   };
 
   return (
-    <div className={`${getBgColor()} text-white px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right`}>
+    <div
+      className={`${getBgColor()} text-white px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right`}
+    >
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium">{notification.message}</p>
         <button

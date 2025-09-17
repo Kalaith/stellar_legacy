@@ -54,11 +54,19 @@ export interface Planet {
   developed: boolean;
 }
 
+export interface TradeRoute {
+  id: string;
+  destination: string;
+  resource: string;
+  volume: number;
+  profitMargin: number;
+}
+
 export interface StarSystem {
   name: string;
   status: 'explored' | 'unexplored';
   planets: Planet[];
-  tradeRoutes: any[]; // TODO: Define trade route type
+  tradeRoutes: TradeRoute[];
   coordinates: {
     x: number;
     y: number;
