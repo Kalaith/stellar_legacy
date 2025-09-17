@@ -5,14 +5,20 @@ export const TabId = {
   CREW_QUARTERS: 'crew-quarters',
   GALAXY_MAP: 'galaxy-map',
   MARKET: 'market',
-  LEGACY: 'legacy'
+  LEGACY: 'legacy',
+  MISSION_COMMAND: 'mission-command',
+  DYNASTY_HALL: 'dynasty-hall',
+  SECT_RELATIONS: 'sect-relations',
+  CULTURAL_EVOLUTION: 'cultural-evolution'
 } as const;
 
 export type TabIdType = typeof TabId[keyof typeof TabId];
 
 export const SystemStatus = {
   EXPLORED: 'explored',
-  UNEXPLORED: 'unexplored'
+  UNEXPLORED: 'unexplored',
+  MISSION_TARGET: 'mission_target',
+  MISSION_ACTIVE: 'mission_active'
 } as const;
 
 export type SystemStatusType = typeof SystemStatus[keyof typeof SystemStatus];
@@ -62,3 +68,69 @@ export const ComponentCategory = {
 } as const;
 
 export type ComponentCategoryType = typeof ComponentCategory[keyof typeof ComponentCategory];
+
+// Generational Mission Types
+export const SectType = {
+  PRESERVERS: 'preservers',
+  ADAPTORS: 'adaptors',
+  WANDERERS: 'wanderers'
+} as const;
+
+export type SectTypeType = typeof SectType[keyof typeof SectType];
+
+export const CohortType = {
+  ENGINEERS: 'engineers',
+  FARMERS: 'farmers',
+  SCHOLARS: 'scholars',
+  SECURITY: 'security',
+  LEADERS: 'leaders',
+  GENERAL: 'general'
+} as const;
+
+export type CohortTypeType = typeof CohortType[keyof typeof CohortType];
+
+export const MissionObjective = {
+  MINING: 'mining',
+  COLONIZATION: 'colonization',
+  EXPLORATION: 'exploration',
+  RESCUE: 'rescue'
+} as const;
+
+export type MissionObjectiveType = typeof MissionObjective[keyof typeof MissionObjective];
+
+export const MissionPhase = {
+  PREPARATION: 'preparation',
+  TRAVEL: 'travel',
+  OPERATION: 'operation',
+  RETURN: 'return',
+  COMPLETION: 'completion'
+} as const;
+
+export type MissionPhaseType = typeof MissionPhase[keyof typeof MissionPhase];
+
+export const EventCategory = {
+  IMMEDIATE_CRISIS: 'immediate_crisis',
+  GENERATIONAL_CHALLENGE: 'generational_challenge',
+  MISSION_MILESTONE: 'mission_milestone',
+  LEGACY_MOMENT: 'legacy_moment'
+} as const;
+
+export type EventCategoryType = typeof EventCategory[keyof typeof EventCategory];
+
+export const ShipClass = {
+  COLONY: 'colony',
+  HARVESTER: 'harvester',
+  EXPLORER: 'explorer',
+  FORTRESS: 'fortress'
+} as const;
+
+export type ShipClassType = typeof ShipClass[keyof typeof ShipClass];
+
+export const ShipSize = {
+  MEDIUM: 'medium',
+  LARGE: 'large',
+  MASSIVE: 'massive',
+  GIGANTIC: 'gigantic'
+} as const;
+
+export type ShipSizeType = typeof ShipSize[keyof typeof ShipSize];

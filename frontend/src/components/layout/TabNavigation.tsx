@@ -12,7 +12,11 @@ const TabNavigation: React.FC = React.memo(() => {
     { id: 'crew-quarters' as TabIdType, label: 'Crew Quarters' },
     { id: 'galaxy-map' as TabIdType, label: 'Galaxy Map' },
     { id: 'market' as TabIdType, label: 'Market' },
-    { id: 'legacy' as TabIdType, label: 'Legacy' }
+    { id: 'legacy' as TabIdType, label: 'Legacy' },
+    { id: 'mission-command' as TabIdType, label: 'Mission Command' },
+    { id: 'dynasty-hall' as TabIdType, label: 'Dynasty Hall' },
+    { id: 'sect-relations' as TabIdType, label: 'Sect Relations' },
+    { id: 'cultural-evolution' as TabIdType, label: 'Cultural Evolution' }
   ], []);
 
   const handleTabSwitch = useCallback((tabId: TabIdType) => {

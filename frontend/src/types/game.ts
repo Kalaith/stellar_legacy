@@ -136,6 +136,15 @@ export interface GameState extends GameData {
   resourceGenerationRate: Partial<Resources>;
   currentTab: TabIdType;
   notifications: Notification[];
+
+  // Generational Missions Integration
+  generationalMissions: import('./generationalMissions').GenerationalMission[];
+  activeMissions: string[]; // Mission IDs
+  selectedMission: import('./generationalMissions').GenerationalMission | null;
+
+  // Sect Relations
+  sectRelations: import('./generationalMissions').SectRelation[];
+  playerSectAffinity: Record<import('../types/enums').SectTypeType, number>;
 }
 
 export interface Notification {

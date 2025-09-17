@@ -1,16 +1,18 @@
 // App.tsx
 import React, { useEffect } from 'react';
 import { useGameStore } from './stores/useGameStore';
-import Header from './components/layout/Header';
-import TabNavigation from './components/layout/TabNavigation';
-import Dashboard from './components/game/Dashboard';
+import TerminalHeader from './components/layout/TerminalHeader';
+import TerminalTabNavigation from './components/layout/TerminalTabNavigation';
+import TerminalDashboard from './components/game/TerminalDashboard';
 import ShipBuilder from './components/game/ShipBuilder';
 import CrewQuarters from './components/game/CrewQuarters';
 import GalaxyMap from './components/game/galaxymap/GalaxyMap';
 import Market from './components/game/market/Market';
 import Legacy from './components/game/legacy/Legacy';
+import { MissionCommandCenter } from './components/game/missions/MissionCommandCenter';
 import NotificationSystem from './components/ui/NotificationSystem';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import './styles/terminal.css';
 
 const App: React.FC = () => {
   const { currentTab, initializeGame } = useGameStore();
@@ -27,7 +29,7 @@ const App: React.FC = () => {
   const renderCurrentTab = () => {
     switch (currentTab) {
       case 'dashboard':
-        return <Dashboard />;
+        return <TerminalDashboard />;
       case 'ship-builder':
         return <ShipBuilder />;
       case 'crew-quarters':
@@ -38,17 +40,25 @@ const App: React.FC = () => {
         return <Market />;
       case 'legacy':
         return <Legacy />;
+      case 'mission-command':
+        return <MissionCommandCenter />;
+      case 'dynasty-hall':
+        return <div className="terminal-content"><h2 className="terminal-h2">Dynasty Hall - Coming Soon</h2></div>;
+      case 'sect-relations':
+        return <div className="terminal-content"><h2 className="terminal-h2">Sect Relations - Coming Soon</h2></div>;
+      case 'cultural-evolution':
+        return <div className="terminal-content"><h2 className="terminal-h2">Cultural Evolution - Coming Soon</h2></div>;
       default:
-        return <Dashboard />;
+        return <TerminalDashboard />;
     }
   };
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-slate-900 text-white">
-        <Header />
-        <TabNavigation />
-        <main className="container mx-auto">
+      <div className="min-h-screen" style={{ background: 'var(--terminal-bg)', color: 'var(--terminal-primary)' }}>
+        <TerminalHeader />
+        <TerminalTabNavigation />
+        <main className="container mx-auto px-4">
           {renderCurrentTab()}
         </main>
         <NotificationSystem />

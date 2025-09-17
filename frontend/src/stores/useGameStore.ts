@@ -196,6 +196,17 @@ export const useGameStore = create<GameStore>()(
       notifications: [],
       resourceIntervalId: null,
 
+      // Generational Missions State
+      generationalMissions: [],
+      activeMissions: [],
+      selectedMission: null,
+      sectRelations: [],
+      playerSectAffinity: {
+        preservers: 0,
+        adaptors: 0,
+        wanderers: 0
+      },
+
       initializeGame: () => {
         Logger.info('Initializing game store');
         // Start resource generation
