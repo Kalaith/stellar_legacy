@@ -1,5 +1,6 @@
 // components/ui/Button.tsx
 import React from 'react';
+import { UI_CONSTANTS } from '../../constants/uiConstants';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
@@ -14,23 +15,21 @@ const Button: React.FC<ButtonProps> = React.memo(({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'font-medium transition-colors rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800';
+  const baseClasses = UI_CONSTANTS.BUTTONS.BASE_CLASSES;
 
   const variantClasses = {
-    primary: 'bg-teal-600 hover:bg-teal-700 text-white focus:ring-teal-500',
-    secondary: 'bg-slate-600 hover:bg-slate-700 text-white focus:ring-slate-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+    primary: UI_CONSTANTS.BUTTONS.VARIANT.PRIMARY,
+    secondary: UI_CONSTANTS.BUTTONS.VARIANT.SECONDARY,
+    danger: UI_CONSTANTS.BUTTONS.VARIANT.DANGER,
   };
 
   const sizeClasses = {
-    sm: 'px-3 py-1 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-6 py-3 text-lg',
+    sm: UI_CONSTANTS.BUTTONS.SIZE.SM,
+    md: UI_CONSTANTS.BUTTONS.SIZE.MD,
+    lg: UI_CONSTANTS.BUTTONS.SIZE.LG,
   };
 
-  const disabledClasses = props.disabled
-    ? 'opacity-50 cursor-not-allowed'
-    : '';
+  const disabledClasses = props.disabled ? UI_CONSTANTS.BUTTONS.DISABLED : '';
 
   return (
     <button

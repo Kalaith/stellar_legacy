@@ -1,5 +1,7 @@
 // services/GameEngine.ts
 import type { CrewMember, Resources, Ship, StarSystem, Planet } from '../types/game';
+import type { GameOperationResult, GameOperationError } from '../types/errors';
+import { CrewIdGenerator } from '../types/branded';
 import { GAME_CONSTANTS } from '../constants/gameConstants';
 import { ResourceService } from './ResourceService';
 import { ValidationService } from './ValidationService';
@@ -26,51 +28,92 @@ export class GameEngine {
     return { updatedCrew, trainedMember: randomCrew, skill: randomSkill };
   }
 
-  static generateRandomCrew(): CrewMember {
-    const names = GAME_CONSTANTS.RANDOM_NAMES.CREW_FIRST_NAMES;
-    const roles = GAME_CONSTANTS.CREW_ROLES;
-    const backgrounds = GAME_CONSTANTS.CREW_BACKGROUNDS;
+  private static generateRandomInRange(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 
+  private static getRandomFromArray<T>(array: readonly T[]): T {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+
+  private static generateRandomSkill(): number {
+    return this.generateRandomInRange(
+      GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
+      GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL
+    );
+  }
+
+  private static generateSkillSet(): CrewMember['skills'] {
     return {
-      id: Date.now(),
-      name: names[Math.floor(Math.random() * names.length)],
-      role: roles[Math.floor(Math.random() * roles.length)],
-      skills: {
-        engineering: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-        navigation: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-        combat: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-        diplomacy: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-        trade: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL - GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL + 1)) + GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL
-      },
-      morale: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_CREW_MORALE - GAME_CONSTANTS.LIMITS.MIN_CREW_MORALE + 1)) + GAME_CONSTANTS.LIMITS.MIN_CREW_MORALE,
-      background: backgrounds[Math.floor(Math.random() * backgrounds.length)],
-      age: Math.floor(Math.random() * (GAME_CONSTANTS.LIMITS.MAX_CREW_AGE - GAME_CONSTANTS.LIMITS.MIN_CREW_AGE + 1)) + GAME_CONSTANTS.LIMITS.MIN_CREW_AGE,
+      engineering: this.generateRandomSkill(),
+      navigation: this.generateRandomSkill(),
+      combat: this.generateRandomSkill(),
+      diplomacy: this.generateRandomSkill(),
+      trade: this.generateRandomSkill()
+    };
+  }
+
+  static generateRandomCrew(): CrewMember {
+    return {
+      id: CrewIdGenerator.generate(),
+      name: this.getRandomFromArray(GAME_CONSTANTS.RANDOM_NAMES.CREW_FIRST_NAMES),
+      role: this.getRandomFromArray(GAME_CONSTANTS.CREW_ROLES),
+      skills: this.generateSkillSet(),
+      morale: this.generateRandomInRange(
+        GAME_CONSTANTS.LIMITS.MIN_CREW_MORALE,
+        GAME_CONSTANTS.LIMITS.MAX_CREW_MORALE
+      ),
+      background: this.getRandomFromArray(GAME_CONSTANTS.CREW_BACKGROUNDS),
+      age: this.generateRandomInRange(
+        GAME_CONSTANTS.LIMITS.MIN_CREW_AGE,
+        GAME_CONSTANTS.LIMITS.MAX_CREW_AGE
+      ),
       isHeir: false
     };
   }
 
-  static generatePlanets(): Planet[] {
-    const planetTypes = GAME_CONSTANTS.PLANET_TYPES;
-    const resourceTypes = GAME_CONSTANTS.RESOURCE_TYPES;
-    const planetCount = Math.floor(Math.random() * (GAME_CONSTANTS.WORLD_GENERATION.MAX_PLANETS_PER_SYSTEM - GAME_CONSTANTS.WORLD_GENERATION.MIN_PLANETS_PER_SYSTEM + 1)) + GAME_CONSTANTS.WORLD_GENERATION.MIN_PLANETS_PER_SYSTEM;
+  private static generatePlanetResources(): string[] {
+    const resourceCount = this.generateRandomInRange(
+      GAME_CONSTANTS.WORLD_GENERATION.MIN_RESOURCES_PER_PLANET,
+      GAME_CONSTANTS.WORLD_GENERATION.MAX_RESOURCES_PER_PLANET
+    );
+
+    const resources = new Set<string>();
+    const maxAttempts = resourceCount * 3; // Prevent infinite loop
+    let attempts = 0;
+
+    while (resources.size < resourceCount && attempts < maxAttempts) {
+      const resource = this.getRandomFromArray(GAME_CONSTANTS.RESOURCE_TYPES);
+      resources.add(resource);
+      attempts++;
+    }
+
+    return Array.from(resources);
+  }
+
+  private static generatePlanetName(systemName: string, index: number): string {
+    const prefixes = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta'] as const;
+    const suffixes = ['Prime', 'Major', 'Minor', 'Station', 'Outpost', 'Colony', 'Base', 'Haven'] as const;
+
+    const prefix = prefixes[index] || `Planet-${index + 1}`;
+    const suffix = this.getRandomFromArray(suffixes);
+
+    return `${systemName} ${prefix} ${suffix}`;
+  }
+
+  static generatePlanets(systemName: string = 'Unknown'): Planet[] {
+    const planetCount = this.generateRandomInRange(
+      GAME_CONSTANTS.WORLD_GENERATION.MIN_PLANETS_PER_SYSTEM,
+      GAME_CONSTANTS.WORLD_GENERATION.MAX_PLANETS_PER_SYSTEM
+    );
+
     const planets: Planet[] = [];
 
     for (let i = 0; i < planetCount; i++) {
-      const type = planetTypes[Math.floor(Math.random() * planetTypes.length)];
-      const resourceCount = Math.floor(Math.random() * (GAME_CONSTANTS.WORLD_GENERATION.MAX_RESOURCES_PER_PLANET - GAME_CONSTANTS.WORLD_GENERATION.MIN_RESOURCES_PER_PLANET + 1)) + GAME_CONSTANTS.WORLD_GENERATION.MIN_RESOURCES_PER_PLANET;
-      const resources: string[] = [];
-
-      for (let j = 0; j < resourceCount; j++) {
-        const resource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
-        if (!resources.includes(resource)) {
-          resources.push(resource);
-        }
-      }
-
       planets.push({
-        name: `Planet ${String.fromCharCode(65 + i)}`,
-        type,
-        resources,
+        name: this.generatePlanetName(systemName, i),
+        type: this.getRandomFromArray(GAME_CONSTANTS.PLANET_TYPES),
+        resources: this.generatePlanetResources(),
         developed: false
       });
     }
@@ -93,61 +136,124 @@ export class GameEngine {
     };
   }
 
-  static processMoraleBoost(resources: Resources, crew: CrewMember[]): { newResources: Resources; updatedCrew: CrewMember[] } | null {
+  static processMoraleBoost(resources: Resources, crew: CrewMember[]): GameOperationResult<{ newResources: Resources; updatedCrew: CrewMember[] }> {
     const validation = ValidationService.validateMoraleBoost(resources.credits);
-    if (!validation.isValid) return null;
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: new GameOperationError(
+          'Morale Boost',
+          validation.message || 'Insufficient resources',
+          { credits: GAME_CONSTANTS.COSTS.MORALE_BOOST }
+        )
+      };
+    }
 
     const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.MORALE_BOOST });
     const updatedCrew = this.calculateMoraleBoost(crew);
 
-    return { newResources, updatedCrew };
+    return { success: true, data: { newResources, updatedCrew } };
   }
 
-  static processCrewTraining(resources: Resources, crew: CrewMember[]): { newResources: Resources; result: { updatedCrew: CrewMember[]; trainedMember: CrewMember; skill: string } } | null {
+  static processCrewTraining(resources: Resources, crew: CrewMember[]): GameOperationResult<{ newResources: Resources; result: { updatedCrew: CrewMember[]; trainedMember: CrewMember; skill: string } }> {
     const validation = ValidationService.validateCrewTraining(resources.credits);
-    if (!validation.isValid) return null;
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: new GameOperationError(
+          'Crew Training',
+          validation.message || 'Insufficient resources',
+          { credits: GAME_CONSTANTS.COSTS.CREW_TRAINING }
+        )
+      };
+    }
 
     const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.CREW_TRAINING });
     const result = this.trainRandomCrew(crew);
 
-    return { newResources, result };
+    return { success: true, data: { newResources, result } };
   }
 
-  static processCrewRecruitment(resources: Resources, crew: CrewMember[], ship: Ship): { newResources: Resources; newCrew: CrewMember } | null {
+  static processCrewRecruitment(resources: Resources, crew: CrewMember[], ship: Ship): GameOperationResult<{ newResources: Resources; newCrew: CrewMember }> {
     const validation = ValidationService.validateCrewRecruitment(resources.credits, crew, ship);
-    if (!validation.isValid) return null;
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: new GameOperationError(
+          'Crew Recruitment',
+          validation.message || 'Cannot recruit crew',
+          { credits: GAME_CONSTANTS.COSTS.CREW_RECRUITMENT }
+        )
+      };
+    }
 
     const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.CREW_RECRUITMENT });
     const newCrew = this.generateRandomCrew();
 
-    return { newResources, newCrew };
+    return { success: true, data: { newResources, newCrew } };
   }
 
-  static processSystemExploration(resources: Resources, selectedSystem: StarSystem | null): { newResources: Resources; planets: Planet[] } | null {
-    if (!selectedSystem) return null;
+  static processSystemExploration(resources: Resources, selectedSystem: StarSystem | null): GameOperationResult<{ newResources: Resources; planets: Planet[] }> {
+    if (!selectedSystem) {
+      return {
+        success: false,
+        error: new GameOperationError('System Exploration', 'No system selected')
+      };
+    }
 
     const validation = ValidationService.validateSystemExploration(resources.energy);
-    if (!validation.isValid) return null;
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: new GameOperationError(
+          'System Exploration',
+          validation.message || 'Insufficient energy',
+          { energy: GAME_CONSTANTS.COSTS.EXPLORATION.energy }
+        )
+      };
+    }
 
     const newResources = ResourceService.deductCost(resources, { energy: GAME_CONSTANTS.COSTS.EXPLORATION.energy });
-    const planets = this.generatePlanets();
+    const planets = this.generatePlanets(selectedSystem.name);
 
-    return { newResources, planets };
+    return { success: true, data: { newResources, planets } };
   }
 
-  static processColonyEstablishment(resources: Resources, selectedSystem: StarSystem | null): { newResources: Resources; colonyPlanet: Planet; newGenerationRate: Partial<Resources> } | null {
-    if (!selectedSystem) return null;
+  static processColonyEstablishment(resources: Resources, selectedSystem: StarSystem | null): GameOperationResult<{ newResources: Resources; colonyPlanet: Planet; newGenerationRate: Partial<Resources> }> {
+    if (!selectedSystem) {
+      return {
+        success: false,
+        error: new GameOperationError('Colony Establishment', 'No system selected')
+      };
+    }
 
     const validation = ValidationService.validateColonyEstablishment(resources);
-    if (!validation.isValid) return null;
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: new GameOperationError(
+          'Colony Establishment',
+          validation.message || 'Insufficient resources',
+          {
+            credits: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.credits,
+            minerals: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.minerals
+          }
+        )
+      };
+    }
+
+    const undevelopedPlanet = selectedSystem.planets.find(p => !p.developed);
+    if (!undevelopedPlanet) {
+      return {
+        success: false,
+        error: new GameOperationError('Colony Establishment', 'No undeveloped planets available')
+      };
+    }
 
     const newResources = ResourceService.deductCost(resources, {
       credits: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.credits,
       minerals: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.minerals
     });
-
-    const undevelopedPlanet = selectedSystem.planets.find(p => !p.developed);
-    if (!undevelopedPlanet) return null;
 
     const newGenerationRate: Partial<Resources> = {};
     undevelopedPlanet.resources.forEach(resource => {
@@ -156,6 +262,6 @@ export class GameEngine {
       }
     });
 
-    return { newResources, colonyPlanet: undevelopedPlanet, newGenerationRate };
+    return { success: true, data: { newResources, colonyPlanet: undevelopedPlanet, newGenerationRate } };
   }
 }

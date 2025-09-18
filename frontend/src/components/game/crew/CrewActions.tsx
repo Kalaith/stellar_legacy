@@ -4,6 +4,7 @@ import { useGameStore } from '../../../stores/useGameStore';
 import { useGameActions } from '../../../hooks/useGameActions';
 import Card from '../../ui/Card';
 import Button from '../../ui/Button';
+import { UI_CONSTANTS } from '../../../constants/uiConstants';
 
 const CrewActions: React.FC = React.memo(() => {
   const { resources, crew, ship } = useGameStore();
@@ -48,8 +49,8 @@ const CrewActions: React.FC = React.memo(() => {
         />
 
         {crew.length >= ship.stats.crewCapacity && (
-          <div className="bg-yellow-900 border border-yellow-700 rounded p-3">
-            <p className="text-yellow-200 text-sm">
+          <div className={`${UI_CONSTANTS.NOTIFICATIONS.WARNING} ${UI_CONSTANTS.SPACING.CARD_PADDING_SM}`}>
+            <p className="text-sm">
               Ship at maximum crew capacity. Upgrade living quarters to recruit more crew.
             </p>
           </div>
@@ -78,12 +79,12 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   cost,
   canAfford
 }) => (
-  <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
-    <div className="flex justify-between items-start mb-2">
-      <h4 className="text-white font-semibold">{title}</h4>
-      <span className="text-slate-400 text-sm">{cost}</span>
+  <div className={`${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded-lg p-4 border ${UI_CONSTANTS.COLORS.BORDER_LIGHT}`}>
+    <div className={`flex justify-between items-start ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM}`}>
+      <h4 className={`${UI_CONSTANTS.COLORS.TEXT_PRIMARY} font-semibold`}>{title}</h4>
+      <span className={`${UI_CONSTANTS.COLORS.TEXT_MUTED} text-sm`}>{cost}</span>
     </div>
-    <p className="text-slate-300 text-sm mb-3">{description}</p>
+    <p className={`${UI_CONSTANTS.COLORS.TEXT_SECONDARY} text-sm mb-3`}>{description}</p>
     <Button
       onClick={onClick}
       disabled={disabled}

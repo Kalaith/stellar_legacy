@@ -1,6 +1,7 @@
 // components/layout/TabNavigation.tsx
 import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../stores/useGameStore';
+import { UI_CONSTANTS } from '../../constants/uiConstants';
 import type { TabIdType } from '../../types/enums';
 
 const TabNavigation: React.FC = React.memo(() => {
@@ -24,7 +25,7 @@ const TabNavigation: React.FC = React.memo(() => {
   }, [switchTab]);
 
   return (
-    <nav className="bg-slate-800 border-b border-slate-700 px-6">
+    <nav className={`${UI_CONSTANTS.COLORS.BG_PRIMARY} border-b ${UI_CONSTANTS.COLORS.BORDER} px-6`}>
       <div className="flex space-x-1">
         {tabs.map(tab => (
           <button
@@ -32,8 +33,8 @@ const TabNavigation: React.FC = React.memo(() => {
             onClick={() => handleTabSwitch(tab.id)}
             className={`px-4 py-3 text-sm font-medium transition-colors ${
               currentTab === tab.id
-                ? 'bg-teal-600 text-white border-b-2 border-teal-400'
-                : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                ? `${UI_CONSTANTS.COLORS.BG_SUCCESS} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} border-b-2 border-teal-400`
+                : `${UI_CONSTANTS.COLORS.TEXT_MUTED} ${UI_CONSTANTS.COLORS.HOVER_TEXT_PRIMARY} ${UI_CONSTANTS.COLORS.HOVER_BG_SECONDARY}`
             }`}
           >
             {tab.label}

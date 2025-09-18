@@ -2,6 +2,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 import { useGameActions } from '../../../hooks/useGameActions';
+import { UI_CONSTANTS } from '../../../constants/uiConstants';
 
 const ComponentShop: React.FC = React.memo(() => {
   const { shipComponents, currentComponentCategory, resources } = useGameStore();
@@ -34,8 +35,8 @@ const ComponentShop: React.FC = React.memo(() => {
   }, [handlePurchaseComponent, currentComponentCategory]);
 
   return (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <h3 className="text-xl font-bold text-white mb-4">Available Components</h3>
+    <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.SPACING.CARD_PADDING} ${UI_CONSTANTS.CARDS.BORDER}`}>
+      <h3 className={`text-xl font-bold ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} ${UI_CONSTANTS.SPACING.SECTION_MARGIN}`}>Available Components</h3>
 
       {/* Category Tabs */}
       <div className="flex space-x-2 mb-6">
@@ -45,8 +46,8 @@ const ComponentShop: React.FC = React.memo(() => {
             onClick={() => handleCategorySwitch(category.id)}
             className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
               currentComponentCategory === category.id
-                ? 'bg-teal-600 text-white'
-                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                ? `${UI_CONSTANTS.COLORS.BG_SUCCESS} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`
+                : `${UI_CONSTANTS.COLORS.BG_SECONDARY} ${UI_CONSTANTS.COLORS.TEXT_SECONDARY} ${UI_CONSTANTS.COLORS.HOVER_BG_TERTIARY}`
             }`}
           >
             {category.label}
@@ -57,28 +58,28 @@ const ComponentShop: React.FC = React.memo(() => {
       {/* Components List */}
       <div className="space-y-3">
         {currentComponents.map(component => (
-          <div key={component.name} className="bg-slate-700 rounded p-4">
+          <div key={component.name} className={`${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded p-4`}>
             <div className="flex justify-between items-start mb-2">
-              <h4 className="text-white font-semibold">{component.name}</h4>
+              <h4 className={`${UI_CONSTANTS.COLORS.TEXT_PRIMARY} font-semibold`}>{component.name}</h4>
               <button
                 onClick={() => handleComponentPurchase(component.name)}
                 disabled={!canAfford(component.cost)}
                 className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                   canAfford(component.cost)
-                    ? 'bg-teal-600 hover:bg-teal-700 text-white'
-                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                    ? `${UI_CONSTANTS.COLORS.BG_SUCCESS} hover:bg-teal-700 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`
+                    : `${UI_CONSTANTS.COLORS.BG_TERTIARY} ${UI_CONSTANTS.COLORS.TEXT_MUTED} cursor-not-allowed`
                 }`}
               >
                 {canAfford(component.cost) ? 'Purchase' : 'Cannot Afford'}
               </button>
             </div>
 
-            <div className="text-sm text-slate-400 mb-2">
+            <div className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_MUTED} mb-2`}>
               Cost: {formatCost(component.cost)}
             </div>
 
             {component.stats && Object.keys(component.stats).length > 0 && (
-              <div className="text-sm text-slate-300">
+              <div className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_SECONDARY}`}>
                 Stats: {Object.entries(component.stats).map(([stat, value]) =>
                   `${stat}: +${value}`
                 ).join(', ')}

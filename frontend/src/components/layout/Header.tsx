@@ -1,6 +1,7 @@
 // components/layout/Header.tsx
 import React, { useMemo } from 'react';
 import { useGameStore } from '../../stores/useGameStore';
+import { UI_CONSTANTS } from '../../constants/uiConstants';
 
 const Header: React.FC = React.memo(() => {
   const { resources, legacy } = useGameStore();
@@ -9,12 +10,12 @@ const Header: React.FC = React.memo(() => {
   const captainName = useMemo(() => captain?.name.split(' ')[1] || 'Unknown', [captain?.name]);
 
   return (
-    <header className="bg-slate-900 border-b border-slate-700 px-6 py-4">
+    <header className={`${UI_CONSTANTS.COLORS.BG_PRIMARY} border-b ${UI_CONSTANTS.COLORS.BORDER} px-6 py-4`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-6">
           <div>
-            <h1 className="text-2xl font-bold text-white">Stellar Legacy</h1>
-            <p className="text-sm text-slate-400">
+            <h1 className={`text-2xl font-bold ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Stellar Legacy</h1>
+            <p className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_MUTED}`}>
               Generation {legacy.generation} - Captain {captainName}
             </p>
           </div>
@@ -43,11 +44,11 @@ interface ResourceItemProps {
 }
 
 const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value }) => (
-  <div className="flex items-center space-x-2 bg-slate-800 px-3 py-2 rounded-lg">
+  <div className={`flex items-center space-x-2 ${UI_CONSTANTS.COLORS.BG_PRIMARY} px-3 py-2 rounded-lg`}>
     <span className="text-lg">{icon}</span>
     <div className="text-center">
-      <div className="text-xs text-slate-400">{label}</div>
-      <div className="text-sm font-semibold text-white">{value}</div>
+      <div className={`text-xs ${UI_CONSTANTS.COLORS.TEXT_MUTED}`}>{label}</div>
+      <div className={`text-sm font-semibold ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>{value}</div>
     </div>
   </div>
 );

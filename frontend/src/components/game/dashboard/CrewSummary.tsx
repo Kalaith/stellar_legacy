@@ -2,6 +2,8 @@
 import React, { useMemo } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 import Card from '../../ui/Card';
+import { UI_CONSTANTS } from '../../../constants/uiConstants';
+import type { CrewMemberId } from '../../../types/branded';
 
 const CrewSummary: React.FC = React.memo(() => {
   const { crew } = useGameStore();
@@ -13,7 +15,7 @@ const CrewSummary: React.FC = React.memo(() => {
 
   return (
     <Card title="Active Crew">
-      <div className="text-slate-300 text-sm mb-4">
+      <div className={`${UI_CONSTANTS.COLORS.TEXT_SECONDARY} text-sm ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM}`}>
         Average Morale: {totalMorale.toFixed(1)}%
       </div>
 
@@ -26,11 +28,11 @@ const CrewSummary: React.FC = React.memo(() => {
   );
 });
 
-CrewSummary.displayName = 'CrewSummary';CrewSummary.displayName = 'CrewSummary';
+CrewSummary.displayName = 'CrewSummary';
 
 interface CrewMemberItemProps {
   member: {
-    id: number;
+    id: CrewMemberId;
     name: string;
     role: string;
     morale: number;
@@ -45,10 +47,10 @@ const CrewMemberItem: React.FC<CrewMemberItemProps> = React.memo(({ member }) =>
   }, []);
 
   return (
-    <div className="flex items-center justify-between bg-slate-700 rounded p-3">
+    <div className={`flex items-center justify-between ${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded ${UI_CONSTANTS.SPACING.CARD_PADDING_SM}`}>
       <div className="flex-1">
-        <div className="text-white font-medium">{member.name}</div>
-        <div className="text-slate-400 text-sm">{member.role}</div>
+        <div className={`${UI_CONSTANTS.COLORS.TEXT_PRIMARY} font-medium`}>{member.name}</div>
+        <div className={`${UI_CONSTANTS.COLORS.TEXT_MUTED} text-sm`}>{member.role}</div>
       </div>
       <div className={`w-3 h-3 rounded-full ${getMoraleColor(member.morale)}`} />
     </div>

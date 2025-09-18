@@ -4,6 +4,10 @@ import { persist } from 'zustand/middleware';
 import type { GameState, GameData, CrewMember, StarSystem, Planet, Notification, ShipStats, ComponentCost } from '../types/game';
 import { GAME_CONSTANTS } from '../constants/gameConstants';
 import type { TabIdType, TradeActionType } from '../types/enums';
+import { TabId } from '../types/enums';
+import { CrewIdGenerator, NotificationIdGenerator } from '../types/branded';
+import type { CrewMemberId, NotificationId } from '../types/branded';
+import { NotificationManager } from '../services/NotificationManager';
 import { ResourceService } from '../services/ResourceService';
 import { ValidationService } from '../services/ValidationService';
 import gameConfig from '../config/gameConfig';
@@ -38,7 +42,7 @@ const initialGameData: GameData = {
   },
   crew: [
     {
-      id: 1,
+      id: CrewIdGenerator.generate(),
       name: "Captain Elena Voss",
       role: "Captain",
       skills: {engineering: 6, navigation: 8, combat: 7, diplomacy: 9, trade: 5},
@@ -48,7 +52,7 @@ const initialGameData: GameData = {
       isHeir: false
     },
     {
-      id: 2,
+      id: CrewIdGenerator.generate(),
       name: "Chief Engineer Marcus Cole",
       role: "Engineer",
       skills: {engineering: 9, navigation: 4, combat: 5, diplomacy: 3, trade: 2},
@@ -58,7 +62,7 @@ const initialGameData: GameData = {
       isHeir: false
     },
     {
-      id: 3,
+      id: CrewIdGenerator.generate(),
       name: "Navigator Zara Chen",
       role: "Pilot",
       skills: {engineering: 3, navigation: 9, combat: 6, diplomacy: 5, trade: 4},
@@ -68,7 +72,7 @@ const initialGameData: GameData = {
       isHeir: false
     },
     {
-      id: 4,
+      id: CrewIdGenerator.generate(),
       name: "Trader Kex Thorne",
       role: "Diplomat",
       skills: {engineering: 2, navigation: 3, combat: 4, diplomacy: 8, trade: 9},
@@ -162,9 +166,9 @@ interface GameStore extends GameState {
   establishColony: () => void;
   switchComponentCategory: (category: keyof typeof initialGameData.shipComponents) => void;
   purchaseComponent: (category: string, componentName: string) => void;
-  selectHeir: (heirId: number) => void;
+  selectHeir: (heirId: CrewMemberId) => void;
   showNotification: (message: string, type?: Notification['type']) => void;
-  clearNotification: (id: string) => void;
+  clearNotification: (id: NotificationId) => void;
   tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: TradeActionType) => void;
 
   // Helper methods
@@ -220,6 +224,10 @@ export const useGameStore = create<GameStore>()(
       },
 
       switchTab: (tabName: TabIdType) => {
+        if (!Object.values(TabId).includes(tabName)) {
+          Logger.warn('Invalid tab requested', { tabName });
+          return;
+        }
         set({ currentTab: tabName });
       },
 
@@ -240,15 +248,18 @@ export const useGameStore = create<GameStore>()(
           const { resources, crew } = get();
           const result = GameEngine.processCrewTraining(resources, crew);
 
-          if (!result) {
-            get().showNotification('Cannot afford crew training!', 'error');
+          if (!result.success) {
+            get().showNotification(result.error.message, 'error');
+            Logger.error('Crew training failed', result.error);
             return;
           }
 
-          const { newResources, result: { updatedCrew, trainedMember, skill } } = result;
+          const { newResources, result: trainingResult } = result.data;
+          const { updatedCrew, trainedMember, skill } = trainingResult;
 
           set({ resources: newResources, crew: updatedCrew });
-          get().showNotification(`${trainedMember.name} improved their ${skill} skill!`, 'success');
+          const message = NotificationManager.createCrewMessage('trained', trainedMember.name, `${skill} skill improved`);
+          get().showNotification(message, 'success');
           Logger.crewAction('skill_training', trainedMember.name, { skill, newLevel: updatedCrew.find(c => c.id === trainedMember.id)?.skills[skill as keyof typeof trainedMember.skills] });
         } catch (error) {
           Logger.error('Crew training failed', error);
@@ -261,12 +272,13 @@ export const useGameStore = create<GameStore>()(
           const { resources, crew } = get();
           const result = GameEngine.processMoraleBoost(resources, crew);
 
-          if (!result) {
-            get().showNotification('Cannot afford morale boost!', 'error');
+          if (!result.success) {
+            get().showNotification(result.error.message, 'error');
+            Logger.error('Morale boost failed', result.error);
             return;
           }
 
-          const { newResources, updatedCrew } = result;
+          const { newResources, updatedCrew } = result.data;
 
           set({ resources: newResources, crew: updatedCrew });
           get().showNotification('Crew morale improved!', 'success');
@@ -282,16 +294,18 @@ export const useGameStore = create<GameStore>()(
           const { resources, crew, ship } = get();
           const result = GameEngine.processCrewRecruitment(resources, crew, ship);
 
-          if (!result) {
-            get().showNotification('Cannot recruit crew!', 'error');
+          if (!result.success) {
+            get().showNotification(result.error.message, 'error');
+            Logger.error('Crew recruitment failed', result.error);
             return;
           }
 
-          const { newResources, newCrew } = result;
+          const { newResources, newCrew } = result.data;
           const updatedCrew = [...crew, newCrew];
 
           set({ resources: newResources, crew: updatedCrew });
-          get().showNotification(`Recruited ${newCrew.name}!`, 'success');
+          const message = NotificationManager.createCrewMessage('recruited', newCrew.name, newCrew.role);
+          get().showNotification(message, 'success');
           Logger.crewAction('recruitment', newCrew.name, { role: newCrew.role });
         } catch (error) {
           Logger.error('Crew recruitment failed', error);
@@ -304,6 +318,10 @@ export const useGameStore = create<GameStore>()(
       },
 
       selectSystem: (system: StarSystem) => {
+        if (!system || !system.name) {
+          Logger.warn('Invalid system selected', { system });
+          return;
+        }
         set({ selectedSystem: system });
       },
 
@@ -312,12 +330,13 @@ export const useGameStore = create<GameStore>()(
           const { selectedSystem, resources } = get();
           const result = GameEngine.processSystemExploration(resources, selectedSystem);
 
-          if (!result) {
-            get().showNotification('Cannot explore system!', 'error');
+          if (!result.success) {
+            get().showNotification(result.error.message, 'error');
+            Logger.error('System exploration failed', result.error);
             return;
           }
 
-          const { newResources, planets } = result;
+          const { newResources, planets } = result.data;
 
           if (selectedSystem) {
             const updatedSystem = { ...selectedSystem, status: 'explored' as const, planets };
@@ -326,7 +345,8 @@ export const useGameStore = create<GameStore>()(
             );
 
             set({ resources: newResources, starSystems: updatedSystems, selectedSystem: updatedSystem });
-            get().showNotification(`Explored ${selectedSystem.name}! Discovered ${planets.length} planets.`, 'success');
+            const message = NotificationManager.createSystemMessage('explored', selectedSystem.name, `Discovered ${planets.length} planets`);
+            get().showNotification(message, 'success');
             Logger.systemEvent('exploration', selectedSystem.name, { planetsDiscovered: planets.length });
           }
         } catch (error) {
@@ -340,12 +360,13 @@ export const useGameStore = create<GameStore>()(
           const { selectedSystem, resources, resourceGenerationRate } = get();
           const result = GameEngine.processColonyEstablishment(resources, selectedSystem);
 
-          if (!result) {
-            get().showNotification('Cannot establish colony!', 'error');
+          if (!result.success) {
+            get().showNotification(result.error.message, 'error');
+            Logger.error('Colony establishment failed', result.error);
             return;
           }
 
-          const { newResources, colonyPlanet, newGenerationRate } = result;
+          const { newResources, colonyPlanet, newGenerationRate } = result.data;
 
           if (selectedSystem) {
             const updatedPlanets = selectedSystem.planets.map(p =>
@@ -364,7 +385,8 @@ export const useGameStore = create<GameStore>()(
               resourceGenerationRate: { ...resourceGenerationRate, ...newGenerationRate }
             });
 
-            get().showNotification(`Established colony on ${colonyPlanet.name}!`, 'success');
+            const message = NotificationManager.createSystemMessage('colonized', colonyPlanet.name);
+            get().showNotification(message, 'success');
             Logger.systemEvent('colony_established', selectedSystem.name, { planet: colonyPlanet.name });
           }
         } catch (error) {
@@ -428,34 +450,31 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      selectHeir: (heirId: number) => {
+      selectHeir: (heirId: CrewMemberId) => {
         const { crew } = get();
-        const updatedCrew = crew.map(member => ({ ...member, isHeir: member.id === heirId }));
-        const heir = updatedCrew.find(m => m.id === heirId);
+        const targetCrew = crew.find(m => m.id === heirId);
 
-        set({ crew: updatedCrew });
-        if (heir) {
-          get().showNotification(`${heir.name} selected as heir!`, 'success');
+        if (!targetCrew) {
+          Logger.warn('Invalid crew member selected as heir', { heirId });
+          get().showNotification('Invalid crew member selected', 'error');
+          return;
         }
+
+        const updatedCrew = crew.map(member => ({ ...member, isHeir: member.id === heirId }));
+        set({ crew: updatedCrew });
+        const message = NotificationManager.createCrewMessage('promoted', targetCrew.name, 'selected as heir');
+        get().showNotification(message, 'success');
       },
 
       showNotification: (message: string, type: Notification['type'] = 'info') => {
-        const notification: Notification = {
-          id: Date.now().toString(),
-          message,
-          type,
-          timestamp: Date.now()
-        };
-
+        const notification = NotificationManager.create(message, type);
         set(state => ({ notifications: [...state.notifications, notification] }));
 
-        // Auto-remove after configured timeout
-        setTimeout(() => {
-          get().clearNotification(notification.id);
-        }, gameConfig.intervals.notificationTimeout);
+        // Auto-remove using NotificationManager
+        NotificationManager.autoRemove(notification, get().clearNotification);
       },
 
-      clearNotification: (id: string) => {
+      clearNotification: (id: NotificationId) => {
         set(state => ({
           notifications: state.notifications.filter(n => n.id !== id)
         }));
@@ -463,6 +482,22 @@ export const useGameStore = create<GameStore>()(
 
       tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: TradeActionType) => {
         try {
+          // Validate inputs
+          const validResources = ['minerals', 'energy', 'food', 'influence'];
+          const validActions = ['buy', 'sell'];
+
+          if (!validResources.includes(resource)) {
+            Logger.warn('Invalid resource for trade', { resource });
+            get().showNotification('Invalid resource selected', 'error');
+            return;
+          }
+
+          if (!validActions.includes(action)) {
+            Logger.warn('Invalid trade action', { action });
+            get().showNotification('Invalid trade action', 'error');
+            return;
+          }
+
           const { resources, market } = get();
           const price = market.prices[resource];
           const validation = ValidationService.validateTrade(resources, resource, action, price);
@@ -478,7 +513,8 @@ export const useGameStore = create<GameStore>()(
           const newResources = ResourceService.processTrade(resources, cost, resource, amount, isBuying);
 
           set({ resources: newResources });
-          get().showNotification(`${isBuying ? 'Bought' : 'Sold'} ${amount} ${resource} for ${cost} credits`, 'success');
+          const message = NotificationManager.createResourceMessage(isBuying ? 'bought' : 'sold', amount, resource, cost);
+          get().showNotification(message, 'success');
           Logger.gameAction('trade', { resource, action: isBuying ? 'buy' : 'sell', amount, cost });
         } catch (error) {
           Logger.error('Resource trade failed', error);

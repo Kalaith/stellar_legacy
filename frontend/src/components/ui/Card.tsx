@@ -1,5 +1,6 @@
 // components/ui/Card.tsx
 import React from 'react';
+import { UI_CONSTANTS } from '../../constants/uiConstants';
 
 interface CardProps {
   title?: string;
@@ -9,13 +10,13 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = React.memo(({ title, children, className = '' }) => {
   return (
-    <div className={`bg-slate-800 rounded-lg border border-slate-700 ${className}`}>
+    <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.CARDS.BORDER} ${className}`}>
       {title && (
-        <h3 className="text-lg font-bold text-white px-6 py-4 border-b border-slate-700">
+        <h3 className={UI_CONSTANTS.CARDS.HEADER}>
           {title}
         </h3>
       )}
-      <div className={title ? 'p-6' : 'p-6'}>
+      <div className={UI_CONSTANTS.SPACING.CARD_PADDING}>
         {children}
       </div>
     </div>

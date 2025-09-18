@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
+import { UI_CONSTANTS } from '../../../constants/uiConstants';
 
 const Market: React.FC = React.memo(() => {
   const { resources, market, tradeResource } = useGameStore();
@@ -18,11 +19,11 @@ const Market: React.FC = React.memo(() => {
   const getTrendColor = useMemo(() => (trend: string) => {
     switch (trend) {
       case 'rising':
-        return 'text-red-400';
+        return UI_CONSTANTS.COLORS.TEXT_ERROR;
       case 'falling':
-        return 'text-green-400';
+        return UI_CONSTANTS.COLORS.TEXT_SUCCESS;
       default:
-        return 'text-gray-400';
+        return UI_CONSTANTS.COLORS.TEXT_MUTED;
     }
   }, []);
 
@@ -48,16 +49,16 @@ const Market: React.FC = React.memo(() => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
       {/* Market Prices */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-lg font-semibold mb-4 text-white">Galactic Market</h3>
+      <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.SPACING.CARD_PADDING} ${UI_CONSTANTS.CARDS.BORDER}`}>
+        <h3 className={`text-lg font-semibold ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Galactic Market</h3>
         <div className="space-y-4">
           {marketItems.map((item) => (
-            <div key={item.key} className="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+            <div key={item.key} className={`flex items-center justify-between p-4 ${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded-lg`}>
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">{item.icon}</span>
                 <div>
-                  <div className="font-medium text-white">{item.name}</div>
-                  <div className="text-sm text-slate-300">
+                  <div className={`font-medium ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>{item.name}</div>
+                  <div className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_SECONDARY}`}>
                     {market.prices[item.key]} Credits
                   </div>
                 </div>
@@ -73,8 +74,8 @@ const Market: React.FC = React.memo(() => {
                 <button
                   className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                     canBuy(item.key)
-                      ? 'bg-teal-600 hover:bg-teal-700 text-white'
-                      : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                      ? `${UI_CONSTANTS.COLORS.BG_SUCCESS} hover:bg-teal-700 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`
+                      : `${UI_CONSTANTS.COLORS.BG_TERTIARY} ${UI_CONSTANTS.COLORS.TEXT_MUTED} cursor-not-allowed`
                   }`}
                   onClick={() => handleTrade(item.key, 'buy')}
                   disabled={!canBuy(item.key)}
@@ -84,8 +85,8 @@ const Market: React.FC = React.memo(() => {
                 <button
                   className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                     canSell(item.key)
-                      ? 'bg-slate-600 hover:bg-slate-700 text-white'
-                      : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                      ? `${UI_CONSTANTS.COLORS.BG_TERTIARY} ${UI_CONSTANTS.COLORS.HOVER_BG_SECONDARY} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`
+                      : `${UI_CONSTANTS.COLORS.BG_TERTIARY} ${UI_CONSTANTS.COLORS.TEXT_MUTED} cursor-not-allowed`
                   }`}
                   onClick={() => handleTrade(item.key, 'sell')}
                   disabled={!canSell(item.key)}
@@ -99,44 +100,44 @@ const Market: React.FC = React.memo(() => {
       </div>
 
       {/* Available Contracts */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-lg font-semibold mb-4 text-white">Available Contracts</h3>
+      <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.SPACING.CARD_PADDING} ${UI_CONSTANTS.CARDS.BORDER}`}>
+        <h3 className={`text-lg font-semibold ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Available Contracts</h3>
         <div className="space-y-4">
-          <div className="p-4 bg-slate-700 rounded-lg">
-            <h4 className="font-medium mb-2 text-white">Mining Survey</h4>
-            <p className="text-sm text-slate-300 mb-3">
+          <div className={`p-4 ${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded-lg`}>
+            <h4 className={`font-medium mb-2 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Mining Survey</h4>
+            <p className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_SECONDARY} mb-3`}>
               Survey asteroid belt for rare minerals
             </p>
             <div className="text-sm text-green-400 mb-3">
               Reward: 300 Credits, 50 Minerals
             </div>
-            <button className="w-full px-3 py-2 rounded text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors">
+            <button className={`w-full px-3 py-2 rounded text-sm font-medium ${UI_CONSTANTS.COLORS.BG_SUCCESS} hover:bg-teal-700 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} transition-colors`}>
               Accept Contract
             </button>
           </div>
 
-          <div className="p-4 bg-slate-700 rounded-lg">
-            <h4 className="font-medium mb-2 text-white">Trade Escort</h4>
-            <p className="text-sm text-slate-300 mb-3">
+          <div className={`p-4 ${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded-lg`}>
+            <h4 className={`font-medium mb-2 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Trade Escort</h4>
+            <p className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_SECONDARY} mb-3`}>
               Escort merchant vessel through pirate territory
             </p>
             <div className="text-sm text-green-400 mb-3">
               Reward: 500 Credits, +10 Military Rep
             </div>
-            <button className="w-full px-3 py-2 rounded text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors">
+            <button className={`w-full px-3 py-2 rounded text-sm font-medium ${UI_CONSTANTS.COLORS.BG_SUCCESS} hover:bg-teal-700 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} transition-colors`}>
               Accept Contract
             </button>
           </div>
 
-          <div className="p-4 bg-slate-700 rounded-lg">
-            <h4 className="font-medium mb-2 text-white">Research Mission</h4>
-            <p className="text-sm text-slate-300 mb-3">
+          <div className={`p-4 ${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded-lg`}>
+            <h4 className={`font-medium mb-2 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Research Mission</h4>
+            <p className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_SECONDARY} mb-3`}>
               Study ancient alien artifacts
             </p>
             <div className="text-sm text-green-400 mb-3">
               Reward: 400 Credits, +15 Science Rep
             </div>
-            <button className="w-full px-3 py-2 rounded text-sm font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors">
+            <button className={`w-full px-3 py-2 rounded text-sm font-medium ${UI_CONSTANTS.COLORS.BG_SUCCESS} hover:bg-teal-700 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} transition-colors`}>
               Accept Contract
             </button>
           </div>

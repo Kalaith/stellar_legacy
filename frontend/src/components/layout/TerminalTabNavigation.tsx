@@ -1,45 +1,26 @@
 // components/layout/TerminalTabNavigation.tsx
-import React, { useMemo, useCallback } from 'react';
-import { useGameStore } from '../../stores/useGameStore';
-import { useGenerationalMissionStore } from '../../stores/useGenerationalMissionStore';
-import type { TabIdType } from '../../types/enums';
+import React from 'react';
+import { useTabNavigation } from '../../hooks/useTabNavigation';
+import { UI_CONSTANTS } from '../../constants/uiConstants';
 
 const TerminalTabNavigation: React.FC = React.memo(() => {
-  const { currentTab, switchTab } = useGameStore();
-  const { activeMissions } = useGenerationalMissionStore();
+  const { currentTab, coreSystemTabs, generationalTabs, handleTabSwitch } = useTabNavigation();
 
-  const tabs = useMemo(() => [
-    { id: 'dashboard' as TabIdType, label: 'DASHBOARD', category: 'CORE' },
-    { id: 'ship-builder' as TabIdType, label: 'SHIP BUILDER', category: 'CORE' },
-    { id: 'crew-quarters' as TabIdType, label: 'CREW QUARTERS', category: 'CORE' },
-    { id: 'galaxy-map' as TabIdType, label: 'GALAXY MAP', category: 'CORE' },
-    { id: 'market' as TabIdType, label: 'MARKET', category: 'CORE' },
-    { id: 'legacy' as TabIdType, label: 'LEGACY', category: 'CORE' },
-    { id: 'mission-command' as TabIdType, label: 'MISSION COMMAND', category: 'GENERATIONAL', alert: activeMissions.length > 0 },
-    { id: 'dynasty-hall' as TabIdType, label: 'DYNASTY HALL', category: 'GENERATIONAL' },
-    { id: 'sect-relations' as TabIdType, label: 'SECT RELATIONS', category: 'GENERATIONAL' },
-    { id: 'cultural-evolution' as TabIdType, label: 'CULTURAL EVOLUTION', category: 'GENERATIONAL' }
-  ], [activeMissions.length]);
-
-  const handleTabSwitch = useCallback((tabId: TabIdType) => {
-    switchTab(tabId);
-  }, [switchTab]);
-
-  const coreTabsWidth = 50;
-  const genTabsWidth = 60;
+  const coreTabsWidth = UI_CONSTANTS.NAVIGATION.CORE_TABS_WIDTH;
+  const genTabsWidth = UI_CONSTANTS.NAVIGATION.GENERATIONAL_TABS_WIDTH;
 
   return (
     <nav className="terminal-navigation">
       {/* Core Systems Section */}
       <div className="terminal-nav-section">
         <div className="terminal-nav-header">
-          ┌─[CORE SYSTEMS]{"─".repeat(coreTabsWidth - 15)}┐
+          ┌─[CORE SYSTEMS]{"─".repeat(coreTabsWidth - UI_CONSTANTS.NAVIGATION.CORE_SYSTEMS_HEADER_LENGTH)}┐
         </div>
         <div className="terminal-nav-content">
           <div className="terminal-nav-grid">
-            {tabs.filter(tab => tab.category === 'CORE').map((tab, index) => {
+            {coreSystemTabs.map((tab, index) => {
               const isActive = currentTab === tab.id;
-              const tabDisplay = tab.label.padEnd(15);
+              const tabDisplay = tab.label.padEnd(UI_CONSTANTS.NAVIGATION.TAB_LABEL_PADDING.CORE);
 
               return (
                 <button
@@ -63,14 +44,14 @@ const TerminalTabNavigation: React.FC = React.memo(() => {
       {/* Generational Systems Section */}
       <div className="terminal-nav-section">
         <div className="terminal-nav-header">
-          ┌─[GENERATIONAL SYSTEMS]{"─".repeat(genTabsWidth - 23)}┐
+          ┌─[GENERATIONAL SYSTEMS]{"─".repeat(genTabsWidth - UI_CONSTANTS.NAVIGATION.GENERATIONAL_SYSTEMS_HEADER_LENGTH)}┐
         </div>
         <div className="terminal-nav-content">
           <div className="terminal-nav-grid">
-            {tabs.filter(tab => tab.category === 'GENERATIONAL').map((tab, index) => {
+            {generationalTabs.map((tab, index) => {
               const isActive = currentTab === tab.id;
               const hasAlert = tab.alert;
-              const tabDisplay = tab.label.padEnd(20);
+              const tabDisplay = tab.label.padEnd(UI_CONSTANTS.NAVIGATION.TAB_LABEL_PADDING.GENERATIONAL);
 
               return (
                 <button

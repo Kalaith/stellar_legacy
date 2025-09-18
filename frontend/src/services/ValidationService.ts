@@ -1,8 +1,85 @@
 // services/ValidationService.ts
 import { GAME_CONSTANTS } from '../constants/gameConstants';
 import type { Resources, CrewMember, Ship } from '../types/game';
+import type { ValidationResult } from '../types/errors';
+
+export interface ResourceConstraints {
+  min: number;
+  max: number;
+  dependencies?: Partial<Resources>;
+}
+
+export const RESOURCE_CONSTRAINTS: Record<keyof Resources, ResourceConstraints> = {
+  credits: { min: 0, max: 1_000_000 },
+  energy: { min: 0, max: 10_000 },
+  minerals: { min: 0, max: 50_000 },
+  food: { min: 0, max: 25_000 },
+  influence: { min: 0, max: 1_000 }
+} as const;
 
 export const ValidationService = {
+  RESOURCE_CONSTRAINTS,
+  validateResourceConstraints: (resources: Resources): ValidationResult => {
+    for (const [resource, amount] of Object.entries(resources)) {
+      const constraints = RESOURCE_CONSTRAINTS[resource as keyof Resources];
+      if (amount < constraints.min || amount > constraints.max) {
+        return {
+          isValid: false,
+          message: `${resource} must be between ${constraints.min} and ${constraints.max}`
+        };
+      }
+    }
+    return { isValid: true };
+  },
+
+  validateResourceOperation: (
+    resources: Resources,
+    operation: 'add' | 'subtract',
+    changes: Partial<Resources>
+  ): ValidationResult => {
+    const projectedResources = { ...resources };
+
+    for (const [resource, amount] of Object.entries(changes)) {
+      const resourceKey = resource as keyof Resources;
+      if (amount && projectedResources[resourceKey] !== undefined) {
+        if (operation === 'add') {
+          projectedResources[resourceKey] += amount;
+        } else {
+          projectedResources[resourceKey] -= amount;
+        }
+      }
+    }
+
+    return ValidationService.validateResourceConstraints(projectedResources);
+  },
+
+  validateTradeLimits: (
+    resources: Resources,
+    resource: keyof Resources,
+    amount: number,
+    isSelling: boolean
+  ): ValidationResult => {
+    const constraints = RESOURCE_CONSTRAINTS[resource];
+    const currentAmount = resources[resource];
+
+    if (isSelling) {
+      if (currentAmount - amount < constraints.min) {
+        return {
+          isValid: false,
+          message: `Cannot sell ${amount} ${resource}. Would result in ${currentAmount - amount}, minimum is ${constraints.min}`
+        };
+      }
+    } else {
+      if (currentAmount + amount > constraints.max) {
+        return {
+          isValid: false,
+          message: `Cannot buy ${amount} ${resource}. Would result in ${currentAmount + amount}, maximum is ${constraints.max}`
+        };
+      }
+    }
+
+    return { isValid: true };
+  },
   validateCrewTraining: (credits: number): { isValid: boolean; message?: string } => {
     if (credits < GAME_CONSTANTS.COSTS.CREW_TRAINING) {
       return {
