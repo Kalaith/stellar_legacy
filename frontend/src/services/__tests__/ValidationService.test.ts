@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ValidationService } from '../ValidationService';
 import type { Resources, CrewMember, Ship } from '../../types/game';
+import type { CrewMemberId } from '../../types/branded';
 
 describe('ValidationService', () => {
   const mockResources: Resources = {
@@ -13,7 +14,7 @@ describe('ValidationService', () => {
 
   const mockCrew: CrewMember[] = [
     {
-      id: 1,
+      id: 'crew_1' as CrewMemberId,
       name: 'Test Crew',
       role: 'Engineer',
       skills: { engineering: 5, navigation: 3, combat: 2, diplomacy: 1, trade: 1 },

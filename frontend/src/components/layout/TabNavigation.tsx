@@ -16,7 +16,7 @@ const TabNavigation: React.FC = React.memo(() => {
     { id: 'legacy' as TabIdType, label: 'Legacy' },
     { id: 'mission-command' as TabIdType, label: 'Mission Command' },
     { id: 'dynasty-hall' as TabIdType, label: 'Dynasty Hall' },
-    { id: 'sect-relations' as TabIdType, label: 'Sect Relations' },
+    { id: 'legacy-relations' as TabIdType, label: 'Legacy Relations' },
     { id: 'cultural-evolution' as TabIdType, label: 'Cultural Evolution' }
   ], []);
 

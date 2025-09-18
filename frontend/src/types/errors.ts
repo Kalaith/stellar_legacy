@@ -2,13 +2,20 @@
 import type { ComponentCost } from './game';
 
 export class GameOperationError extends Error {
+  public readonly operation: string;
+  public readonly reason: string;
+  public readonly requiredResources?: ComponentCost;
+
   constructor(
-    public readonly operation: string,
-    public readonly reason: string,
-    public readonly requiredResources?: ComponentCost
+    operation: string,
+    reason: string,
+    requiredResources?: ComponentCost
   ) {
     super(`${operation} failed: ${reason}`);
     this.name = 'GameOperationError';
+    this.operation = operation;
+    this.reason = reason;
+    this.requiredResources = requiredResources;
   }
 }
 

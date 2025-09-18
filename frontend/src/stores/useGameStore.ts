@@ -2,12 +2,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { GameState, GameData, CrewMember, StarSystem, Planet, Notification, ShipStats, ComponentCost } from '../types/game';
-import type { Dynasty, CulturalEvolution } from '../types/generationalMissions';
+import type { CulturalEvolution } from '../types/generationalMissions';
 import { GAME_CONSTANTS } from '../constants/gameConstants';
-import type { TabIdType, TradeActionType, SectTypeType } from '../types/enums';
+import type { TabIdType, TradeActionType, LegacyTypeType } from '../types/enums';
 import { TabId } from '../types/enums';
 import { DynastyService } from '../services/DynastyService';
-import { CrewIdGenerator, NotificationIdGenerator } from '../types/branded';
+import { CrewIdGenerator } from '../types/branded';
 import type { CrewMemberId, NotificationId } from '../types/branded';
 import { NotificationManager } from '../services/NotificationManager';
 import { ResourceService } from '../services/ResourceService';
@@ -175,9 +175,9 @@ interface GameStore extends GameState {
 
   // Dynasty System Actions
   dynastyAction: (dynastyId: string, action: string) => void;
-  sectAction: (targetSect: SectTypeType, action: string) => void;
+  legacyAction: (targetLegacy: LegacyTypeType, action: string) => void;
   culturalAction: (action: string, parameters?: any) => void;
-  initializeDynasties: (sect: SectTypeType) => void;
+  initializeDynasties: (legacy: LegacyTypeType) => void;
 
   // Helper methods
   canAffordComponent: (cost: ComponentCost) => boolean;
@@ -212,8 +212,8 @@ export const useGameStore = create<GameStore>()(
       generationalMissions: [],
       activeMissions: [],
       selectedMission: null,
-      sectRelations: [],
-      playerSectAffinity: {
+      legacyRelations: [],
+      playerLegacyAffinity: {
         preservers: 0,
         adaptors: 0,
         wanderers: 0
@@ -221,23 +221,23 @@ export const useGameStore = create<GameStore>()(
 
       // Dynasty System State
       dynasties: [],
-      playerSect: 'preservers' as SectTypeType,
+      playerLegacy: 'preservers' as LegacyTypeType,
       currentGeneration: 1,
       culturalEvolution: [
         {
-          sect: 'preservers',
+          legacy: 'preservers',
           baselineDeviation: 0,
           majorChanges: [],
           currentTrends: []
         },
         {
-          sect: 'adaptors',
+          legacy: 'adaptors',
           baselineDeviation: 0,
           majorChanges: [],
           currentTrends: []
         },
         {
-          sect: 'wanderers',
+          legacy: 'wanderers',
           baselineDeviation: 0,
           majorChanges: [],
           currentTrends: []
@@ -602,39 +602,37 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      sectAction: (targetSect: SectTypeType, action: string) => {
+      legacyAction: (targetLegacy: LegacyTypeType, action: string) => {
         try {
-          const { sectRelations, playerSect } = get();
           let message = '';
 
           switch (action) {
             case 'improve_relations':
-              message = `Attempting to improve relations with ${targetSect}`;
+              message = `Attempting to improve relations with ${targetLegacy}`;
               break;
             case 'formal_alliance':
-              message = `Proposing formal alliance with ${targetSect}`;
+              message = `Proposing formal alliance with ${targetLegacy}`;
               break;
             case 'cultural_exchange':
-              message = `Initiating cultural exchange with ${targetSect}`;
+              message = `Initiating cultural exchange with ${targetLegacy}`;
               break;
             case 'issue_warning':
-              message = `Issued warning to ${targetSect}`;
+              message = `Issued warning to ${targetLegacy}`;
               break;
             default:
-              message = `Unknown sect action: ${action}`;
+              message = `Unknown legacy action: ${action}`;
           }
 
           get().showNotification(message, 'success');
-          Logger.gameAction('sect_action', { targetSect, action });
+          Logger.gameAction('legacy_action', { targetLegacy, action });
         } catch (error) {
-          Logger.error('Sect action failed', error);
-          get().showNotification('Sect action failed', 'error');
+          Logger.error('Legacy action failed', error);
+          get().showNotification('Legacy action failed', 'error');
         }
       },
 
       culturalAction: (action: string, parameters?: any) => {
         try {
-          const { culturalEvolution } = get();
           let message = '';
 
           switch (action) {
@@ -677,12 +675,12 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      initializeDynasties: (sect: SectTypeType) => {
+      initializeDynasties: (legacy: LegacyTypeType) => {
         try {
-          const dynasties = DynastyService.generateInitialDynasties(sect, 50000); // 50k population
-          set({ dynasties, playerSect: sect });
-          get().showNotification(`Initialized ${dynasties.length} dynasties for ${sect} sect`, 'success');
-          Logger.gameAction('dynasties_initialized', { sect, count: dynasties.length });
+          const dynasties = DynastyService.generateInitialDynasties(legacy, 50000); // 50k population
+          set({ dynasties, playerLegacy: legacy });
+          get().showNotification(`Initialized ${dynasties.length} dynasties for ${legacy} legacy`, 'success');
+          Logger.gameAction('dynasties_initialized', { legacy, count: dynasties.length });
         } catch (error) {
           Logger.error('Dynasty initialization failed', error);
           get().showNotification('Failed to initialize dynasties', 'error');

@@ -2,6 +2,7 @@
 import { useCallback } from 'react';
 import { useGameStore } from '../stores/useGameStore';
 import type { ShipComponentsData } from '../types/game';
+import type { CrewMemberId } from '../types/branded';
 
 export const useGameActions = () => {
   const store = useGameStore();
@@ -30,7 +31,7 @@ export const useGameActions = () => {
     store.purchaseComponent(category, componentName);
   }, [store]);
 
-  const handleSelectHeir = useCallback((heirId: number) => {
+  const handleSelectHeir = useCallback((heirId: CrewMemberId) => {
     store.selectHeir(heirId);
   }, [store]);
 

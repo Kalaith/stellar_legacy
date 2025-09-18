@@ -6,28 +6,27 @@ import type {
   MissionEvent,
   Dynasty,
   PopulationCohort,
-  ExtendedResources,
   AIDecision,
   GenerationalMission
 } from '../types/generationalMissions';
-import type { SectTypeType } from '../types/enums';
+import type { LegacyTypeType } from '../types/enums';
 import { DynastyService } from './DynastyService';
 import Logger from '../utils/logger';
 
 export class AutomationService {
   // Initialize Default Automation Config for New Mission
-  static createDefaultAutomationConfig(sect: SectTypeType): AutomationConfig {
+  static createDefaultAutomationConfig(legacy: LegacyTypeType): AutomationConfig {
     return {
-      resourceThresholds: this.getDefaultResourceThresholds(sect),
-      crisisEscalationRules: this.getDefaultEscalationRules(sect),
+      resourceThresholds: this.getDefaultResourceThresholds(legacy),
+      crisisEscalationRules: this.getDefaultEscalationRules(legacy),
       councilMembers: [], // Will be populated when dynasties are assigned
-      delegationRules: this.getDefaultDelegationRules(sect),
-      emergencyProtocols: this.getDefaultEmergencyProtocols(sect)
+      delegationRules: this.getDefaultDelegationRules(legacy),
+      emergencyProtocols: this.getDefaultEmergencyProtocols(legacy)
     };
   }
 
   // Default Resource Thresholds by Sect
-  private static getDefaultResourceThresholds(sect: SectTypeType): Record<string, number> {
+  private static getDefaultResourceThresholds(legacy: LegacyTypeType): Record<string, number> {
     const baseThresholds = {
       credits: 1000,
       energy: 500,
@@ -40,8 +39,8 @@ export class AutomationService {
       unity: 0.5
     };
 
-    // Sect-specific adjustments
-    switch (sect) {
+    // Legacy-specific adjustments
+    switch (legacy) {
       case 'preservers':
         return {
           ...baseThresholds,
@@ -73,7 +72,7 @@ export class AutomationService {
   }
 
   // Default Crisis Escalation Rules
-  private static getDefaultEscalationRules(sect: SectTypeType): DelegationRule[] {
+  private static getDefaultEscalationRules(legacy: LegacyTypeType): DelegationRule[] {
     const rules: DelegationRule[] = [
       {
         id: 'critical_resources',
@@ -101,8 +100,8 @@ export class AutomationService {
       }
     ];
 
-    // Add sect-specific escalation rules
-    switch (sect) {
+    // Add legacy-specific escalation rules
+    switch (legacy) {
       case 'preservers':
         rules.push({
           id: 'cultural_drift',
@@ -141,7 +140,7 @@ export class AutomationService {
   }
 
   // Default Delegation Rules
-  private static getDefaultDelegationRules(sect: SectTypeType): DelegationRule[] {
+  private static getDefaultDelegationRules(_legacy: LegacyTypeType): DelegationRule[] {
     return [
       {
         id: 'routine_maintenance',
@@ -179,7 +178,7 @@ export class AutomationService {
   }
 
   // Default Emergency Protocols
-  private static getDefaultEmergencyProtocols(sect: SectTypeType): Record<string, string> {
+  private static getDefaultEmergencyProtocols(legacy: LegacyTypeType): Record<string, string> {
     const baseProtocols = {
       'hull_breach': 'seal_compartments_evacuate_affected_areas',
       'life_support_failure': 'activate_emergency_systems_reduce_population_activity',
@@ -189,8 +188,8 @@ export class AutomationService {
       'system_cascade_failure': 'activate_all_emergency_protocols_wake_leadership'
     };
 
-    // Add sect-specific protocols
-    switch (sect) {
+    // Add legacy-specific protocols
+    switch (legacy) {
       case 'preservers':
         return {
           ...baseProtocols,
@@ -220,7 +219,7 @@ export class AutomationService {
   // Assign Dynasties to Council Positions
   static assignCouncilPositions(
     dynasties: Dynasty[],
-    automationConfig: AutomationConfig
+    _automationConfig: AutomationConfig
   ): CouncilMember[] {
     const councilPositions = [
       { role: 'Chief Administrator', authority: ['resources', 'population', 'general'], priority: 'leadership' },
@@ -326,7 +325,7 @@ export class AutomationService {
   // Process Automated Decision Making
   static processAutomatedDecisions(
     mission: GenerationalMission,
-    timeElapsed: number
+    _timeElapsed: number
   ): AIDecision[] {
     const decisions: AIDecision[] = [];
     const config = mission.automationConfig;

@@ -1,25 +1,19 @@
-// services/SectService.ts
+// services/LegacyService.ts
 import type {
   GenerationalMission,
-  Dynasty,
-  PopulationCohort,
   ExtendedResources,
-  MissionEvent,
-  EventOutcome,
-  PopulationEffect,
-  SectModification
+  PopulationEffect
 } from '../types/generationalMissions';
-import type { SectTypeType, CohortTypeType } from '../types/enums';
-import Logger from '../utils/logger';
+import type { LegacyTypeType } from '../types/enums';
 
-export class SectService {
-  // Core Sect Mechanics Implementation
+export class LegacyService {
+  // Core Legacy Mechanics Implementation
 
   // Preservers: Stability vs Stagnation
   static processPreserversDialemma(
     mission: GenerationalMission,
     choice: 'tradition' | 'adaptation' | 'compromise'
-  ): SectDialemmaResult {
+  ): LegacyDilemmaResult {
     const preserverMetrics = this.getPreserverMetrics(mission);
 
     switch (choice) {
@@ -50,7 +44,7 @@ export class SectService {
             'Cultural purity maintained',
             preserverMetrics.traditionSupport < 0.4 ? 'Growing underground adaptation movement' : ''
           ].filter(Boolean),
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             traditionPoints: 20,
             adaptationPressure: 10
           }
@@ -83,7 +77,7 @@ export class SectService {
             'Improved adaptability',
             preserverMetrics.traditionSupport > 0.6 ? 'Traditional faction forms resistance' : ''
           ].filter(Boolean),
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             traditionPoints: -15,
             adaptationPressure: -10,
             culturalSchismRisk: preserverMetrics.traditionSupport > 0.6 ? 25 : 5
@@ -110,7 +104,7 @@ export class SectService {
             'Gradual cultural evolution',
             'Delayed decision making in future crises'
           ],
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             traditionPoints: 5,
             adaptationPressure: 5,
             compromiseDebt: 10 // Future decisions become harder
@@ -126,7 +120,7 @@ export class SectService {
   static processAdaptorsEvolution(
     mission: GenerationalMission,
     enhancement: 'genetic' | 'cybernetic' | 'biological' | 'reject'
-  ): SectDialemmaResult {
+  ): LegacyDilemmaResult {
     const adaptorMetrics = this.getAdaptorMetrics(mission);
 
     switch (enhancement) {
@@ -155,7 +149,7 @@ export class SectService {
             'Fear of future modifications',
             'Medical complications'
           ],
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             mutationEvents: geneticSuccess ? 0 : 1,
             enhancementResistance: geneticSuccess ? -5 : 15,
             bodyHorrorRisk: geneticSuccess ? 5 : 20
@@ -186,7 +180,7 @@ export class SectService {
             'Cybernetic rejection syndrome',
             'Technology dependency issues'
           ],
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             cyberneticIntegration: cyberneticSuccess ? 20 : -10,
             humanityDrift: cyberneticSuccess ? 10 : 5
           }
@@ -216,7 +210,7 @@ export class SectService {
             'Biological system rejection',
             'Increased medical needs'
           ],
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             biologicalIntegration: biologicalSuccess ? 25 : -15,
             bodyHorrorRisk: biologicalSuccess ? 3 : 15
           }
@@ -240,7 +234,7 @@ export class SectService {
             'Delayed adaptation progress',
             adaptorMetrics.enhancementPressure > 0.7 ? 'Rogue enhancement groups may form' : ''
           ].filter(Boolean),
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             enhancementPressure: 15,
             purityFactionStrength: 10
           }
@@ -255,7 +249,7 @@ export class SectService {
   static processWanderersSurvival(
     mission: GenerationalMission,
     action: 'raid' | 'trade' | 'scavenge' | 'conserve'
-  ): SectDialemmaResult {
+  ): LegacyDilemmaResult {
     const wandererMetrics = this.getWandererMetrics(mission);
 
     switch (action) {
@@ -288,7 +282,7 @@ export class SectService {
             'Potential retaliation from target',
             'Crew questions leadership'
           ],
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             piracyReputation: raidSuccess ? (10 + raidSeverity * 20) : 5,
             moralCode: -(5 + raidSeverity * 10),
             existentialDread: raidSuccess ? -5 : 10
@@ -320,7 +314,7 @@ export class SectService {
             'Decreased trust from trading partners',
             'Limited future trade options'
           ],
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             tradeReputation: tradeSuccess ? 5 : -3,
             moralCode: tradeSuccess ? 2 : -1,
             existentialDread: tradeSuccess ? -2 : 3
@@ -349,7 +343,7 @@ export class SectService {
             'Improved scavenging capabilities',
             scavengeFind > 0.8 ? 'Discovered valuable technology cache' : ''
           ].filter(Boolean),
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             scavengingSkill: 3,
             resourceConservation: 2,
             existentialDread: -1
@@ -376,7 +370,7 @@ export class SectService {
             'Improved resource efficiency',
             wandererMetrics.existentialDread > 50 ? 'Growing despair over endless journey' : ''
           ].filter(Boolean),
-          sectSpecificEffects: {
+          legacySpecificEffects: {
             resourceConservation: 5,
             survivalSkills: 3,
             existentialDread: wandererMetrics.existentialDread > 50 ? 8 : 2
@@ -391,7 +385,6 @@ export class SectService {
   // Get Preservers Specific Metrics
   private static getPreserverMetrics(mission: GenerationalMission): PreserverMetrics {
     const culturalDrift = mission.resources.culturalDrift || 0;
-    const unity = mission.resources.unity || 0.5;
 
     return {
       traditionSupport: Math.max(0, 1 - culturalDrift - (mission.currentYear / mission.estimatedDuration)),
@@ -416,7 +409,7 @@ export class SectService {
 
   // Get Wanderers Specific Metrics
   private static getWandererMetrics(mission: GenerationalMission): WandererMetrics {
-    // These would be stored as sect-specific resources in a full implementation
+    // These would be stored as legacy-specific resources in a full implementation
     return {
       resourceScarcity: this.calculateResourceScarcity(mission.resources),
       piracyReputation: 20, // Would be tracked over time
@@ -438,9 +431,9 @@ export class SectService {
     return Math.max(0, 1 - avgScarcity);
   }
 
-  // Apply Sect-Specific Failure Conditions
-  static checkSectFailureConditions(mission: GenerationalMission): SectFailureCheck {
-    switch (mission.sect) {
+  // Apply Legacy-Specific Failure Conditions
+  static checkLegacyFailureConditions(mission: GenerationalMission): LegacyFailureCheck {
+    switch (mission.legacy) {
       case 'preservers':
         return this.checkPreserversFailure(mission);
       case 'adaptors':
@@ -453,10 +446,10 @@ export class SectService {
   }
 
   // Check Preservers Failure: Cultural Collapse
-  private static checkPreserversFailure(mission: GenerationalMission): SectFailureCheck {
+  private static checkPreserversFailure(mission: GenerationalMission): LegacyFailureCheck {
     const culturalDrift = mission.resources.culturalDrift || 0;
     const unity = mission.resources.unity || 0.5;
-    const traditionPoints = 50; // Would be tracked in sect-specific data
+    const traditionPoints = 50; // Would be tracked in legacy-specific data
 
     const riskFactors = [];
     let riskLevel = 0;
@@ -490,7 +483,7 @@ export class SectService {
   }
 
   // Check Adaptors Failure: Humanity Loss
-  private static checkAdaptorsFailure(mission: GenerationalMission): SectFailureCheck {
+  private static checkAdaptorsFailure(mission: GenerationalMission): LegacyFailureCheck {
     const adaptationLevel = mission.resources.adaptationLevel || 0;
     const unity = mission.resources.unity || 0.5;
     const bodyHorrorEvents = 2; // Would be tracked
@@ -527,7 +520,7 @@ export class SectService {
   }
 
   // Check Wanderers Failure: Fleet Dissolution
-  private static checkWanderersFailure(mission: GenerationalMission): SectFailureCheck {
+  private static checkWanderersFailure(mission: GenerationalMission): LegacyFailureCheck {
     const fuel = mission.resources.fuel || 0;
     const unity = mission.resources.unity || 0.5;
     const existentialDread = 40; // Would be tracked
@@ -569,9 +562,9 @@ export class SectService {
     return { isAtRisk, riskLevel, warnings, failureType: 'fleet_dissolution' };
   }
 
-  // Get Sect-Specific Event Modifiers
-  static getSectEventModifiers(sect: SectTypeType, eventCategory: string): number {
-    const modifiers: Record<SectTypeType, Record<string, number>> = {
+  // Get Legacy-Specific Event Modifiers
+  static getLegacyEventModifiers(legacy: LegacyTypeType, eventCategory: string): number {
+    const modifiers: Record<LegacyTypeType, Record<string, number>> = {
       preservers: {
         'cultural': 0.3,
         'tradition': 0.4,
@@ -595,16 +588,16 @@ export class SectService {
       }
     };
 
-    return modifiers[sect][eventCategory] || 0;
+    return modifiers[legacy][eventCategory] || 0;
   }
 }
 
 // Helper Interfaces
-interface SectDialemmaResult {
+interface LegacyDilemmaResult {
   resourceChanges: Partial<ExtendedResources>;
   populationEffects: PopulationEffect[];
   longTermConsequences: string[];
-  sectSpecificEffects: Record<string, number>;
+  legacySpecificEffects: Record<string, number>;
 }
 
 interface PreserverMetrics {
@@ -628,7 +621,7 @@ interface WandererMetrics {
   fleetCohesion: number;
 }
 
-interface SectFailureCheck {
+interface LegacyFailureCheck {
   isAtRisk: boolean;
   riskLevel: number;
   warnings: string[];

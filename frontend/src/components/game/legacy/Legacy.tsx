@@ -2,6 +2,7 @@ import React from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
 import { UI_CONSTANTS } from '../../../constants/uiConstants';
 import type { CrewMember } from '../../../types/game';
+import type { CrewMemberId } from '../../../types/branded';
 
 const Legacy: React.FC = () => {
   const { crew, legacy, selectHeir } = useGameStore();
@@ -9,7 +10,7 @@ const Legacy: React.FC = () => {
   const captain = crew.find(c => c.role === 'Captain');
   const potentialHeirs = crew.filter(member => member.role !== 'Captain' && member.age < 50);
 
-  const handleSelectHeir = (heirId: number) => {
+  const handleSelectHeir = (heirId: CrewMemberId) => {
     selectHeir(heirId);
   };
 

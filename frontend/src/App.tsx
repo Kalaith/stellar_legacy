@@ -11,7 +11,7 @@ import Market from './components/game/market/Market';
 import Legacy from './components/game/legacy/Legacy';
 import { MissionCommandCenter } from './components/game/missions/MissionCommandCenter';
 import DynastyHall from './components/game/DynastyHall';
-import SectRelations from './components/game/SectRelations';
+import LegacyRelations from './components/game/LegacyRelations';
 import CulturalEvolution from './components/game/CulturalEvolution';
 import NotificationSystem from './components/ui/NotificationSystem';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -23,10 +23,10 @@ const App: React.FC = () => {
     initializeGame,
     dynasties,
     dynastyAction,
-    sectRelations,
-    playerSect,
-    playerSectAffinity,
-    sectAction,
+    legacyRelations,
+    playerLegacy,
+    playerLegacyAffinity,
+    legacyAction,
     culturalEvolution,
     currentGeneration,
     culturalAction,
@@ -38,7 +38,7 @@ const App: React.FC = () => {
 
     // Initialize dynasties if none exist
     if (dynasties.length === 0) {
-      initializeDynasties('preservers'); // Default to preservers sect
+      initializeDynasties('preservers'); // Default to preservers legacy
     }
 
     return () => {
@@ -65,13 +65,13 @@ const App: React.FC = () => {
         return <MissionCommandCenter />;
       case 'dynasty-hall':
         return <DynastyHall dynasties={dynasties} onDynastyAction={dynastyAction} />;
-      case 'sect-relations':
+      case 'legacy-relations':
         return (
-          <SectRelations
-            sectRelations={sectRelations}
-            playerSect={playerSect}
-            playerSectAffinity={playerSectAffinity}
-            onSectAction={sectAction}
+          <LegacyRelations
+            legacyRelations={legacyRelations}
+            playerLegacy={playerLegacy}
+            playerLegacyAffinity={playerLegacyAffinity}
+            onLegacyAction={legacyAction}
           />
         );
       case 'cultural-evolution':

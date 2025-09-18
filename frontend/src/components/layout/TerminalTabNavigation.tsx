@@ -1,7 +1,6 @@
 // components/layout/TerminalTabNavigation.tsx
 import React from 'react';
 import { useTabNavigation } from '../../hooks/useTabNavigation';
-import { UI_CONSTANTS } from '../../constants/uiConstants';
 import { generateTerminalBorder } from '../../utils/terminalBorders';
 
 const TerminalTabNavigation: React.FC = React.memo(() => {
@@ -18,7 +17,7 @@ const TerminalTabNavigation: React.FC = React.memo(() => {
       case 'legacy': return '⟡';        // Legacy/Records
       case 'mission-command': return '⟐'; // Command
       case 'dynasty-hall': return '⬢';   // Dynasty
-      case 'sect-relations': return '◎';  // Relations
+      case 'legacy-relations': return '◎';  // Legacy Relations
       case 'cultural-evolution': return '⟡'; // Culture
       default: return '▫';
     }

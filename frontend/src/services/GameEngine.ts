@@ -1,6 +1,7 @@
 // services/GameEngine.ts
 import type { CrewMember, Resources, Ship, StarSystem, Planet } from '../types/game';
-import type { GameOperationResult, GameOperationError } from '../types/errors';
+import type { GameOperationResult } from '../types/errors';
+import { GameOperationError } from '../types/errors';
 import { CrewIdGenerator } from '../types/branded';
 import { GAME_CONSTANTS } from '../constants/gameConstants';
 import { ResourceService } from './ResourceService';

@@ -1,9 +1,9 @@
 // components/game/missions/MissionCommandCenter.tsx
 import React, { useState } from 'react';
-import { useGenerationalMissionStore, useCurrentMission, useActiveEvents } from '../../../stores/useGenerationalMissionStore';
+import { useGenerationalMissionStore, useActiveEvents } from '../../../stores/useGenerationalMissionStore';
 import { TerminalWindow, TerminalText, TerminalButton, TerminalSelect, TerminalInput, TerminalProgress, TerminalTable } from '../../ui/TerminalWindow';
 import type { GenerationalMission, MissionEvent } from '../../../types/generationalMissions';
-import type { SectTypeType, MissionObjectiveType } from '../../../types/enums';
+import type { LegacyTypeType, MissionObjectiveType } from '../../../types/enums';
 
 interface MissionCommandCenterProps {
   className?: string;
@@ -27,7 +27,7 @@ export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({ clas
   const [showCreateMission, setShowCreateMission] = useState(false);
   const [newMissionConfig, setNewMissionConfig] = useState({
     name: '',
-    sect: 'preservers' as SectTypeType,
+    legacy: 'preservers' as LegacyTypeType,
     objective: 'colonization' as MissionObjectiveType,
     targetSystemId: 'system_1',
     estimatedDuration: 200,
@@ -155,7 +155,7 @@ const TerminalMissionCard: React.FC<{
             {mission.name.toUpperCase()}
           </TerminalText>
           <div className="terminal-text dim">
-            {mission.sect.toUpperCase()} • {mission.objective.toUpperCase()}
+            {mission.legacy.toUpperCase()} • {mission.objective.toUpperCase()}
           </div>
           <div className="terminal-text dim">
             YEAR {mission.currentYear}/{mission.estimatedDuration}
@@ -392,10 +392,10 @@ const TerminalCreateMission: React.FC<{
           </div>
 
           <div>
-            <TerminalText variant="bright">SECT ASSIGNMENT:</TerminalText>
+            <TerminalText variant="bright">LEGACY ASSIGNMENT:</TerminalText>
             <TerminalSelect
-              value={config.sect}
-              onChange={(value) => onChange({ ...config, sect: value })}
+              value={config.legacy}
+              onChange={(value) => onChange({ ...config, legacy: value })}
               options={[
                 { value: 'preservers', label: 'PRESERVERS' },
                 { value: 'adaptors', label: 'ADAPTORS' },

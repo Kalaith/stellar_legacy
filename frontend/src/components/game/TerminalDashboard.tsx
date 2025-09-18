@@ -263,7 +263,7 @@ const TerminalDashboard: React.FC = () => {
               <div className="terminal-list">
                 {activeMissionsList.slice(0, 3).map((mission, index) => (
                   <div key={index} className="terminal-list-item">
-                    {mission.name.toUpperCase()} - {mission.sect.toUpperCase()}
+                    {mission.name.toUpperCase()} - {mission.legacy.toUpperCase()}
                     <div className="terminal-text dim">
                       YEAR {mission.currentYear}/{mission.estimatedDuration}
                     </div>

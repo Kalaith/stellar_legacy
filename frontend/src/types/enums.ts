@@ -8,7 +8,7 @@ export const TabId = {
   LEGACY: 'legacy',
   MISSION_COMMAND: 'mission-command',
   DYNASTY_HALL: 'dynasty-hall',
-  SECT_RELATIONS: 'sect-relations',
+  LEGACY_RELATIONS: 'legacy-relations',
   CULTURAL_EVOLUTION: 'cultural-evolution'
 } as const;
 
@@ -70,13 +70,13 @@ export const ComponentCategory = {
 export type ComponentCategoryType = typeof ComponentCategory[keyof typeof ComponentCategory];
 
 // Generational Mission Types
-export const SectType = {
+export const LegacyType = {
   PRESERVERS: 'preservers',
   ADAPTORS: 'adaptors',
   WANDERERS: 'wanderers'
 } as const;
 
-export type SectTypeType = typeof SectType[keyof typeof SectType];
+export type LegacyTypeType = typeof LegacyType[keyof typeof LegacyType];
 
 export const CohortType = {
   ENGINEERS: 'engineers',

@@ -5,12 +5,9 @@ import type {
   StoryThread,
   PopulationCohort,
   AIDecision,
-  AIPerformance,
-  AutomationConfig,
-  CouncilMember,
   MissionEvent
 } from '../types/generationalMissions';
-import type { SectTypeType, CohortTypeType } from '../types/enums';
+import type { LegacyTypeType, CohortTypeType } from '../types/enums';
 import Logger from '../utils/logger';
 
 export class DynastyService {
@@ -51,14 +48,14 @@ export class DynastyService {
 
   // Generate Initial Dynasties for a Mission
   static generateInitialDynasties(
-    sect: SectTypeType,
+    legacy: LegacyTypeType,
     populationSize: number
   ): Dynasty[] {
     const dynastyCount = Math.min(8, Math.max(5, Math.floor(populationSize / 5000)));
     const dynasties: Dynasty[] = [];
 
     for (let i = 0; i < dynastyCount; i++) {
-      const dynasty = this.createDynasty(sect, i === 0); // First dynasty starts as leaders
+      const dynasty = this.createDynasty(legacy, i === 0); // First dynasty starts as leaders
       dynasties.push(dynasty);
     }
 
@@ -66,15 +63,15 @@ export class DynastyService {
   }
 
   // Create a Single Dynasty
-  private static createDynasty(sect: SectTypeType, isLeadership: boolean = false): Dynasty {
-    const names = this.DYNASTY_NAMES[sect];
-    const traits = this.TRAITS[sect];
+  private static createDynasty(legacy: LegacyTypeType, isLeadership: boolean = false): Dynasty {
+    const names = this.DYNASTY_NAMES[legacy];
+    const traits = this.TRAITS[legacy];
     const name = names[Math.floor(Math.random() * names.length)];
     const specialization = isLeadership ?
       'Leadership' :
       this.SPECIALIZATIONS[Math.floor(Math.random() * this.SPECIALIZATIONS.length)];
 
-    const leader = this.generateDynastyMember(name, specialization, true, sect);
+    const leader = this.generateDynastyMember(name, specialization, true, legacy);
 
     const dynasty: Dynasty = {
       id: `dynasty_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -92,7 +89,7 @@ export class DynastyService {
     // Add 2-4 additional family members
     const memberCount = Math.floor(Math.random() * 3) + 2;
     for (let i = 0; i < memberCount; i++) {
-      const member = this.generateDynastyMember(name, specialization, false, sect);
+      const member = this.generateDynastyMember(name, specialization, false, legacy);
       dynasty.members.push(member);
     }
 
@@ -104,7 +101,7 @@ export class DynastyService {
     familyName: string,
     specialization: string,
     isLeader: boolean,
-    sect: SectTypeType
+    legacy: LegacyTypeType
   ): DynastyMember {
     const firstNames = [
       'Alex', 'Morgan', 'Casey', 'Jordan', 'Taylor', 'Riley',
@@ -120,7 +117,7 @@ export class DynastyService {
       age,
       role: isLeader ? 'Dynasty Head' : this.getRandomRole(specialization),
       skills: this.generateSkills(specialization, isLeader),
-      traits: this.generateMemberTraits(sect, specialization),
+      traits: this.generateMemberTraits(legacy, specialization),
       isLeader
     };
 
@@ -176,12 +173,12 @@ export class DynastyService {
   }
 
   // Generate Member Traits
-  private static generateMemberTraits(sect: SectTypeType, specialization: string): string[] {
-    const sectTraits = this.TRAITS[sect];
+  private static generateMemberTraits(legacy: LegacyTypeType, specialization: string): string[] {
+    const legacyTraits = this.TRAITS[legacy];
     const traits: string[] = [];
 
-    // Add one sect-specific trait
-    traits.push(sectTraits[Math.floor(Math.random() * sectTraits.length)]);
+    // Add one legacy-specific trait
+    traits.push(legacyTraits[Math.floor(Math.random() * legacyTraits.length)]);
 
     // Add specialization trait
     const specializationTraits: Record<string, string[]> = {
@@ -290,7 +287,6 @@ export class DynastyService {
     dynasty: Dynasty,
     context: any
   ): { action: string; reasoning: string; confidence: number } {
-    const leader = dynasty.currentLeader;
     const specialization = dynasty.specialization;
 
     // Simple AI decision logic based on specialization and current context
@@ -383,7 +379,7 @@ export class DynastyService {
         dynasty.familyLine,
         dynasty.specialization,
         false,
-        'preservers' // Default sect, should be passed in
+        'preservers' as LegacyTypeType // Default legacy, should be passed in
       );
       newMember.age = Math.floor(Math.random() * 25) + 18; // Young adults
       updatedDynasty.members.push(newMember);

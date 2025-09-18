@@ -4,12 +4,11 @@ import type {
   EventOutcome,
   PopulationEffect,
   GenerationalMission,
-  Dynasty,
-  ExtendedResources
+  PopulationCohort
 } from '../types/generationalMissions';
 import type {
   EventCategoryType,
-  SectTypeType,
+  LegacyTypeType,
   MissionPhaseType,
   CohortTypeType
 } from '../types/enums';
@@ -23,7 +22,7 @@ export class EventService {
     forceCategory?: EventCategoryType
   ): MissionEvent | null {
     const eventCategory = forceCategory || this.selectEventCategory(mission);
-    const eventTemplate = this.selectEventTemplate(eventCategory, mission.sect, mission.currentPhase);
+    const eventTemplate = this.selectEventTemplate(eventCategory, mission.legacy, mission.currentPhase);
 
     if (!eventTemplate) return null;
 
@@ -110,10 +109,10 @@ export class EventService {
   // Select Event Template
   private static selectEventTemplate(
     category: EventCategoryType,
-    sect: SectTypeType,
+    legacy: LegacyTypeType,
     phase: MissionPhaseType
   ): EventTemplate | null {
-    const templates = this.getEventTemplates(category, sect, phase);
+    const templates = this.getEventTemplates(category, legacy, phase);
 
     if (templates.length === 0) return null;
 
@@ -123,14 +122,14 @@ export class EventService {
   // Get Event Templates by Category and Context
   private static getEventTemplates(
     category: EventCategoryType,
-    sect: SectTypeType,
+    legacy: LegacyTypeType,
     phase: MissionPhaseType
   ): EventTemplate[] {
     const allTemplates = this.getAllEventTemplates();
 
     return allTemplates.filter(template =>
       template.category === category &&
-      (template.sectSpecific === null || template.sectSpecific === sect) &&
+      (template.legacySpecific === null || template.legacySpecific === legacy) &&
       template.validPhases.includes(phase)
     );
   }
@@ -153,7 +152,7 @@ export class EventService {
       })),
       affectedCohorts: template.affectedCohorts,
       affectedDynasties: template.affectedDynasties,
-      sectSpecific: template.sectSpecific,
+      legacySpecific: template.legacySpecific,
       triggeredAt: Date.now(),
       resolvedAt: null,
       generation: Math.floor(mission.currentYear / 25) + 1
@@ -169,7 +168,7 @@ export class EventService {
       '{YEAR}': mission.currentYear.toString(),
       '{GENERATION}': (Math.floor(mission.currentYear / 25) + 1).toString(),
       '{POPULATION}': mission.population.total.toString(),
-      '{SECT}': mission.sect,
+      '{SECT}': mission.legacy,
       '{PHASE}': mission.currentPhase
     };
 
@@ -222,7 +221,7 @@ export class EventService {
 
     // AI chooses best outcome based on mission state
     const chosenOutcome = this.selectBestOutcome(event.possibleOutcomes, mission);
-    const resolution = this.applyEventOutcome(chosenOutcome, mission, event);
+    const resolution = this.applyEventOutcome(chosenOutcome, mission);
 
     event.resolvedAt = Date.now();
 
@@ -250,7 +249,7 @@ export class EventService {
       };
     }
 
-    const resolution = this.applyEventOutcome(chosenOutcome, mission, event);
+    const resolution = this.applyEventOutcome(chosenOutcome, mission);
     event.resolvedAt = Date.now();
 
     Logger.info(`Player resolved event: ${event.title}`, {
@@ -313,7 +312,7 @@ export class EventService {
     score -= outcome.longTermConsequences.length * 100;
 
     // Sect-specific bonuses
-    const sectBonus = outcome.sectModifiers[mission.sect] || 0;
+    const sectBonus = outcome.legacyModifiers[mission.legacy] || 0;
     score += sectBonus * 200;
 
     return score;
@@ -322,8 +321,7 @@ export class EventService {
   // Apply Event Outcome to Mission
   private static applyEventOutcome(
     outcome: EventOutcome,
-    mission: GenerationalMission,
-    event: MissionEvent
+    mission: GenerationalMission
   ): EventResolution {
     const effects: string[] = [];
 
@@ -392,7 +390,7 @@ export class EventService {
         title: 'Critical System Failure',
         description: 'Multiple ship systems are failing simultaneously. Immediate action required.',
         category: 'immediate_crisis',
-        sectSpecific: null,
+        legacySpecific: null,
         validPhases: ['travel', 'operation'],
         autoResolutionDelay: 2, // 2 hours
         affectedCohorts: ['engineers', 'general'],
@@ -410,7 +408,7 @@ export class EventService {
             populationEffects: [],
             longTermConsequences: [],
             requirements: [],
-            sectModifiers: { preservers: 0.1, adaptors: 0.2, wanderers: 0.0 }
+            legacyModifiers: { preservers: 0.1, adaptors: 0.2, wanderers: 0.0 }
           },
           {
             id: 'jury_rig_solution',
@@ -424,7 +422,7 @@ export class EventService {
             populationEffects: [],
             longTermConsequences: ['Increased system instability'],
             requirements: [],
-            sectModifiers: { preservers: -0.1, adaptors: 0.0, wanderers: 0.3 }
+            legacyModifiers: { preservers: -0.1, adaptors: 0.0, wanderers: 0.3 }
           }
         ]
       },
@@ -435,7 +433,7 @@ export class EventService {
         title: 'Population Boom',
         description: 'Birth rates have increased significantly. Resources are being strained.',
         category: 'generational_challenge',
-        sectSpecific: null,
+        legacySpecific: null,
         validPhases: ['travel', 'operation'],
         autoResolutionDelay: 24, // 24 hours for long-term planning
         affectedCohorts: ['general'],
@@ -459,7 +457,7 @@ export class EventService {
             }],
             longTermConsequences: [],
             requirements: [],
-            sectModifiers: { preservers: 0.2, adaptors: 0.1, wanderers: -0.1 }
+            legacyModifiers: { preservers: 0.2, adaptors: 0.1, wanderers: -0.1 }
           },
           {
             id: 'population_control',
@@ -477,7 +475,7 @@ export class EventService {
             }],
             longTermConsequences: ['Social tension over reproductive rights'],
             requirements: [],
-            sectModifiers: { preservers: -0.2, adaptors: 0.1, wanderers: 0.0 }
+            legacyModifiers: { preservers: -0.2, adaptors: 0.1, wanderers: 0.0 }
           }
         ]
       },
@@ -488,7 +486,7 @@ export class EventService {
         title: 'Arrival at Target System',
         description: 'After {YEAR} years of travel, we have reached our destination.',
         category: 'mission_milestone',
-        sectSpecific: null,
+        legacySpecific: null,
         validPhases: ['travel'],
         autoResolutionDelay: 6,
         affectedCohorts: ['general'],
@@ -511,7 +509,7 @@ export class EventService {
             }],
             longTermConsequences: [],
             requirements: [],
-            sectModifiers: { preservers: 0.0, adaptors: 0.1, wanderers: 0.2 }
+            legacyModifiers: { preservers: 0.0, adaptors: 0.1, wanderers: 0.2 }
           }
         ]
       },
@@ -522,7 +520,7 @@ export class EventService {
         title: 'Cultural Schism',
         description: 'A fundamental disagreement about mission direction has divided the population.',
         category: 'legacy_moment',
-        sectSpecific: 'preservers',
+        legacySpecific: 'preservers',
         validPhases: ['travel', 'operation'],
         autoResolutionDelay: 48, // Very long for major decisions
         affectedCohorts: ['leaders', 'general'],
@@ -533,8 +531,7 @@ export class EventService {
             title: 'Preserve Traditional Ways',
             description: 'Maintain cultural purity despite challenges',
             resourceChanges: {
-              unity: -0.2,
-              culturalDrift: -0.1
+              unity: -0.2
             },
             populationEffects: [{
               cohortType: 'leaders',
@@ -544,15 +541,14 @@ export class EventService {
             }],
             longTermConsequences: ['Increased resistance to adaptation'],
             requirements: [],
-            sectModifiers: { preservers: 0.3, adaptors: 0.0, wanderers: 0.0 }
+            legacyModifiers: { preservers: 0.3, adaptors: 0.0, wanderers: 0.0 }
           },
           {
             id: 'cultural_adaptation',
             title: 'Allow Cultural Evolution',
             description: 'Permit society to adapt to new circumstances',
             resourceChanges: {
-              unity: 0.1,
-              culturalDrift: 0.2
+              unity: 0.1
             },
             populationEffects: [{
               cohortType: 'general',
@@ -562,7 +558,7 @@ export class EventService {
             }],
             longTermConsequences: ['Permanent cultural shift'],
             requirements: [],
-            sectModifiers: { preservers: -0.2, adaptors: 0.2, wanderers: 0.1 }
+            legacyModifiers: { preservers: -0.2, adaptors: 0.2, wanderers: 0.1 }
           }
         ]
       }
@@ -576,7 +572,7 @@ interface EventTemplate {
   title: string;
   description: string;
   category: EventCategoryType;
-  sectSpecific: SectTypeType | null;
+  legacySpecific: LegacyTypeType | null;
   validPhases: MissionPhaseType[];
   autoResolutionDelay: number; // hours
   affectedCohorts: CohortTypeType[];

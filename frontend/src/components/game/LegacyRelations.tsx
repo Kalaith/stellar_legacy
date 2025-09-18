@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { SectRelation, TradeAgreement } from '../../types/generationalMissions';
-import type { SectTypeType } from '../../types/enums';
-import { SectService } from '../../services/SectService';
+import type { LegacyRelation } from '../../types/generationalMissions';
+import type { LegacyTypeType } from '../../types/enums';
 
-interface SectRelationsProps {
-  sectRelations: SectRelation[];
-  playerSect: SectTypeType;
-  playerSectAffinity: Record<SectTypeType, number>;
-  onSectAction?: (targetSect: SectTypeType, action: string) => void;
+interface LegacyRelationsProps {
+  legacyRelations: LegacyRelation[];
+  playerLegacy: LegacyTypeType;
+  playerLegacyAffinity: Record<LegacyTypeType, number>;
+  onLegacyAction?: (targetLegacy: LegacyTypeType, action: string) => void;
 }
 
-export const SectRelations: React.FC<SectRelationsProps> = ({
-  sectRelations,
-  playerSect,
-  playerSectAffinity,
-  onSectAction
+export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
+  legacyRelations,
+  playerLegacy,
+  playerLegacyAffinity,
+  onLegacyAction
 }) => {
-  const [selectedSect, setSelectedSect] = useState<SectTypeType | null>(null);
+  const [selectedLegacy, setSelectedLegacy] = useState<LegacyTypeType | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'diplomacy' | 'trade' | 'threats'>('overview');
 
-  const sectInfo = {
+  const legacyInfo = {
     preservers: {
       name: 'The Preservers',
       description: 'Guardians of human tradition and cultural purity',
@@ -66,38 +65,38 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
     return 'text-red-400';
   };
 
-  const renderSectOverview = () => (
+  const renderLegacyOverview = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {(Object.keys(sectInfo) as SectTypeType[]).map((sect) => {
-          const info = sectInfo[sect];
-          const relation = sectRelations.find(r =>
-            (r.fromSect === playerSect && r.toSect === sect) ||
-            (r.fromSect === sect && r.toSect === playerSect)
+        {(Object.keys(legacyInfo) as LegacyTypeType[]).map((legacy) => {
+          const info = legacyInfo[legacy];
+          const relation = legacyRelations.find(r =>
+            (r.fromLegacy === playerLegacy && r.toLegacy === legacy) ||
+            (r.fromLegacy === legacy && r.toLegacy === playerLegacy)
           );
           const relationshipValue = relation?.relationship || 0;
           const status = getRelationshipStatus(relationshipValue);
-          const affinity = playerSectAffinity[sect] || 0;
+          const affinity = playerLegacyAffinity[legacy] || 0;
 
           return (
             <motion.div
-              key={sect}
+              key={legacy}
               className={`${info.bgColor} bg-opacity-20 border border-gray-600 rounded-lg p-4 cursor-pointer hover:border-opacity-60 transition-colors`}
               whileHover={{ scale: 1.02 }}
-              onClick={() => setSelectedSect(sect)}
+              onClick={() => setSelectedLegacy(legacy)}
             >
               <div className="flex justify-between items-start mb-3">
                 <h3 className={`text-lg font-bold ${info.color}`}>{info.name}</h3>
-                {sect === playerSect && (
+                {legacy === playerLegacy && (
                   <span className="px-2 py-1 bg-yellow-600 text-yellow-100 rounded text-xs">
-                    Your Sect
+                    Your Legacy
                   </span>
                 )}
               </div>
 
               <p className="text-gray-300 text-sm mb-3">{info.description}</p>
 
-              {sect !== playerSect && (
+              {legacy !== playerLegacy && (
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-400 text-sm">Relationship:</span>
@@ -121,7 +120,7 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
                 </div>
               )}
 
-              {sect === playerSect && (
+              {legacy === playerLegacy && (
                 <div className="text-sm text-gray-400">
                   Your civilization follows the {info.philosophy.toLowerCase()}
                 </div>
@@ -132,35 +131,35 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
       </div>
 
       <div className="bg-gray-800 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">◎ Sect Relations Matrix</h3>
+        <h3 className="text-xl font-semibold text-white mb-4">◎ Legacy Relations Matrix</h3>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-600">
                 <th className="text-left py-2 text-gray-400">From / To</th>
-                {(Object.keys(sectInfo) as SectTypeType[]).map(sect => (
-                  <th key={sect} className={`text-center py-2 ${sectInfo[sect].color}`}>
-                    {sectInfo[sect].name.split(' ')[1]}
+                {(Object.keys(legacyInfo) as LegacyTypeType[]).map(legacy => (
+                  <th key={legacy} className={`text-center py-2 ${legacyInfo[legacy].color}`}>
+                    {legacyInfo[legacy].name.split(' ')[1]}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {(Object.keys(sectInfo) as SectTypeType[]).map(fromSect => (
-                <tr key={fromSect} className="border-b border-gray-700">
-                  <td className={`py-2 font-medium ${sectInfo[fromSect].color}`}>
-                    {sectInfo[fromSect].name.split(' ')[1]}
+              {(Object.keys(legacyInfo) as LegacyTypeType[]).map(fromLegacy => (
+                <tr key={fromLegacy} className="border-b border-gray-700">
+                  <td className={`py-2 font-medium ${legacyInfo[fromLegacy].color}`}>
+                    {legacyInfo[fromLegacy].name.split(' ')[1]}
                   </td>
-                  {(Object.keys(sectInfo) as SectTypeType[]).map(toSect => {
-                    if (fromSect === toSect) {
-                      return <td key={toSect} className="text-center py-2 text-gray-500">—</td>;
+                  {(Object.keys(legacyInfo) as LegacyTypeType[]).map(toLegacy => {
+                    if (fromLegacy === toLegacy) {
+                      return <td key={toLegacy} className="text-center py-2 text-gray-500">—</td>;
                     }
-                    const relation = sectRelations.find(r =>
-                      r.fromSect === fromSect && r.toSect === toSect
+                    const relation = legacyRelations.find(r =>
+                      r.fromLegacy === fromLegacy && r.toLegacy === toLegacy
                     );
                     const status = getRelationshipStatus(relation?.relationship || 0);
                     return (
-                      <td key={toSect} className={`text-center py-2 ${status.color}`}>
+                      <td key={toLegacy} className={`text-center py-2 ${status.color}`}>
                         {relation?.relationship || 0}
                       </td>
                     );
@@ -174,13 +173,13 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
     </div>
   );
 
-  const renderSectDetail = () => {
-    if (!selectedSect) return null;
+  const renderLegacyDetail = () => {
+    if (!selectedLegacy) return null;
 
-    const info = sectInfo[selectedSect];
-    const relation = sectRelations.find(r =>
-      (r.fromSect === playerSect && r.toSect === selectedSect) ||
-      (r.fromSect === selectedSect && r.toSect === playerSect)
+    const info = legacyInfo[selectedLegacy];
+    const relation = legacyRelations.find(r =>
+      (r.fromLegacy === playerLegacy && r.toLegacy === selectedLegacy) ||
+      (r.fromLegacy === selectedLegacy && r.toLegacy === playerLegacy)
     );
 
     return (
@@ -191,7 +190,7 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
             <p className="text-gray-300">{info.description}</p>
           </div>
           <button
-            onClick={() => setSelectedSect(null)}
+            onClick={() => setSelectedLegacy(null)}
             className="text-gray-400 hover:text-white transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,15 +223,15 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            {renderSectTabContent(selectedSect, relation)}
+            {renderLegacyTabContent(selectedLegacy, relation)}
           </motion.div>
         </AnimatePresence>
       </div>
     );
   };
 
-  const renderSectTabContent = (sect: SectTypeType, relation?: SectRelation) => {
-    const info = sectInfo[sect];
+  const renderLegacyTabContent = (legacy: LegacyTypeType, relation?: LegacyRelation) => {
+    const info = legacyInfo[legacy];
 
     switch (activeTab) {
       case 'overview':
@@ -297,24 +296,24 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
         );
 
       case 'diplomacy':
-        return renderDiplomacyTab(sect, relation);
+        return renderDiplomacyTab(legacy, relation);
 
       case 'trade':
-        return renderTradeTab(sect, relation);
+        return renderTradeTab(legacy, relation);
 
       case 'threats':
-        return renderThreatsTab(sect);
+        return renderThreatsTab(legacy);
 
       default:
         return null;
     }
   };
 
-  const renderDiplomacyTab = (sect: SectTypeType, relation?: SectRelation) => {
-    if (sect === playerSect) {
+  const renderDiplomacyTab = (legacy: LegacyTypeType, relation?: LegacyRelation) => {
+    if (legacy === playerLegacy) {
       return (
         <div className="text-center py-8">
-          <div className="text-gray-400">This is your own sect.</div>
+          <div className="text-gray-400">This is your own legacy.</div>
           <div className="text-gray-300 mt-2">Manage internal affairs through other systems.</div>
         </div>
       );
@@ -345,30 +344,30 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
           )}
         </div>
 
-        {onSectAction && (
+        {onLegacyAction && (
           <div className="bg-gray-700 rounded-lg p-4">
             <h4 className="text-lg font-semibold text-green-400 mb-4">Diplomatic Actions</h4>
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => onSectAction(sect, 'improve_relations')}
+                onClick={() => onLegacyAction(legacy, 'improve_relations')}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm transition-colors"
               >
                 Improve Relations
               </button>
               <button
-                onClick={() => onSectAction(sect, 'formal_alliance')}
+                onClick={() => onLegacyAction(legacy, 'formal_alliance')}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
               >
                 Propose Alliance
               </button>
               <button
-                onClick={() => onSectAction(sect, 'cultural_exchange')}
+                onClick={() => onLegacyAction(legacy, 'cultural_exchange')}
                 className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors"
               >
                 Cultural Exchange
               </button>
               <button
-                onClick={() => onSectAction(sect, 'issue_warning')}
+                onClick={() => onLegacyAction(legacy, 'issue_warning')}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors"
               >
                 Issue Warning
@@ -395,7 +394,7 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
     );
   };
 
-  const renderTradeTab = (sect: SectTypeType, relation?: SectRelation) => (
+  const renderTradeTab = (legacy: LegacyTypeType, relation?: LegacyRelation) => (
     <div className="space-y-6">
       <div className="bg-gray-700 rounded-lg p-4">
         <h4 className="text-lg font-semibold text-green-400 mb-4">Active Trade Agreements</h4>
@@ -418,30 +417,30 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
         )}
       </div>
 
-      {onSectAction && (
+      {onLegacyAction && (
         <div className="bg-gray-700 rounded-lg p-4">
           <h4 className="text-lg font-semibold text-blue-400 mb-4">Trade Actions</h4>
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => onSectAction(sect, 'propose_trade')}
+              onClick={() => onLegacyAction(legacy, 'propose_trade')}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm transition-colors"
             >
               Propose Trade Deal
             </button>
             <button
-              onClick={() => onSectAction(sect, 'resource_exchange')}
+              onClick={() => onLegacyAction(legacy, 'resource_exchange')}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
             >
               Resource Exchange
             </button>
             <button
-              onClick={() => onSectAction(sect, 'technology_share')}
+              onClick={() => onLegacyAction(legacy, 'technology_share')}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors"
             >
               Technology Share
             </button>
             <button
-              onClick={() => onSectAction(sect, 'trade_embargo')}
+              onClick={() => onLegacyAction(legacy, 'trade_embargo')}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors"
             >
               Trade Embargo
@@ -452,9 +451,9 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
     </div>
   );
 
-  const renderThreatsTab = (sect: SectTypeType) => {
-    const getSectThreats = (sectType: SectTypeType) => {
-      switch (sectType) {
+  const renderThreatsTab = (legacy: LegacyTypeType) => {
+    const getLegacyThreats = (legacyType: LegacyTypeType) => {
+      switch (legacyType) {
         case 'preservers':
           return [
             { name: 'Cultural Collapse', level: 'Medium', description: 'Loss of traditional values' },
@@ -478,7 +477,7 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
       }
     };
 
-    const threats = getSectThreats(sect);
+    const threats = getLegacyThreats(legacy);
     const getThreatColor = (level: string) => {
       switch (level) {
         case 'High': return 'text-red-400';
@@ -510,21 +509,21 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
         <div className="bg-gray-700 rounded-lg p-4">
           <h4 className="text-lg font-semibold text-orange-400 mb-4">Mitigation Strategies</h4>
           <div className="text-sm text-gray-300 space-y-2">
-            {sect === 'preservers' && (
+            {legacy === 'preservers' && (
               <>
                 <div>• Gradual adaptation to maintain cultural continuity</div>
                 <div>• Inter-generational dialogue programs</div>
                 <div>• Selective technology adoption</div>
               </>
             )}
-            {sect === 'adaptors' && (
+            {legacy === 'adaptors' && (
               <>
                 <div>• Careful monitoring of enhancement procedures</div>
                 <div>• Ethical guidelines for modifications</div>
                 <div>• Baseline human preservation protocols</div>
               </>
             )}
-            {sect === 'wanderers' && (
+            {legacy === 'wanderers' && (
               <>
                 <div>• Fleet cohesion maintenance systems</div>
                 <div>• Resource sharing agreements</div>
@@ -540,15 +539,15 @@ export const SectRelations: React.FC<SectRelationsProps> = ({
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-400 mb-2">◎ Sect Relations</h1>
+        <h1 className="text-3xl font-bold text-blue-400 mb-2">◎ Legacy Relations</h1>
         <p className="text-gray-300">
           Navigate the complex relationships between the great ideological factions of humanity.
         </p>
       </div>
 
-      {selectedSect ? renderSectDetail() : renderSectOverview()}
+      {selectedLegacy ? renderLegacyDetail() : renderLegacyOverview()}
     </div>
   );
 };
 
-export default SectRelations;
+export default LegacyRelations;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { CulturalEvolution, CulturalChange } from '../../types/generationalMissions';
-import type { SectTypeType } from '../../types/enums';
+import type { CulturalEvolution } from '../../types/generationalMissions';
+import type { LegacyTypeType } from '../../types/enums';
 
 interface CulturalEvolutionProps {
   culturalEvolution: CulturalEvolution[];
@@ -14,10 +14,10 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   currentGeneration,
   onCulturalAction
 }) => {
-  const [selectedSect, setSelectedSect] = useState<SectTypeType | null>(null);
+  const [selectedLegacy, setSelectedLegacy] = useState<LegacyTypeType | null>(null);
   const [activeTab, setActiveTab] = useState<'timeline' | 'trends' | 'analysis' | 'decisions'>('timeline');
 
-  const sectInfo = {
+  const legacyInfo = {
     preservers: {
       name: 'The Preservers',
       color: 'text-blue-400',
@@ -66,16 +66,16 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {culturalEvolution.map((evolution) => {
-          const info = sectInfo[evolution.sect];
+          const info = legacyInfo[evolution.legacy];
           const totalChanges = evolution.majorChanges.length;
           const permanentChanges = evolution.majorChanges.filter(c => c.isPermanent).length;
 
           return (
             <motion.div
-              key={evolution.sect}
+              key={evolution.legacy}
               className={`${info.bgColor} bg-opacity-20 border border-gray-600 rounded-lg p-4 cursor-pointer hover:border-opacity-60 transition-colors`}
               whileHover={{ scale: 1.02 }}
-              onClick={() => setSelectedSect(evolution.sect)}
+              onClick={() => setSelectedLegacy(evolution.legacy)}
             >
               <div className="flex justify-between items-start mb-3">
                 <h3 className={`text-lg font-bold ${info.color}`}>{info.name}</h3>
@@ -158,13 +158,13 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
     </div>
   );
 
-  const renderSectDetail = () => {
-    if (!selectedSect) return null;
+  const renderLegacyDetail = () => {
+    if (!selectedLegacy) return null;
 
-    const evolution = culturalEvolution.find(e => e.sect === selectedSect);
+    const evolution = culturalEvolution.find(e => e.legacy === selectedLegacy);
     if (!evolution) return null;
 
-    const info = sectInfo[selectedSect];
+    const info = legacyInfo[selectedLegacy];
 
     return (
       <div className="bg-gray-800 rounded-lg p-6">
@@ -174,7 +174,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
             <p className="text-gray-300">Cultural Evolution Analysis</p>
           </div>
           <button
-            onClick={() => setSelectedSect(null)}
+            onClick={() => setSelectedLegacy(null)}
             className="text-gray-400 hover:text-white transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -316,7 +316,6 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   );
 
   const renderAnalysisTab = (evolution: CulturalEvolution) => {
-    const info = sectInfo[evolution.sect];
     const totalImpact = evolution.majorChanges.reduce((sum, change) => sum + Math.abs(change.impact), 0);
     const averageImpact = evolution.majorChanges.length > 0 ? totalImpact / evolution.majorChanges.length : 0;
 
@@ -433,25 +432,25 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
           </p>
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => onCulturalAction('preserve_traditions', { sect: evolution.sect })}
+              onClick={() => onCulturalAction('preserve_traditions', { legacy: evolution.legacy })}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
             >
               Preserve Traditions
             </button>
             <button
-              onClick={() => onCulturalAction('encourage_innovation', { sect: evolution.sect })}
+              onClick={() => onCulturalAction('encourage_innovation', { legacy: evolution.legacy })}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm transition-colors"
             >
               Encourage Innovation
             </button>
             <button
-              onClick={() => onCulturalAction('cultural_festival', { sect: evolution.sect })}
+              onClick={() => onCulturalAction('cultural_festival', { legacy: evolution.legacy })}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors"
             >
               Cultural Festival
             </button>
             <button
-              onClick={() => onCulturalAction('generational_dialogue', { sect: evolution.sect })}
+              onClick={() => onCulturalAction('generational_dialogue', { legacy: evolution.legacy })}
               className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded text-sm transition-colors"
             >
               Generational Dialogue
@@ -463,21 +462,21 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
           <h4 className="text-lg font-semibold text-green-400 mb-4">Stabilization Actions</h4>
           <div className="grid grid-cols-1 gap-3">
             <button
-              onClick={() => onCulturalAction('cultural_census', { sect: evolution.sect })}
+              onClick={() => onCulturalAction('cultural_census', { legacy: evolution.legacy })}
               className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded text-sm transition-colors text-left"
             >
               <div className="font-medium">Cultural Census</div>
               <div className="text-xs text-indigo-200">Assess current cultural state and trends</div>
             </button>
             <button
-              onClick={() => onCulturalAction('cultural_education', { sect: evolution.sect })}
+              onClick={() => onCulturalAction('cultural_education', { legacy: evolution.legacy })}
               className="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded text-sm transition-colors text-left"
             >
               <div className="font-medium">Cultural Education Program</div>
               <div className="text-xs text-teal-200">Reinforce core values and beliefs</div>
             </button>
             <button
-              onClick={() => onCulturalAction('cultural_reform', { sect: evolution.sect })}
+              onClick={() => onCulturalAction('cultural_reform', { legacy: evolution.legacy })}
               className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm transition-colors text-left"
             >
               <div className="font-medium">Cultural Reform Initiative</div>
@@ -494,14 +493,14 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
             </p>
             <div className="grid grid-cols-1 gap-3">
               <button
-                onClick={() => onCulturalAction('cultural_restoration', { sect: evolution.sect })}
+                onClick={() => onCulturalAction('cultural_restoration', { legacy: evolution.legacy })}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors text-left"
               >
                 <div className="font-medium">Cultural Restoration</div>
                 <div className="text-xs text-red-200">Attempt to return to baseline culture</div>
               </button>
               <button
-                onClick={() => onCulturalAction('accept_evolution', { sect: evolution.sect })}
+                onClick={() => onCulturalAction('accept_evolution', { legacy: evolution.legacy })}
                 className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors text-left"
               >
                 <div className="font-medium">Accept Evolution</div>
@@ -523,7 +522,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
         </p>
       </div>
 
-      {selectedSect ? renderSectDetail() : renderOverview()}
+      {selectedLegacy ? renderLegacyDetail() : renderOverview()}
     </div>
   );
 };

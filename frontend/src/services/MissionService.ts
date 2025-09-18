@@ -1,21 +1,17 @@
 // services/MissionService.ts
 import type {
   GenerationalMission,
-  Dynasty,
   PopulationCohort,
   ExtendedResources,
   GenerationalShip,
   Population,
-  MissionEvent,
   SuccessMetric,
   FailureRisk,
-  Milestone,
-  AutomationConfig
+  Milestone
 } from '../types/generationalMissions';
 import type {
-  SectTypeType,
+  LegacyTypeType,
   MissionObjectiveType,
-  MissionPhaseType,
   ShipClassType,
   ShipSizeType,
   CohortTypeType
@@ -23,7 +19,7 @@ import type {
 import { DynastyService } from './DynastyService';
 import { AutomationService } from './AutomationService';
 import { EventService } from './EventService';
-import { SectService } from './SectService';
+import { LegacyService } from './LegacyService';
 import Logger from '../utils/logger';
 
 export class MissionService {
@@ -32,7 +28,7 @@ export class MissionService {
     const ship = this.createGenerationalShip(config);
     const population = this.createMissionPopulation(config);
     const resources = this.createInitialResources(config);
-    const automationConfig = AutomationService.createDefaultAutomationConfig(config.sect);
+    const automationConfig = AutomationService.createDefaultAutomationConfig(config.legacy);
 
     // Assign council positions
     automationConfig.councilMembers = AutomationService.assignCouncilPositions(
@@ -43,7 +39,7 @@ export class MissionService {
     const mission: GenerationalMission = {
       id: `mission_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: config.name,
-      sect: config.sect,
+      legacy: config.legacy,
 
       // Mission Parameters
       objective: config.objective,
@@ -57,7 +53,7 @@ export class MissionService {
 
       // Resources and Production
       resources,
-      productionRates: this.calculateInitialProduction(config, population),
+      productionRates: this.calculateInitialProduction(population),
 
       // Mission Progress
       currentPhase: 'preparation',
@@ -83,7 +79,7 @@ export class MissionService {
     };
 
     Logger.info(`Created generational mission: ${mission.name}`, {
-      sect: mission.sect,
+      legacy: mission.legacy,
       objective: mission.objective,
       population: mission.population.total
     });
@@ -95,21 +91,21 @@ export class MissionService {
   private static createGenerationalShip(config: MissionCreationConfig): GenerationalShip {
     return {
       id: `ship_${Date.now()}`,
-      name: config.shipName || this.generateShipName(config.sect),
+      name: config.shipName || this.generateShipName(config.legacy),
       class: config.shipClass,
       size: config.shipSize,
       populationCapacity: this.calculatePopulationCapacity(config.shipSize),
       currentPopulation: config.populationSize,
       hullIntegrity: 1.0,
       systemsEfficiency: 0.9,
-      sectModifications: this.getSectModifications(config.sect),
-      aiSystems: this.getAISystems(config.sect),
+      legacyModifications: this.getLegacyModifications(config.legacy),
+      aiSystems: this.getAISystems(config.legacy),
       automationLevel: 0.8
     };
   }
 
   // Generate Ship Name
-  private static generateShipName(sect: SectTypeType): string {
+  private static generateShipName(legacy: LegacyTypeType): string {
     const names = {
       preservers: [
         'Heritage', 'Legacy', 'Tradition', 'Foundation', 'Covenant',
@@ -125,9 +121,9 @@ export class MissionService {
       ]
     };
 
-    const sectNames = names[sect];
+    const legacyNames = names[legacy];
     const prefix = ['GSV', 'SSV', 'CSV'][Math.floor(Math.random() * 3)]; // Generational/Seed/Colony Ship Vessel
-    const name = sectNames[Math.floor(Math.random() * sectNames.length)];
+    const name = legacyNames[Math.floor(Math.random() * legacyNames.length)];
 
     return `${prefix} ${name}`;
   }
@@ -144,8 +140,8 @@ export class MissionService {
     return capacities[size];
   }
 
-  // Get Sect Modifications
-  private static getSectModifications(sect: SectTypeType): any[] {
+  // Get Legacy Modifications
+  private static getLegacyModifications(legacy: LegacyTypeType): any[] {
     // Would return actual SectModification objects in full implementation
     const modifications = {
       preservers: ['Cultural Preservation Protocols', 'Traditional Life Support', 'Heritage Archives'],
@@ -153,31 +149,31 @@ export class MissionService {
       wanderers: ['Modular Fleet Configuration', 'Extended Range Systems', 'Resource Conservation Protocols']
     };
 
-    return modifications[sect].map((name, index) => ({
-      id: `mod_${sect}_${index}`,
+    return modifications[legacy].map((name, index) => ({
+      id: `mod_${legacy}_${index}`,
       name,
-      sect,
-      description: `${sect}-specific modification: ${name}`,
+      legacy,
+      description: `${legacy}-specific modification: ${name}`,
       effects: {},
       unlockRequirements: []
     }));
   }
 
   // Get AI Systems
-  private static getAISystems(sect: SectTypeType): string[] {
+  private static getAISystems(legacy: LegacyTypeType): string[] {
     const systems = {
       preservers: ['Cultural Archive AI', 'Tradition Compliance Monitor', 'Heritage Preservation System'],
       adaptors: ['Evolution Guidance AI', 'Adaptation Controller', 'Enhancement Risk Assessor'],
       wanderers: ['Navigation Coordinator', 'Resource Optimizer', 'Fleet Cohesion Monitor']
     };
 
-    return systems[sect];
+    return systems[legacy];
   }
 
   // Create Mission Population
   private static createMissionPopulation(config: MissionCreationConfig): Population {
-    const dynasties = DynastyService.generateInitialDynasties(config.sect, config.populationSize);
-    const cohorts = this.createPopulationCohorts(config.populationSize, config.sect);
+    const dynasties = DynastyService.generateInitialDynasties(config.legacy, config.populationSize);
+    const cohorts = this.createPopulationCohorts(config.populationSize, config.legacy);
 
     // Apply dynasty effects to cohorts
     const enhancedCohorts = DynastyService.assignDynasTiesToCohorts(dynasties, cohorts);
@@ -192,9 +188,9 @@ export class MissionService {
       unity: 0.8,
       stability: 0.75,
 
-      // Sect-Specific Metrics
-      sectLoyalty: 0.9,
-      adaptationLevel: config.sect === 'adaptors' ? 0.2 : 0.05,
+      // Legacy-Specific Metrics
+      legacyLoyalty: 0.9,
+      adaptationLevel: config.legacy === 'adaptors' ? 0.2 : 0.05,
       culturalDrift: 0.1,
 
       // Demographics
@@ -205,7 +201,7 @@ export class MissionService {
   }
 
   // Create Population Cohorts
-  private static createPopulationCohorts(populationSize: number, sect: SectTypeType): PopulationCohort[] {
+  private static createPopulationCohorts(populationSize: number, legacy: LegacyTypeType): PopulationCohort[] {
     const distributions = {
       preservers: {
         engineers: 0.15,
@@ -233,7 +229,7 @@ export class MissionService {
       }
     };
 
-    const distribution = distributions[sect];
+    const distribution = distributions[legacy];
     const cohorts: PopulationCohort[] = [];
 
     Object.entries(distribution).forEach(([type, percentage]) => {
@@ -290,15 +286,14 @@ export class MissionService {
       researchData: 0,
       geneticSamples: 0,
 
-      // Sect-Specific
+      // Legacy-Specific
       culturalDrift: 0.1,
-      adaptationLevel: config.sect === 'adaptors' ? 0.2 : 0.05
+      adaptationLevel: config.legacy === 'adaptors' ? 0.2 : 0.05
     };
   }
 
   // Calculate Initial Production Rates
   private static calculateInitialProduction(
-    config: MissionCreationConfig,
     population: Population
   ): Partial<ExtendedResources> {
     const farmerCount = population.cohorts.find(c => c.type === 'farmers')?.count || 0;
@@ -510,8 +505,8 @@ export class MissionService {
       }
     ];
 
-    // Add sect-specific risks
-    switch (config.sect) {
+    // Add legacy-specific risks
+    switch (config.legacy) {
       case 'preservers':
         risks.push({
           id: 'cultural_collapse',
@@ -586,14 +581,14 @@ export class MissionService {
       }
     }
 
-    // Check sect-specific failure conditions
-    const failureCheck = SectService.checkSectFailureConditions(mission);
+    // Check legacy-specific failure conditions
+    const failureCheck = LegacyService.checkLegacyFailureConditions(mission);
     if (failureCheck.isAtRisk) {
       updates.push(...failureCheck.warnings);
     }
 
     // Update success metrics
-    this.updateSuccessMetrics(mission, updates);
+    this.updateSuccessMetrics(mission);
 
     // Check mission completion
     this.checkMissionCompletion(mission, updates);
@@ -661,7 +656,7 @@ export class MissionService {
   }
 
   // Update Success Metrics
-  private static updateSuccessMetrics(mission: GenerationalMission, updates: string[]): void {
+  private static updateSuccessMetrics(mission: GenerationalMission): void {
     mission.successMetrics.forEach(metric => {
       switch (metric.id) {
         case 'population_survival':
@@ -726,7 +721,7 @@ export class MissionService {
 // Helper Interfaces
 interface MissionCreationConfig {
   name: string;
-  sect: SectTypeType;
+  legacy: LegacyTypeType;
   objective: MissionObjectiveType;
   targetSystemId: string;
   estimatedDuration: number; // years

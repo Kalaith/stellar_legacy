@@ -1,6 +1,8 @@
 // types/game.ts
-import type { TabIdType, SystemStatusType, NotificationTypeType, PlanetTypeType, CrewRoleType, ComponentCategoryType } from './enums';
+import type { TabIdType, SystemStatusType, NotificationTypeType, PlanetTypeType, CrewRoleType, ComponentCategoryType, LegacyTypeType } from './enums';
 import type { CrewMemberId, NotificationId, TradeRouteId } from './branded';
+
+export type { NotificationTypeType };
 export interface Resources {
   credits: number;
   energy: number;
@@ -153,13 +155,13 @@ export interface GameState extends GameData {
   activeMissions: string[]; // Mission IDs
   selectedMission: import('./generationalMissions').GenerationalMission | null;
 
-  // Sect Relations
-  sectRelations: import('./generationalMissions').SectRelation[];
-  playerSectAffinity: Record<import('../types/enums').SectTypeType, number>;
+  // Legacy Relations
+  legacyRelations: import('./generationalMissions').LegacyRelation[];
+  playerLegacyAffinity: Record<LegacyTypeType, number>;
 
   // Dynasty System
   dynasties: import('./generationalMissions').Dynasty[];
-  playerSect: import('../types/enums').SectTypeType;
+  playerLegacy: LegacyTypeType;
   currentGeneration: number;
   culturalEvolution: import('./generationalMissions').CulturalEvolution[];
 }

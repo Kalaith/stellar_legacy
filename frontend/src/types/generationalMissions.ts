@@ -1,6 +1,6 @@
 // types/generationalMissions.ts
 import type {
-  SectTypeType,
+  LegacyTypeType,
   CohortTypeType,
   MissionObjectiveType,
   MissionPhaseType,
@@ -62,8 +62,8 @@ export class Population {
   unity!: number;
   stability!: number;
 
-  // Sect-Specific Metrics
-  sectLoyalty!: number;
+  // Legacy-Specific Metrics
+  legacyLoyalty!: number;
   adaptationLevel!: number;
   culturalDrift!: number;
 
@@ -88,6 +88,8 @@ export class ExtendedResources {
   unity!: number;
   knowledge!: number;
   technology!: number;
+  culturalDrift!: number;
+  adaptationLevel!: number;
 
   // Ship Resources
   hullIntegrity!: number;
@@ -143,7 +145,7 @@ export class MissionEvent {
   // Context
   affectedCohorts!: string[];
   affectedDynasties!: string[];
-  sectSpecific!: SectTypeType | null;
+  legacySpecific!: LegacyTypeType | null;
 
   // Timing
   triggeredAt!: number;
@@ -163,7 +165,7 @@ export class EventOutcome {
 
   // Requirements
   requirements!: string[];
-  sectModifiers!: Record<SectTypeType, number>;
+  legacyModifiers!: Record<LegacyTypeType, number>;
 }
 
 export class PopulationEffect {
@@ -186,28 +188,40 @@ export class GenerationalShip {
   hullIntegrity!: number;
   systemsEfficiency!: number;
 
-  // Sect Modifications
-  sectModifications!: SectModification[];
+  // Legacy Modifications
+  legacyModifications!: LegacyModification[];
 
   // Automation Systems
   aiSystems!: string[];
   automationLevel!: number;
 }
 
-export class SectModification {
+export class LegacyModification {
   id!: string;
   name!: string;
-  sect!: SectTypeType;
+  legacy!: LegacyTypeType;
   description!: string;
   effects!: Record<string, number>;
   unlockRequirements!: string[];
+}
+
+// Backwards compatibility alias
+export class SectModification extends LegacyModification {
+  constructor() {
+    super();
+    // Map legacy to sect for compatibility
+    Object.defineProperty(this, 'sect', {
+      get() { return this.legacy; },
+      set(value) { this.legacy = value; }
+    });
+  }
 }
 
 // Mission System
 export class GenerationalMission {
   id!: string;
   name!: string;
-  sect!: SectTypeType;
+  legacy!: LegacyTypeType;
 
   // Mission Parameters
   objective!: MissionObjectiveType;
@@ -273,13 +287,30 @@ export class FailureRisk {
   isActive!: boolean;
 }
 
-// Sect Relations and Cultural Evolution
-export class SectRelation {
-  fromSect!: SectTypeType;
-  toSect!: SectTypeType;
+// Legacy Relations and Cultural Evolution
+export class LegacyRelation {
+  fromLegacy!: LegacyTypeType;
+  toLegacy!: LegacyTypeType;
   relationship!: number; // -100 to 100
   recentEvents!: string[];
   tradeAgreements!: TradeAgreement[];
+}
+
+// Backwards compatibility alias
+export class SectRelation extends LegacyRelation {
+  fromSect!: LegacyTypeType;
+  toSect!: LegacyTypeType;
+  constructor() {
+    super();
+    Object.defineProperty(this, 'fromSect', {
+      get() { return this.fromLegacy; },
+      set(value) { this.fromLegacy = value; }
+    });
+    Object.defineProperty(this, 'toSect', {
+      get() { return this.toLegacy; },
+      set(value) { this.toLegacy = value; }
+    });
+  }
 }
 
 export class TradeAgreement {
@@ -291,7 +322,7 @@ export class TradeAgreement {
 }
 
 export class CulturalEvolution {
-  sect!: SectTypeType;
+  legacy!: LegacyTypeType;
   baselineDeviation!: number;
   majorChanges!: CulturalChange[];
   currentTrends!: string[];

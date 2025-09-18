@@ -3,16 +3,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
   GenerationalMission,
-  MissionEvent,
-  Dynasty,
-  SectRelation,
-  ExtendedResources
+  LegacyRelation
 } from '../types/generationalMissions';
-import type { SectTypeType, MissionObjectiveType } from '../types/enums';
+import type { LegacyTypeType, MissionObjectiveType } from '../types/enums';
 import { MissionService } from '../services/MissionService';
 import { EventService } from '../services/EventService';
-import { SectService } from '../services/SectService';
-import { AutomationService } from '../services/AutomationService';
+import { LegacyService } from '../services/LegacyService';
 import Logger from '../utils/logger';
 
 interface GenerationalMissionStore {
@@ -20,8 +16,8 @@ interface GenerationalMissionStore {
   missions: GenerationalMission[];
   activeMissions: string[];
   selectedMission: GenerationalMission | null;
-  sectRelations: SectRelation[];
-  playerSectAffinity: Record<SectTypeType, number>;
+  legacyRelations: LegacyRelation[];
+  playerLegacyAffinity: Record<LegacyTypeType, number>;
 
   // UI State
   selectedEventId: string | null;
@@ -42,19 +38,19 @@ interface GenerationalMissionStore {
   updateAutomationConfig: (missionId: string, config: Partial<any>) => void;
   overrideAIDecision: (missionId: string, decisionId: string, override: any) => void;
 
-  // Actions - Sect Management
-  processSectDilemma: (missionId: string, choice: any) => void;
-  updateSectRelations: (fromSect: SectTypeType, toSect: SectTypeType, change: number) => void;
+  // Actions - Legacy Management
+  processLegacyDilemma: (missionId: string, choice: any) => void;
+  updateLegacyRelations: (fromLegacy: LegacyTypeType, toLegacy: LegacyTypeType, change: number) => void;
 
   // Utility Actions
   getAllActiveMissions: () => GenerationalMission[];
   getMissionsByObjective: (objective: MissionObjectiveType) => GenerationalMission[];
-  getMissionsBySect: (sect: SectTypeType) => GenerationalMission[];
+  getMissionsByLegacy: (legacy: LegacyTypeType) => GenerationalMission[];
 }
 
 interface MissionCreationConfig {
   name: string;
-  sect: SectTypeType;
+  legacy: LegacyTypeType;
   objective: MissionObjectiveType;
   targetSystemId: string;
   estimatedDuration: number;
@@ -70,30 +66,30 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       missions: [],
       activeMissions: [],
       selectedMission: null,
-      sectRelations: [
+      legacyRelations: [
         {
-          fromSect: 'preservers',
-          toSect: 'adaptors',
+          fromLegacy: 'preservers',
+          toLegacy: 'adaptors',
           relationship: -20,
           recentEvents: [],
           tradeAgreements: []
         },
         {
-          fromSect: 'preservers',
-          toSect: 'wanderers',
+          fromLegacy: 'preservers',
+          toLegacy: 'wanderers',
           relationship: 10,
           recentEvents: [],
           tradeAgreements: []
         },
         {
-          fromSect: 'adaptors',
-          toSect: 'wanderers',
+          fromLegacy: 'adaptors',
+          toLegacy: 'wanderers',
           relationship: -30,
           recentEvents: [],
           tradeAgreements: []
         }
       ],
-      playerSectAffinity: {
+      playerLegacyAffinity: {
         preservers: 0,
         adaptors: 0,
         wanderers: 0
@@ -118,11 +114,11 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
             selectedMission: mission
           }));
 
-          // Update sect affinity
-          get().updateSectRelations(config.sect, config.sect, 10);
+          // Update legacy affinity
+          get().updateLegacyRelations(config.legacy, config.legacy, 10);
 
           Logger.info(`Created generational mission: ${mission.name}`, {
-            sect: mission.sect,
+            legacy: mission.legacy,
             objective: mission.objective
           });
         } catch (error) {
@@ -167,12 +163,12 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           selectedMission: state.selectedMission?.id === missionId ? null : state.selectedMission
         }));
 
-        // Update sect affinity based on success
+        // Update legacy affinity based on success
         const affinityChange = mission.successLevel === 'complete' ? 20 :
                               mission.successLevel === 'partial' ? 10 :
                               mission.successLevel === 'pyrrhic' ? 5 : -10;
 
-        get().updateSectRelations(mission.sect, mission.sect, affinityChange);
+        get().updateLegacyRelations(mission.legacy, mission.legacy, affinityChange);
 
         Logger.info(`Completed mission: ${mission.name}`, {
           successLevel: mission.successLevel
@@ -243,27 +239,27 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         }));
       },
 
-      overrideAIDecision: (missionId: string, decisionId: string, override: any) => {
+      overrideAIDecision: (targetMissionId: string, decisionId: string, overrideData: unknown) => {
         // Implementation for overriding AI decisions
-        Logger.info(`Override AI decision: ${decisionId}`, { override });
+        Logger.info(`Override AI decision: ${decisionId}`, { targetMissionId, override: overrideData });
       },
 
-      // Sect Management Actions
-      processSectDilemma: (missionId: string, choice: any) => {
+      // Legacy Management Actions
+      processLegacyDilemma: (missionId: string, choice: 'tradition' | 'adaptation' | 'compromise' | 'genetic' | 'cybernetic' | 'biological' | 'reject' | 'raid' | 'trade' | 'scavenge' | 'conserve') => {
         const mission = get().missions.find(m => m.id === missionId);
         if (!mission) return;
 
         try {
           let result;
-          switch (mission.sect) {
+          switch (mission.legacy) {
             case 'preservers':
-              result = SectService.processPreserversDialemma(mission, choice);
+              result = LegacyService.processPreserversDialemma(mission, choice as 'tradition' | 'adaptation' | 'compromise');
               break;
             case 'adaptors':
-              result = SectService.processAdaptorsEvolution(mission, choice);
+              result = LegacyService.processAdaptorsEvolution(mission, choice as 'genetic' | 'cybernetic' | 'biological' | 'reject');
               break;
             case 'wanderers':
-              result = SectService.processWanderersSurvival(mission, choice);
+              result = LegacyService.processWanderersSurvival(mission, choice as 'raid' | 'trade' | 'scavenge' | 'conserve');
               break;
             default:
               return;
@@ -277,7 +273,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           });
 
           // Apply population effects
-          result.populationEffects.forEach(effect => {
+          result.populationEffects.forEach((effect: any) => {
             const cohort = mission.population.cohorts.find(c => c.type === effect.cohortType);
             if (cohort) {
               switch (effect.effectType) {
@@ -299,20 +295,20 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
             selectedMission: state.selectedMission?.id === missionId ? mission : state.selectedMission
           }));
 
-          Logger.info(`Processed sect dilemma for ${mission.sect}`, {
+          Logger.info(`Processed legacy dilemma for ${mission.legacy}`, {
             choice,
             consequences: result.longTermConsequences
           });
 
         } catch (error) {
-          Logger.error('Failed to process sect dilemma', error);
+          Logger.error('Failed to process legacy dilemma', error);
         }
       },
 
-      updateSectRelations: (fromSect: SectTypeType, toSect: SectTypeType, change: number) => {
+      updateLegacyRelations: (fromLegacy: LegacyTypeType, toLegacy: LegacyTypeType, change: number) => {
         set(state => ({
-          sectRelations: state.sectRelations.map(relation => {
-            if (relation.fromSect === fromSect && relation.toSect === toSect) {
+          legacyRelations: state.legacyRelations.map(relation => {
+            if (relation.fromLegacy === fromLegacy && relation.toLegacy === toLegacy) {
               return {
                 ...relation,
                 relationship: Math.max(-100, Math.min(100, relation.relationship + change))
@@ -320,9 +316,9 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
             }
             return relation;
           }),
-          playerSectAffinity: {
-            ...state.playerSectAffinity,
-            [fromSect]: Math.max(-100, Math.min(100, state.playerSectAffinity[fromSect] + change))
+          playerLegacyAffinity: {
+            ...state.playerLegacyAffinity,
+            [fromLegacy]: Math.max(-100, Math.min(100, state.playerLegacyAffinity[fromLegacy] + change))
           }
         }));
       },
@@ -336,8 +332,8 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         return get().missions.filter(mission => mission.objective === objective);
       },
 
-      getMissionsBySect: (sect: SectTypeType) => {
-        return get().missions.filter(mission => mission.sect === sect);
+      getMissionsByLegacy: (legacy: LegacyTypeType) => {
+        return get().missions.filter(mission => mission.legacy === legacy);
       }
     }),
     {
@@ -345,8 +341,8 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       partialize: (state) => ({
         missions: state.missions,
         activeMissions: state.activeMissions,
-        sectRelations: state.sectRelations,
-        playerSectAffinity: state.playerSectAffinity
+        legacyRelations: state.legacyRelations,
+        playerLegacyAffinity: state.playerLegacyAffinity
         // Don't persist UI state like selectedMission, selectedEventId
       })
     }
