@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { LegacyRelation } from '../../types/generationalMissions';
 import type { LegacyTypeType } from '../../types/enums';
+import { TerminalWindow, TerminalText, TerminalButton, TerminalTable, TerminalProgress } from '../ui/TerminalWindow';
 
 interface LegacyRelationsProps {
   legacyRelations: LegacyRelation[];
@@ -58,118 +58,106 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
     return { text: 'Enemy', color: 'text-red-600' };
   };
 
-  const getAffinityColor = (affinity: number) => {
-    if (affinity > 75) return 'text-green-400';
-    if (affinity > 50) return 'text-blue-400';
-    if (affinity > 25) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
   const renderLegacyOverview = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {(Object.keys(legacyInfo) as LegacyTypeType[]).map((legacy) => {
-          const info = legacyInfo[legacy];
-          const relation = legacyRelations.find(r =>
-            (r.fromLegacy === playerLegacy && r.toLegacy === legacy) ||
-            (r.fromLegacy === legacy && r.toLegacy === playerLegacy)
-          );
-          const relationshipValue = relation?.relationship || 0;
-          const status = getRelationshipStatus(relationshipValue);
-          const affinity = playerLegacyAffinity[legacy] || 0;
+    <div className="terminal-space-y">
+      <TerminalWindow title="LEGACY FACTIONS" statusLine="MONITORING">
+        <div className="terminal-grid cols-3">
+          {(Object.keys(legacyInfo) as LegacyTypeType[]).map((legacy) => {
+            const info = legacyInfo[legacy];
+            const relation = legacyRelations.find(r =>
+              (r.fromLegacy === playerLegacy && r.toLegacy === legacy) ||
+              (r.fromLegacy === legacy && r.toLegacy === playerLegacy)
+            );
+            const relationshipValue = relation?.relationship || 0;
+            const status = getRelationshipStatus(relationshipValue);
+            const affinity = playerLegacyAffinity[legacy] || 0;
 
-          return (
-            <motion.div
-              key={legacy}
-              className={`${info.bgColor} bg-opacity-20 border border-gray-600 rounded-lg p-4 cursor-pointer hover:border-opacity-60 transition-colors`}
-              whileHover={{ scale: 1.02 }}
-              onClick={() => setSelectedLegacy(legacy)}
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className={`text-lg font-bold ${info.color}`}>{info.name}</h3>
-                {legacy === playerLegacy && (
-                  <span className="px-2 py-1 bg-yellow-600 text-yellow-100 rounded text-xs">
-                    Your Legacy
-                  </span>
-                )}
+            return (
+              <div 
+                key={legacy}
+                className="cursor-pointer"
+                onClick={() => setSelectedLegacy(legacy)}
+              >
+                <TerminalWindow
+                  title={info.name.toUpperCase()}
+                  statusLine={legacy === playerLegacy ? 'YOUR LEGACY' : status.text.toUpperCase()}
+                  className={`hover:border-terminal-primary transition-colors ${
+                    legacy === playerLegacy ? 'border-terminal-warning' : ''
+                  }`}
+                  isActive={legacy === playerLegacy}
+                >
+                  <div className="terminal-space-y-sm">
+                    <TerminalText variant="secondary" className="text-sm">
+                      {info.description.toUpperCase()}
+                    </TerminalText>
+
+                    {legacy !== playerLegacy && (
+                      <div className="border-t border-terminal-border pt-2">
+                        <div className="terminal-flex between">
+                          <TerminalText variant="dim">RELATIONSHIP:</TerminalText>
+                          <TerminalText variant={
+                            relationshipValue > 50 ? 'success' :
+                            relationshipValue > 0 ? 'warning' : 'error'
+                          }>
+                            {status.text.toUpperCase()}
+                          </TerminalText>
+                        </div>
+                        
+                        <div className="terminal-flex between">
+                          <TerminalText variant="dim">YOUR AFFINITY:</TerminalText>
+                          <TerminalText variant={affinity > 50 ? 'success' : affinity > 25 ? 'warning' : 'error'}>
+                            {affinity}%
+                          </TerminalText>
+                        </div>
+
+                        <TerminalProgress
+                          value={Math.max(0, relationshipValue + 100)}
+                          max={200}
+                          ascii={true}
+                          variant={relationshipValue > 0 ? 'success' : 'error'}
+                        />
+                      </div>
+                    )}
+
+                    {legacy === playerLegacy && (
+                      <div className="border-t border-terminal-border pt-2">
+                        <TerminalText variant="warning" className="text-sm">
+                          PHILOSOPHY: {info.philosophy.toUpperCase()}
+                        </TerminalText>
+                      </div>
+                    )}
+                  </div>
+                </TerminalWindow>
               </div>
-
-              <p className="text-gray-300 text-sm mb-3">{info.description}</p>
-
-              {legacy !== playerLegacy && (
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 text-sm">Relationship:</span>
-                    <span className={`font-medium ${status.color}`}>{status.text}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 text-sm">Your Affinity:</span>
-                    <span className={`font-medium ${getAffinityColor(affinity)}`}>
-                      {affinity}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${
-                        relationshipValue > 50 ? 'bg-green-500' :
-                        relationshipValue > 0 ? 'bg-yellow-500' : 'bg-red-500'
-                      }`}
-                      style={{ width: `${Math.max(5, (relationshipValue + 100) / 2)}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {legacy === playerLegacy && (
-                <div className="text-sm text-gray-400">
-                  Your civilization follows the {info.philosophy.toLowerCase()}
-                </div>
-              )}
-            </motion.div>
-          );
-        })}
-      </div>
-
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">◎ Legacy Relations Matrix</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-600">
-                <th className="text-left py-2 text-gray-400">From / To</th>
-                {(Object.keys(legacyInfo) as LegacyTypeType[]).map(legacy => (
-                  <th key={legacy} className={`text-center py-2 ${legacyInfo[legacy].color}`}>
-                    {legacyInfo[legacy].name.split(' ')[1]}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {(Object.keys(legacyInfo) as LegacyTypeType[]).map(fromLegacy => (
-                <tr key={fromLegacy} className="border-b border-gray-700">
-                  <td className={`py-2 font-medium ${legacyInfo[fromLegacy].color}`}>
-                    {legacyInfo[fromLegacy].name.split(' ')[1]}
-                  </td>
-                  {(Object.keys(legacyInfo) as LegacyTypeType[]).map(toLegacy => {
-                    if (fromLegacy === toLegacy) {
-                      return <td key={toLegacy} className="text-center py-2 text-gray-500">—</td>;
-                    }
-                    const relation = legacyRelations.find(r =>
-                      r.fromLegacy === fromLegacy && r.toLegacy === toLegacy
-                    );
-                    const status = getRelationshipStatus(relation?.relationship || 0);
-                    return (
-                      <td key={toLegacy} className={`text-center py-2 ${status.color}`}>
-                        {relation?.relationship || 0}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            );
+          })}
         </div>
-      </div>
+      </TerminalWindow>
+
+      <TerminalWindow title="RELATIONS MATRIX" statusLine="DIPLOMATIC STATUS">
+        <TerminalTable
+          headers={['FROM/TO', ...Object.keys(legacyInfo).map(l => legacyInfo[l as LegacyTypeType].name.split(' ')[1].toUpperCase())]}
+          rows={
+            (Object.keys(legacyInfo) as LegacyTypeType[]).map(fromLegacy => [
+              legacyInfo[fromLegacy].name.split(' ')[1].toUpperCase(),
+              ...(Object.keys(legacyInfo) as LegacyTypeType[]).map(toLegacy => {
+                if (fromLegacy === toLegacy) {
+                  return <TerminalText variant="dim">—</TerminalText>;
+                }
+                const relation = legacyRelations.find(r =>
+                  r.fromLegacy === fromLegacy && r.toLegacy === toLegacy
+                );
+                const value = relation?.relationship || 0;
+                return (
+                  <TerminalText variant={value > 0 ? 'success' : value < 0 ? 'error' : 'warning'}>
+                    {value}
+                  </TerminalText>
+                );
+              })
+            ])
+          }
+        />
+      </TerminalWindow>
     </div>
   );
 
@@ -183,50 +171,51 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
     );
 
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-6">
+      <TerminalWindow title={`◎ ${info.name.toUpperCase()} - DIPLOMATIC INTERFACE`} statusLine="DETAILED ANALYSIS">
+        <div className="terminal-flex between mb-4">
           <div>
-            <h2 className={`text-2xl font-bold ${info.color} mb-2`}>{info.name}</h2>
-            <p className="text-gray-300">{info.description}</p>
+            <TerminalText variant="primary" className="text-lg mb-2">
+              {info.name.toUpperCase()}
+            </TerminalText>
+            <TerminalText variant="secondary" className="text-sm">
+              {info.description.toUpperCase()}
+            </TerminalText>
           </div>
-          <button
+          <div 
+            className="cursor-pointer hover:opacity-80"
             onClick={() => setSelectedLegacy(null)}
-            className="text-gray-400 hover:text-white transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            <TerminalText variant="warning">
+              [X] CLOSE
+            </TerminalText>
+          </div>
         </div>
 
-        <div className="flex space-x-4 mb-6">
+        <div className="terminal-flex start gap-2 mb-6">
           {(['overview', 'diplomacy', 'trade', 'threats'] as const).map((tab) => (
-            <button
+            <div
               key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-md transition-colors capitalize ${
+              className={`cursor-pointer px-2 py-1 border transition-colors ${
                 activeTab === tab
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'border-terminal-primary bg-terminal-primary bg-opacity-20'
+                  : 'border-terminal-border hover:border-terminal-secondary'
               }`}
+              onClick={() => setActiveTab(tab)}
             >
-              {tab}
-            </button>
+              <TerminalText
+                variant={activeTab === tab ? 'primary' : 'dim'}
+                className="uppercase"
+              >
+                [{tab}]
+              </TerminalText>
+            </div>
           ))}
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-          >
-            {renderLegacyTabContent(selectedLegacy, relation)}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+        <div className="terminal-content">
+          {renderLegacyTabContent(selectedLegacy, relation)}
+        </div>
+      </TerminalWindow>
     );
   };
 
@@ -237,60 +226,67 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
       case 'overview':
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-lg font-semibold text-blue-400 mb-3">Philosophy</h4>
-                <p className="text-gray-300 italic">{info.philosophy}</p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TerminalWindow title="PHILOSOPHY" statusLine="IDEOLOGY">
+                <TerminalText className="text-cyan-400 italic">
+                  {info.philosophy}
+                </TerminalText>
+              </TerminalWindow>
 
-              <div className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-lg font-semibold text-green-400 mb-3">Strengths</h4>
-                <ul className="space-y-1">
+              <TerminalWindow title="STRENGTHS" statusLine="ASSETS">
+                <div className="space-y-1">
                   {info.strengths.map((strength, index) => (
-                    <li key={index} className="text-gray-300">• {strength}</li>
+                    <TerminalText key={index} className="text-xs">
+                      ▶ {strength}
+                    </TerminalText>
                   ))}
-                </ul>
-              </div>
+                </div>
+              </TerminalWindow>
 
-              <div className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-lg font-semibold text-red-400 mb-3">Weaknesses</h4>
-                <ul className="space-y-1">
+              <TerminalWindow title="WEAKNESSES" statusLine="LIABILITIES">
+                <div className="space-y-1">
                   {info.weaknesses.map((weakness, index) => (
-                    <li key={index} className="text-gray-300">• {weakness}</li>
+                    <TerminalText key={index} className="text-xs">
+                      ▶ {weakness}
+                    </TerminalText>
                   ))}
-                </ul>
-              </div>
+                </div>
+              </TerminalWindow>
 
               {relation && (
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-yellow-400 mb-3">Current Relations</h4>
+                <TerminalWindow title="CURRENT RELATIONS" statusLine="DIPLOMATIC">
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-300">Status:</span>
-                      <span className={getRelationshipStatus(relation.relationship).color}>
+                      <TerminalText className="text-xs">STATUS:</TerminalText>
+                      <TerminalText className={`text-xs ${getRelationshipStatus(relation.relationship).color}`}>
                         {getRelationshipStatus(relation.relationship).text}
-                      </span>
+                      </TerminalText>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-300">Value:</span>
-                      <span className="text-white">{relation.relationship}</span>
+                      <TerminalText className="text-xs">VALUE:</TerminalText>
+                      <TerminalText className="text-xs font-mono text-amber-400">{relation.relationship}</TerminalText>
                     </div>
                   </div>
-                </div>
+                  <TerminalProgress
+                    value={Math.max(0, relation.relationship)}
+                    max={100}
+                    variant={relation.relationship > 50 ? 'success' : relation.relationship > 0 ? 'warning' : 'error'}
+                    className="mt-2"
+                  />
+                </TerminalWindow>
               )}
             </div>
 
             {relation?.recentEvents && relation.recentEvents.length > 0 && (
-              <div className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-lg font-semibold text-purple-400 mb-3">Recent Events</h4>
+              <TerminalWindow title="RECENT EVENTS" statusLine="HISTORY">
                 <div className="space-y-2">
                   {relation.recentEvents.slice(0, 3).map((event, index) => (
-                    <div key={index} className="text-sm text-gray-300 border-l-2 border-purple-500 pl-3">
-                      {event}
-                    </div>
+                    <TerminalText key={index} className="text-xs border-l-2 border-purple-500 pl-3">
+                      ▶ {event}
+                    </TerminalText>
                   ))}
                 </div>
-              </div>
+              </TerminalWindow>
             )}
           </div>
         );
@@ -312,141 +308,149 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
   const renderDiplomacyTab = (legacy: LegacyTypeType, relation?: LegacyRelation) => {
     if (legacy === playerLegacy) {
       return (
-        <div className="text-center py-8">
-          <div className="text-gray-400">This is your own legacy.</div>
-          <div className="text-gray-300 mt-2">Manage internal affairs through other systems.</div>
-        </div>
+        <TerminalWindow title="INTERNAL AFFAIRS" statusLine="RESTRICTED">
+          <TerminalText className="text-center text-amber-400">
+            ▲ THIS IS YOUR OWN LEGACY
+          </TerminalText>
+          <TerminalText className="text-center text-xs text-gray-400 mt-2">
+            Manage internal affairs through other systems
+          </TerminalText>
+        </TerminalWindow>
       );
     }
 
     return (
-      <div className="space-y-6">
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-blue-400 mb-4">Diplomatic Status</h4>
+      <div className="space-y-4">
+        <TerminalWindow title="DIPLOMATIC STATUS" statusLine="RELATIONS">
           {relation && (
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-300">Current Relationship:</span>
-                <span className={getRelationshipStatus(relation.relationship).color}>
+                <TerminalText className="text-xs">CURRENT RELATIONSHIP:</TerminalText>
+                <TerminalText className={`text-xs ${getRelationshipStatus(relation.relationship).color}`}>
                   {getRelationshipStatus(relation.relationship).text} ({relation.relationship})
-                </span>
+                </TerminalText>
               </div>
-              <div className="w-full bg-gray-600 rounded-full h-3">
-                <div
-                  className={`h-3 rounded-full transition-all duration-500 ${
-                    relation.relationship > 50 ? 'bg-green-500' :
-                    relation.relationship > 0 ? 'bg-yellow-500' : 'bg-red-500'
-                  }`}
-                  style={{ width: `${Math.max(5, (relation.relationship + 100) / 2)}%` }}
-                />
-              </div>
+              <TerminalProgress
+                value={Math.max(0, relation.relationship + 100)}
+                max={200}
+                variant={relation.relationship > 50 ? 'success' : relation.relationship > 0 ? 'warning' : 'error'}
+              />
             </div>
           )}
-        </div>
+        </TerminalWindow>
 
         {onLegacyAction && (
-          <div className="bg-gray-700 rounded-lg p-4">
-            <h4 className="text-lg font-semibold text-green-400 mb-4">Diplomatic Actions</h4>
-            <div className="grid grid-cols-2 gap-3">
-              <button
+          <TerminalWindow title="DIPLOMATIC ACTIONS" statusLine="AVAILABLE">
+            <div className="grid grid-cols-2 gap-2">
+              <TerminalButton
                 onClick={() => onLegacyAction(legacy, 'improve_relations')}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm transition-colors"
+                variant="success"
+                className="text-xs"
               >
-                Improve Relations
-              </button>
-              <button
+                IMPROVE RELATIONS
+              </TerminalButton>
+              <TerminalButton
                 onClick={() => onLegacyAction(legacy, 'formal_alliance')}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
+                variant="primary"
+                className="text-xs"
               >
-                Propose Alliance
-              </button>
-              <button
+                PROPOSE ALLIANCE
+              </TerminalButton>
+              <TerminalButton
                 onClick={() => onLegacyAction(legacy, 'cultural_exchange')}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors"
+                variant="success"
+                className="text-xs"
               >
-                Cultural Exchange
-              </button>
-              <button
+                CULTURAL EXCHANGE
+              </TerminalButton>
+              <TerminalButton
                 onClick={() => onLegacyAction(legacy, 'issue_warning')}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors"
+                variant="warning"
+                className="text-xs"
               >
-                Issue Warning
-              </button>
+                ISSUE WARNING
+              </TerminalButton>
             </div>
-          </div>
+          </TerminalWindow>
         )}
 
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-yellow-400 mb-4">Diplomatic History</h4>
+        <TerminalWindow title="DIPLOMATIC HISTORY" statusLine="ARCHIVE">
           {relation?.recentEvents && relation.recentEvents.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-1">
               {relation.recentEvents.map((event, index) => (
-                <div key={index} className="text-sm text-gray-300 border-l-2 border-yellow-500 pl-3 py-1">
-                  {event}
-                </div>
+                <TerminalText key={index} className="text-xs border-l-2 border-yellow-500 pl-3">
+                  ▶ {event}
+                </TerminalText>
               ))}
             </div>
           ) : (
-            <div className="text-gray-400 text-sm">No significant diplomatic events recorded.</div>
+            <TerminalText className="text-xs text-gray-400">No significant diplomatic events recorded</TerminalText>
           )}
-        </div>
+        </TerminalWindow>
       </div>
     );
   };
 
   const renderTradeTab = (legacy: LegacyTypeType, relation?: LegacyRelation) => (
-    <div className="space-y-6">
-      <div className="bg-gray-700 rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-green-400 mb-4">Active Trade Agreements</h4>
+    <div className="space-y-4">
+      <TerminalWindow title="ACTIVE TRADE AGREEMENTS" statusLine="COMMERCE">
         {relation?.tradeAgreements && relation.tradeAgreements.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {relation.tradeAgreements.map((agreement) => (
-              <div key={agreement.id} className="bg-gray-600 rounded p-3">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-white">{agreement.resource}</span>
-                  <span className="text-green-400">{agreement.amount} units</span>
+              <TerminalWindow key={agreement.id} title={agreement.resource.toUpperCase()} className="bg-gray-800">
+                <div className="flex justify-between items-center mb-1">
+                  <TerminalText className="text-xs">AMOUNT:</TerminalText>
+                  <TerminalText className="text-xs font-mono text-green-400">{agreement.amount} UNITS</TerminalText>
                 </div>
-                <div className="text-sm text-gray-300">
-                  Price: {agreement.price} credits/unit • Duration: {agreement.duration} days
+                <div className="flex justify-between items-center mb-1">
+                  <TerminalText className="text-xs">PRICE:</TerminalText>
+                  <TerminalText className="text-xs font-mono text-amber-400">{agreement.price} CR/UNIT</TerminalText>
                 </div>
-              </div>
+                <div className="flex justify-between items-center">
+                  <TerminalText className="text-xs">DURATION:</TerminalText>
+                  <TerminalText className="text-xs font-mono text-cyan-400">{agreement.duration} DAYS</TerminalText>
+                </div>
+              </TerminalWindow>
             ))}
           </div>
         ) : (
-          <div className="text-gray-400">No active trade agreements</div>
+          <TerminalText className="text-xs text-gray-400">No active trade agreements</TerminalText>
         )}
-      </div>
+      </TerminalWindow>
 
       {onLegacyAction && (
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-blue-400 mb-4">Trade Actions</h4>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => onLegacyAction(legacy, 'propose_trade')}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm transition-colors"
+        <TerminalWindow title="TRADE ACTIONS" statusLine="AVAILABLE">
+          <div className="grid grid-cols-2 gap-2">
+            <TerminalButton
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'propose_trade')}
+              variant="success"
+              className="text-xs"
             >
-              Propose Trade Deal
-            </button>
-            <button
-              onClick={() => onLegacyAction(legacy, 'resource_exchange')}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
+              PROPOSE TRADE DEAL
+            </TerminalButton>
+            <TerminalButton
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'resource_exchange')}
+              variant="primary"
+              className="text-xs"
             >
-              Resource Exchange
-            </button>
-            <button
-              onClick={() => onLegacyAction(legacy, 'technology_share')}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors"
+              RESOURCE EXCHANGE
+            </TerminalButton>
+            <TerminalButton
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'technology_share')}
+              variant="primary"
+              className="text-xs"
             >
-              Technology Share
-            </button>
-            <button
-              onClick={() => onLegacyAction(legacy, 'trade_embargo')}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors"
+              TECHNOLOGY SHARE
+            </TerminalButton>
+            <TerminalButton
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'trade_embargo')}
+              variant="error"
+              className="text-xs"
             >
-              Trade Embargo
-            </button>
+              TRADE EMBARGO
+            </TerminalButton>
           </div>
-        </div>
+        </TerminalWindow>
       )}
     </div>
   );
@@ -488,64 +492,73 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
     };
 
     return (
-      <div className="space-y-6">
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-red-400 mb-4">Existential Threats</h4>
-          <div className="space-y-4">
+      <div className="space-y-4">
+        <TerminalWindow title="EXISTENTIAL THREATS" statusLine="CRITICAL">
+          <div className="space-y-3">
             {threats.map((threat, index) => (
-              <div key={index} className="bg-gray-600 rounded p-3">
+              <TerminalWindow key={index} title={threat.name.toUpperCase()} className="bg-gray-800">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-white">{threat.name}</span>
-                  <span className={`px-2 py-1 rounded text-xs ${getThreatColor(threat.level)}`}>
-                    {threat.level} Risk
-                  </span>
+                  <TerminalText className="text-xs">RISK LEVEL:</TerminalText>
+                  <TerminalText className={`text-xs font-mono ${getThreatColor(threat.level)}`}>
+                    {threat.level.toUpperCase()}
+                  </TerminalText>
                 </div>
-                <p className="text-sm text-gray-300">{threat.description}</p>
-              </div>
+                <TerminalText className="text-xs text-gray-300">{threat.description}</TerminalText>
+              </TerminalWindow>
             ))}
           </div>
-        </div>
+        </TerminalWindow>
 
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-orange-400 mb-4">Mitigation Strategies</h4>
-          <div className="text-sm text-gray-300 space-y-2">
+        <TerminalWindow title="MITIGATION STRATEGIES" statusLine="PROTOCOLS">
+          <div className="space-y-1">
             {legacy === 'preservers' && (
               <>
-                <div>• Gradual adaptation to maintain cultural continuity</div>
-                <div>• Inter-generational dialogue programs</div>
-                <div>• Selective technology adoption</div>
+                <TerminalText className="text-xs">▶ Gradual adaptation to maintain cultural continuity</TerminalText>
+                <TerminalText className="text-xs">▶ Inter-generational dialogue programs</TerminalText>
+                <TerminalText className="text-xs">▶ Selective technology adoption</TerminalText>
               </>
             )}
             {legacy === 'adaptors' && (
               <>
-                <div>• Careful monitoring of enhancement procedures</div>
-                <div>• Ethical guidelines for modifications</div>
-                <div>• Baseline human preservation protocols</div>
+                <TerminalText className="text-xs">▶ Careful monitoring of enhancement procedures</TerminalText>
+                <TerminalText className="text-xs">▶ Ethical guidelines for modifications</TerminalText>
+                <TerminalText className="text-xs">▶ Baseline human preservation protocols</TerminalText>
               </>
             )}
             {legacy === 'wanderers' && (
               <>
-                <div>• Fleet cohesion maintenance systems</div>
-                <div>• Resource sharing agreements</div>
-                <div>• Collective purpose reinforcement</div>
+                <TerminalText className="text-xs">▶ Fleet cohesion maintenance systems</TerminalText>
+                <TerminalText className="text-xs">▶ Resource sharing agreements</TerminalText>
+                <TerminalText className="text-xs">▶ Collective purpose reinforcement</TerminalText>
               </>
             )}
           </div>
-        </div>
+        </TerminalWindow>
       </div>
     );
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-400 mb-2">◎ Legacy Relations</h1>
-        <p className="text-gray-300">
-          Navigate the complex relationships between the great ideological factions of humanity.
-        </p>
+    <div className="terminal-window active fullscreen">
+      <div className="terminal-header">
+        <div className="terminal-title-bar">
+          ┌─[◎ LEGACY RELATIONS - DIPLOMATIC INTERFACE]─────────────┐
+        </div>
+        <div className="terminal-status">
+          │ STATUS: MONITORING IDEOLOGICAL FACTION RELATIONSHIPS    │
+        </div>
+        <div className="terminal-separator">
+          ├──────────────────────────────────────────────────────────┤
+        </div>
       </div>
 
-      {selectedLegacy ? renderLegacyDetail() : renderLegacyOverview()}
+      <div className="terminal-content">
+        {selectedLegacy ? renderLegacyDetail() : renderLegacyOverview()}
+      </div>
+
+      <div className="terminal-footer">
+        └──────────────────────────────────────────────────────────┘
+      </div>
     </div>
   );
 };

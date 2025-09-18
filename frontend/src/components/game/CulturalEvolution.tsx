@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { CulturalEvolution } from '../../types/generationalMissions';
 import type { LegacyTypeType } from '../../types/enums';
+import { TerminalWindow, TerminalText, TerminalButton, TerminalProgress } from '../ui/TerminalWindow';
 
 interface CulturalEvolutionProps {
   culturalEvolution: CulturalEvolution[];
@@ -20,20 +20,20 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   const legacyInfo = {
     preservers: {
       name: 'The Preservers',
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-900',
+      color: 'text-cyan-400',
+      bgColor: 'bg-gray-800',
       baseline: 'Traditional Human Culture'
     },
     adaptors: {
       name: 'The Adaptors',
       color: 'text-green-400',
-      bgColor: 'bg-green-900',
+      bgColor: 'bg-gray-800',
       baseline: 'Enhanced Human Potential'
     },
     wanderers: {
       name: 'The Wanderers',
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-900',
+      color: 'text-amber-400',
+      bgColor: 'bg-gray-800',
       baseline: 'Nomadic Freedom Culture'
     }
   };
@@ -64,97 +64,92 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
 
   const renderOverview = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {culturalEvolution.map((evolution) => {
           const info = legacyInfo[evolution.legacy];
           const totalChanges = evolution.majorChanges.length;
           const permanentChanges = evolution.majorChanges.filter(c => c.isPermanent).length;
 
           return (
-            <motion.div
+            <div
               key={evolution.legacy}
-              className={`${info.bgColor} bg-opacity-20 border border-gray-600 rounded-lg p-4 cursor-pointer hover:border-opacity-60 transition-colors`}
-              whileHover={{ scale: 1.02 }}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => setSelectedLegacy(evolution.legacy)}
             >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className={`text-lg font-bold ${info.color}`}>{info.name}</h3>
-                <span className="text-xs text-gray-400">Gen {currentGeneration}</span>
-              </div>
+              <TerminalWindow
+                title={`${info.name} - GEN ${currentGeneration}`}
+                className="h-full"
+              >
+                <TerminalText className="mb-2 text-xs">
+                  ┌ BASELINE: {info.baseline}
+                </TerminalText>
 
-              <div className="mb-3">
-                <div className="text-sm text-gray-300 mb-2">
-                  Baseline: {info.baseline}
-                </div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-gray-400 text-sm">Cultural Drift:</span>
-                  <span className={`font-medium ${getDeviationColor(evolution.baselineDeviation)}`}>
-                    {evolution.baselineDeviation > 0 ? '+' : ''}{evolution.baselineDeviation}%
-                  </span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full transition-all duration-500 ${
-                      Math.abs(evolution.baselineDeviation) > 50 ? 'bg-red-500' :
-                      Math.abs(evolution.baselineDeviation) > 25 ? 'bg-yellow-500' : 'bg-green-500'
-                    }`}
-                    style={{
-                      width: `${Math.min(100, Math.abs(evolution.baselineDeviation))}%`,
-                      marginLeft: evolution.baselineDeviation < 0 ? 'auto' : '0'
-                    }}
+                <div className="mb-3">
+                  <div className="flex justify-between mb-1">
+                    <TerminalText className="text-xs">CULTURAL DRIFT:</TerminalText>
+                    <TerminalText className={`text-xs font-mono ${getDeviationColor(evolution.baselineDeviation)}`}>
+                      {evolution.baselineDeviation > 0 ? '+' : ''}{evolution.baselineDeviation}%
+                    </TerminalText>
+                  </div>
+                  <TerminalProgress
+                    value={Math.abs(evolution.baselineDeviation)}
+                    max={100}
+                    variant={
+                      Math.abs(evolution.baselineDeviation) > 50 ? 'error' :
+                      Math.abs(evolution.baselineDeviation) > 25 ? 'warning' : 'success'
+                    }
                   />
                 </div>
-              </div>
 
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Total Changes:</span>
-                  <span className="text-white">{totalChanges}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Permanent:</span>
-                  <span className="text-green-400">{permanentChanges}</span>
-                </div>
-                <div className="text-xs text-gray-500 mt-2">
-                  {getDeviationDescription(evolution.baselineDeviation)}
-                </div>
-              </div>
-
-              {evolution.currentTrends.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-600">
-                  <div className="text-xs text-blue-300">
-                    Active: {evolution.currentTrends[0]}
+                <div className="space-y-1 mb-3">
+                  <div className="flex justify-between">
+                    <TerminalText className="text-xs">├ TOTAL CHANGES:</TerminalText>
+                    <TerminalText className="text-xs font-mono text-amber-400">{totalChanges}</TerminalText>
                   </div>
+                  <div className="flex justify-between">
+                    <TerminalText className="text-xs">├ PERMANENT:</TerminalText>
+                    <TerminalText className="text-xs font-mono text-green-400">{permanentChanges}</TerminalText>
+                  </div>
+                  <TerminalText className="text-xs text-gray-400">
+                    └ {getDeviationDescription(evolution.baselineDeviation)}
+                  </TerminalText>
                 </div>
-              )}
-            </motion.div>
+
+                {evolution.currentTrends.length > 0 && (
+                  <div className="border-t border-gray-600 pt-2">
+                    <TerminalText className="text-xs text-cyan-400">
+                      ▶ ACTIVE: {evolution.currentTrends[0]}
+                    </TerminalText>
+                  </div>
+                )}
+              </TerminalWindow>
+            </div>
           );
         })}
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">⟡ Cultural Evolution Summary</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-400">
+      <TerminalWindow title="⟡ CULTURAL EVOLUTION SUMMARY">
+        <div className="grid grid-cols-3 gap-6 text-center">
+          <div>
+            <TerminalText className="text-xl font-mono text-cyan-400">
               {culturalEvolution.reduce((sum, e) => sum + e.majorChanges.length, 0)}
-            </div>
-            <div className="text-sm text-gray-400">Total Cultural Changes</div>
+            </TerminalText>
+            <TerminalText className="text-xs text-gray-400">TOTAL CHANGES</TerminalText>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-400">
+          <div>
+            <TerminalText className="text-xl font-mono text-green-400">
               {culturalEvolution.reduce((sum, e) => sum + e.majorChanges.filter(c => c.isPermanent).length, 0)}
-            </div>
-            <div className="text-sm text-gray-400">Permanent Adaptations</div>
+            </TerminalText>
+            <TerminalText className="text-xs text-gray-400">PERMANENT ADAPTATIONS</TerminalText>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-400">
+          <div>
+            <TerminalText className="text-xl font-mono text-amber-400">
               {culturalEvolution.reduce((sum, e) => sum + e.currentTrends.length, 0)}
-            </div>
-            <div className="text-sm text-gray-400">Active Trends</div>
+            </TerminalText>
+            <TerminalText className="text-xs text-gray-400">ACTIVE TRENDS</TerminalText>
           </div>
         </div>
-      </div>
+      </TerminalWindow>
     </div>
   );
 
@@ -167,50 +162,35 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
     const info = legacyInfo[selectedLegacy];
 
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className={`text-2xl font-bold ${info.color} mb-2`}>{info.name}</h2>
-            <p className="text-gray-300">Cultural Evolution Analysis</p>
-          </div>
-          <button
+      <TerminalWindow title={`${info.name} - CULTURAL EVOLUTION ANALYSIS`}>
+        <div className="flex items-center justify-between mb-4">
+          <TerminalText className="text-cyan-400">DETAILED ANALYSIS</TerminalText>
+          <TerminalButton
             onClick={() => setSelectedLegacy(null)}
-            className="text-gray-400 hover:text-white transition-colors"
+            variant="warning"
+            className="text-xs"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            ← BACK
+          </TerminalButton>
         </div>
 
-        <div className="flex space-x-4 mb-6">
+        <div className="flex space-x-2 mb-6">
           {(['timeline', 'trends', 'analysis', 'decisions'] as const).map((tab) => (
-            <button
+            <TerminalButton
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-md transition-colors capitalize ${
-                activeTab === tab
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              variant={activeTab === tab ? 'primary' : 'error'}
+              className="uppercase text-xs"
             >
               {tab}
-            </button>
+            </TerminalButton>
           ))}
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-          >
-            {renderTabContent(evolution)}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+        <div className="terminal-content">
+          {renderTabContent(evolution)}
+        </div>
+      </TerminalWindow>
     );
   };
 
@@ -230,88 +210,101 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   };
 
   const renderTimelineTab = (evolution: CulturalEvolution) => (
-    <div className="space-y-6">
-      <div className="bg-gray-700 rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-blue-400 mb-4">Cultural Timeline</h4>
-        <div className="space-y-4">
-          {evolution.majorChanges
-            .sort((a, b) => a.generation - b.generation)
-            .map((change) => (
-              <div key={change.id} className="relative pl-6 border-l-2 border-blue-500">
-                <div className="absolute -left-2 top-1 w-4 h-4 bg-blue-500 rounded-full" />
-                <div className="mb-2">
-                  <div className="flex items-center justify-between">
-                    <h5 className="font-medium text-white">{change.name}</h5>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-400">Gen {change.generation}</span>
-                      <span className="text-lg">{getImpactIcon(change.impact)}</span>
-                      {change.isPermanent && (
-                        <span className="px-2 py-1 bg-green-600 text-green-100 rounded text-xs">
-                          Permanent
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-300 mt-1">{change.description}</p>
-                  <div className="text-xs text-gray-400 mt-2">
-                    Cultural Impact: <span className={getDeviationColor(change.impact)}>
-                      {change.impact > 0 ? '+' : ''}{change.impact}%
-                    </span>
+    <TerminalWindow title="CULTURAL TIMELINE" statusLine="CHRONOLOGICAL ANALYSIS">
+      <div className="space-y-3">
+        {evolution.majorChanges
+          .sort((a, b) => a.generation - b.generation)
+          .map((change) => (
+            <div key={change.id} className="border-l-2 border-terminal-secondary pl-4 relative">
+              <div className="absolute -left-2 top-1 w-3 h-3 bg-terminal-secondary rounded-full" />
+              <div className="mb-2">
+                <div className="flex items-center justify-between">
+                  <TerminalText variant="primary" className="font-mono">
+                    {change.name.toUpperCase()}
+                  </TerminalText>
+                  <div className="flex items-center space-x-2">
+                    <TerminalText variant="dim" className="text-xs">
+                      GEN {change.generation}
+                    </TerminalText>
+                    <TerminalText className="text-lg">
+                      {getImpactIcon(change.impact)}
+                    </TerminalText>
+                    {change.isPermanent && (
+                      <TerminalText variant="success" className="text-xs border border-terminal-success px-1">
+                        [PERMANENT]
+                      </TerminalText>
+                    )}
                   </div>
                 </div>
+                <TerminalText variant="secondary" className="text-sm mt-1">
+                  {change.description}
+                </TerminalText>
+                <div className="mt-2">
+                  <TerminalText variant="dim" className="text-xs">
+                    CULTURAL IMPACT: <span className={getDeviationColor(change.impact)}>
+                      {change.impact > 0 ? '+' : ''}{change.impact}%
+                    </span>
+                  </TerminalText>
+                </div>
               </div>
-            ))}
-        </div>
+            </div>
+          ))}
       </div>
-    </div>
+    </TerminalWindow>
   );
 
   const renderTrendsTab = (evolution: CulturalEvolution) => (
-    <div className="space-y-6">
-      <div className="bg-gray-700 rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-green-400 mb-4">Current Trends</h4>
+    <div className="space-y-4">
+      <TerminalWindow title="CURRENT TRENDS" statusLine="ACTIVE MONITORING">
         {evolution.currentTrends.length > 0 ? (
           <div className="space-y-3">
             {evolution.currentTrends.map((trend, index) => (
-              <div key={index} className="bg-gray-600 rounded p-3 border-l-4 border-green-500">
-                <div className="font-medium text-white mb-1">{trend}</div>
-                <div className="text-sm text-gray-300">
-                  This trend is actively shaping cultural development in Generation {currentGeneration}.
-                </div>
+              <div key={index} className="border-l-4 border-terminal-success pl-3">
+                <TerminalText variant="primary" className="font-mono mb-1">
+                  ▶ {trend.toUpperCase()}
+                </TerminalText>
+                <TerminalText variant="secondary" className="text-sm">
+                  TREND ACTIVE IN GENERATION {currentGeneration}
+                </TerminalText>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-gray-400">No major cultural trends detected in this generation.</div>
+          <TerminalText variant="dim">NO MAJOR CULTURAL TRENDS DETECTED</TerminalText>
         )}
-      </div>
+      </TerminalWindow>
 
-      <div className="bg-gray-700 rounded-lg p-4">
-        <h4 className="text-lg font-semibold text-yellow-400 mb-4">Trend Predictions</h4>
+      <TerminalWindow title="TREND PREDICTIONS" statusLine="PROBABILITY ANALYSIS">
         <div className="space-y-3">
-          <div className="bg-gray-600 rounded p-3">
-            <div className="font-medium text-white mb-1">Technological Integration</div>
-            <div className="text-sm text-gray-300">
-              Likelihood: <span className="text-yellow-400">75%</span> -
-              Expected impact on cultural norms regarding human-machine interaction.
-            </div>
+          <div className="border border-terminal-border p-3">
+            <TerminalText variant="primary" className="font-mono mb-1">
+              TECHNOLOGICAL INTEGRATION
+            </TerminalText>
+            <TerminalText variant="secondary" className="text-sm">
+              LIKELIHOOD: <TerminalText variant="warning" className="inline">75%</TerminalText> -
+              EXPECTED IMPACT ON HUMAN-MACHINE INTERACTION NORMS
+            </TerminalText>
           </div>
-          <div className="bg-gray-600 rounded p-3">
-            <div className="font-medium text-white mb-1">Generational Values Shift</div>
-            <div className="text-sm text-gray-300">
-              Likelihood: <span className="text-blue-400">60%</span> -
-              New generation may develop different priorities than founders.
-            </div>
+          <div className="border border-terminal-border p-3">
+            <TerminalText variant="primary" className="font-mono mb-1">
+              GENERATIONAL VALUES SHIFT
+            </TerminalText>
+            <TerminalText variant="secondary" className="text-sm">
+              LIKELIHOOD: <TerminalText variant="primary" className="inline">60%</TerminalText> -
+              NEW GENERATION MAY DEVELOP DIFFERENT PRIORITIES
+            </TerminalText>
           </div>
-          <div className="bg-gray-600 rounded p-3">
-            <div className="font-medium text-white mb-1">Resource Scarcity Adaptation</div>
-            <div className="text-sm text-gray-300">
-              Likelihood: <span className="text-red-400">45%</span> -
-              Cultural practices may evolve based on available resources.
-            </div>
+          <div className="border border-terminal-border p-3">
+            <TerminalText variant="primary" className="font-mono mb-1">
+              RESOURCE SCARCITY ADAPTATION
+            </TerminalText>
+            <TerminalText variant="secondary" className="text-sm">
+              LIKELIHOOD: <TerminalText variant="error" className="inline">45%</TerminalText> -
+              CULTURAL PRACTICES MAY EVOLVE BASED ON RESOURCES
+            </TerminalText>
           </div>
         </div>
-      </div>
+      </TerminalWindow>
     </div>
   );
 
@@ -320,96 +313,97 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
     const averageImpact = evolution.majorChanges.length > 0 ? totalImpact / evolution.majorChanges.length : 0;
 
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-700 rounded-lg p-4">
-            <h4 className="text-lg font-semibold text-purple-400 mb-4">Cultural Metrics</h4>
-            <div className="space-y-3">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TerminalWindow title="CULTURAL METRICS" statusLine="STATISTICAL ANALYSIS">
+            <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-300">Baseline Deviation:</span>
-                <span className={getDeviationColor(evolution.baselineDeviation)}>
+                <TerminalText variant="dim">BASELINE DEVIATION:</TerminalText>
+                <TerminalText className={getDeviationColor(evolution.baselineDeviation)}>
                   {evolution.baselineDeviation > 0 ? '+' : ''}{evolution.baselineDeviation}%
-                </span>
+                </TerminalText>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-300">Total Changes:</span>
-                <span className="text-white">{evolution.majorChanges.length}</span>
+                <TerminalText variant="dim">TOTAL CHANGES:</TerminalText>
+                <TerminalText variant="primary">{evolution.majorChanges.length}</TerminalText>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-300">Average Impact:</span>
-                <span className="text-blue-400">{averageImpact.toFixed(1)}%</span>
+                <TerminalText variant="dim">AVERAGE IMPACT:</TerminalText>
+                <TerminalText variant="primary">{averageImpact.toFixed(1)}%</TerminalText>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-300">Permanent Shifts:</span>
-                <span className="text-green-400">
+                <TerminalText variant="dim">PERMANENT SHIFTS:</TerminalText>
+                <TerminalText variant="success">
                   {evolution.majorChanges.filter(c => c.isPermanent).length}
-                </span>
+                </TerminalText>
               </div>
             </div>
-          </div>
+          </TerminalWindow>
 
-          <div className="bg-gray-700 rounded-lg p-4">
-            <h4 className="text-lg font-semibold text-orange-400 mb-4">Cultural Health</h4>
+          <TerminalWindow title="CULTURAL HEALTH" statusLine="STABILITY MONITOR">
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-gray-300">Stability:</span>
-                  <span className={Math.abs(evolution.baselineDeviation) < 25 ? 'text-green-400' :
-                    Math.abs(evolution.baselineDeviation) < 50 ? 'text-yellow-400' : 'text-red-400'}>
-                    {Math.abs(evolution.baselineDeviation) < 25 ? 'Stable' :
-                     Math.abs(evolution.baselineDeviation) < 50 ? 'Shifting' : 'Unstable'}
-                  </span>
+                  <TerminalText variant="dim">STABILITY:</TerminalText>
+                  <TerminalText variant={Math.abs(evolution.baselineDeviation) < 25 ? 'success' :
+                    Math.abs(evolution.baselineDeviation) < 50 ? 'warning' : 'error'}>
+                    {Math.abs(evolution.baselineDeviation) < 25 ? 'STABLE' :
+                     Math.abs(evolution.baselineDeviation) < 50 ? 'SHIFTING' : 'UNSTABLE'}
+                  </TerminalText>
                 </div>
-                <div className="w-full bg-gray-600 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full ${
-                      Math.abs(evolution.baselineDeviation) < 25 ? 'bg-green-500' :
-                      Math.abs(evolution.baselineDeviation) < 50 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}
-                    style={{ width: `${Math.min(100, 100 - Math.abs(evolution.baselineDeviation))}%` }}
-                  />
-                </div>
+                <TerminalProgress
+                  value={Math.min(100, 100 - Math.abs(evolution.baselineDeviation))}
+                  max={100}
+                  variant={Math.abs(evolution.baselineDeviation) < 25 ? 'success' :
+                    Math.abs(evolution.baselineDeviation) < 50 ? 'warning' : 'error'}
+                  ascii={true}
+                />
               </div>
-              <div className="text-sm text-gray-300">
+              <TerminalText variant="secondary" className="text-sm">
                 {Math.abs(evolution.baselineDeviation) < 25
-                  ? 'Culture remains close to founding principles'
+                  ? 'CULTURE REMAINS CLOSE TO FOUNDING PRINCIPLES'
                   : Math.abs(evolution.baselineDeviation) < 50
-                  ? 'Moderate drift from original culture'
-                  : 'Significant cultural transformation occurring'}
-              </div>
+                  ? 'MODERATE DRIFT FROM ORIGINAL CULTURE'
+                  : 'SIGNIFICANT CULTURAL TRANSFORMATION OCCURRING'}
+              </TerminalText>
             </div>
-          </div>
+          </TerminalWindow>
         </div>
 
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-red-400 mb-4">Risk Assessment</h4>
+        <TerminalWindow title="RISK ASSESSMENT" statusLine="THREAT ANALYSIS">
           <div className="space-y-3">
             {Math.abs(evolution.baselineDeviation) > 75 && (
-              <div className="bg-red-900 bg-opacity-30 border border-red-500 rounded p-3">
-                <div className="font-medium text-red-400">Critical Cultural Drift</div>
-                <div className="text-sm text-gray-300">
-                  Culture has deviated significantly from baseline. Risk of identity crisis and social fragmentation.
-                </div>
+              <div className="border border-terminal-error p-3 bg-terminal-error bg-opacity-10">
+                <TerminalText variant="error" className="font-mono mb-1">
+                  [CRITICAL] CULTURAL DRIFT
+                </TerminalText>
+                <TerminalText variant="secondary" className="text-sm">
+                  CULTURE HAS DEVIATED SIGNIFICANTLY FROM BASELINE. RISK OF IDENTITY CRISIS.
+                </TerminalText>
               </div>
             )}
             {evolution.majorChanges.filter(c => !c.isPermanent).length > 3 && (
-              <div className="bg-yellow-900 bg-opacity-30 border border-yellow-500 rounded p-3">
-                <div className="font-medium text-yellow-400">Cultural Instability</div>
-                <div className="text-sm text-gray-300">
-                  Multiple temporary changes suggest cultural uncertainty. Consider stabilizing measures.
-                </div>
+              <div className="border border-terminal-warning p-3 bg-terminal-warning bg-opacity-10">
+                <TerminalText variant="warning" className="font-mono mb-1">
+                  [WARNING] CULTURAL INSTABILITY
+                </TerminalText>
+                <TerminalText variant="secondary" className="text-sm">
+                  MULTIPLE TEMPORARY CHANGES SUGGEST UNCERTAINTY. CONSIDER STABILIZING MEASURES.
+                </TerminalText>
               </div>
             )}
             {evolution.currentTrends.length === 0 && (
-              <div className="bg-blue-900 bg-opacity-30 border border-blue-500 rounded p-3">
-                <div className="font-medium text-blue-400">Cultural Stagnation</div>
-                <div className="text-sm text-gray-300">
-                  No active cultural trends. Society may benefit from deliberate cultural initiatives.
-                </div>
+              <div className="border border-terminal-primary p-3 bg-terminal-primary bg-opacity-10">
+                <TerminalText variant="primary" className="font-mono mb-1">
+                  [INFO] CULTURAL STAGNATION
+                </TerminalText>
+                <TerminalText variant="secondary" className="text-sm">
+                  NO ACTIVE CULTURAL TRENDS. SOCIETY MAY BENEFIT FROM CULTURAL INITIATIVES.
+                </TerminalText>
               </div>
             )}
           </div>
-        </div>
+        </TerminalWindow>
       </div>
     );
   };
@@ -417,113 +411,129 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   const renderDecisionsTab = (evolution: CulturalEvolution) => {
     if (!onCulturalAction) {
       return (
-        <div className="text-center py-8">
-          <div className="text-gray-400">Cultural decision system not available.</div>
-        </div>
+        <TerminalWindow title="CULTURAL DECISIONS" statusLine="SYSTEM UNAVAILABLE">
+          <TerminalText variant="dim" className="text-center py-4">
+            CULTURAL DECISION SYSTEM NOT AVAILABLE
+          </TerminalText>
+        </TerminalWindow>
       );
     }
 
     return (
-      <div className="space-y-6">
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-blue-400 mb-4">Cultural Guidance</h4>
-          <p className="text-gray-300 mb-4">
-            Shape the cultural evolution of your civilization through deliberate actions and policies.
-          </p>
+      <div className="space-y-4">
+        <TerminalWindow title="CULTURAL GUIDANCE" statusLine="POLICY MANAGEMENT">
+          <TerminalText variant="secondary" className="mb-4">
+            SHAPE THE CULTURAL EVOLUTION OF YOUR CIVILIZATION THROUGH DELIBERATE ACTIONS
+          </TerminalText>
           <div className="grid grid-cols-2 gap-3">
-            <button
+            <TerminalButton
               onClick={() => onCulturalAction('preserve_traditions', { legacy: evolution.legacy })}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
+              variant="primary"
             >
-              Preserve Traditions
-            </button>
-            <button
+              PRESERVE TRADITIONS
+            </TerminalButton>
+            <TerminalButton
               onClick={() => onCulturalAction('encourage_innovation', { legacy: evolution.legacy })}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm transition-colors"
+              variant="success"
             >
-              Encourage Innovation
-            </button>
-            <button
+              ENCOURAGE INNOVATION
+            </TerminalButton>
+            <TerminalButton
               onClick={() => onCulturalAction('cultural_festival', { legacy: evolution.legacy })}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors"
+              variant="primary"
             >
-              Cultural Festival
-            </button>
-            <button
+              CULTURAL FESTIVAL
+            </TerminalButton>
+            <TerminalButton
               onClick={() => onCulturalAction('generational_dialogue', { legacy: evolution.legacy })}
-              className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded text-sm transition-colors"
+              variant="warning"
             >
-              Generational Dialogue
-            </button>
+              GENERATIONAL DIALOGUE
+            </TerminalButton>
           </div>
-        </div>
+        </TerminalWindow>
 
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-green-400 mb-4">Stabilization Actions</h4>
-          <div className="grid grid-cols-1 gap-3">
-            <button
+        <TerminalWindow title="STABILIZATION ACTIONS" statusLine="CULTURAL CONTROL">
+          <div className="space-y-3">
+            <div 
+              className="border border-terminal-border p-3 cursor-pointer hover:border-terminal-primary transition-colors"
               onClick={() => onCulturalAction('cultural_census', { legacy: evolution.legacy })}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded text-sm transition-colors text-left"
             >
-              <div className="font-medium">Cultural Census</div>
-              <div className="text-xs text-indigo-200">Assess current cultural state and trends</div>
-            </button>
-            <button
+              <TerminalText variant="primary" className="font-mono mb-1">
+                ▶ CULTURAL CENSUS
+              </TerminalText>
+              <TerminalText variant="dim" className="text-xs">
+                ASSESS CURRENT CULTURAL STATE AND TRENDS
+              </TerminalText>
+            </div>
+            <div 
+              className="border border-terminal-border p-3 cursor-pointer hover:border-terminal-primary transition-colors"
               onClick={() => onCulturalAction('cultural_education', { legacy: evolution.legacy })}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 rounded text-sm transition-colors text-left"
             >
-              <div className="font-medium">Cultural Education Program</div>
-              <div className="text-xs text-teal-200">Reinforce core values and beliefs</div>
-            </button>
-            <button
+              <TerminalText variant="primary" className="font-mono mb-1">
+                ▶ CULTURAL EDUCATION PROGRAM
+              </TerminalText>
+              <TerminalText variant="dim" className="text-xs">
+                REINFORCE CORE VALUES AND BELIEFS
+              </TerminalText>
+            </div>
+            <div 
+              className="border border-terminal-border p-3 cursor-pointer hover:border-terminal-primary transition-colors"
               onClick={() => onCulturalAction('cultural_reform', { legacy: evolution.legacy })}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm transition-colors text-left"
             >
-              <div className="font-medium">Cultural Reform Initiative</div>
-              <div className="text-xs text-orange-200">Actively guide cultural development</div>
-            </button>
-          </div>
-        </div>
-
-        {Math.abs(evolution.baselineDeviation) > 50 && (
-          <div className="bg-gray-700 rounded-lg p-4 border border-red-500">
-            <h4 className="text-lg font-semibold text-red-400 mb-4">Emergency Measures</h4>
-            <p className="text-gray-300 mb-3 text-sm">
-              High cultural deviation detected. Consider emergency stabilization measures.
-            </p>
-            <div className="grid grid-cols-1 gap-3">
-              <button
-                onClick={() => onCulturalAction('cultural_restoration', { legacy: evolution.legacy })}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors text-left"
-              >
-                <div className="font-medium">Cultural Restoration</div>
-                <div className="text-xs text-red-200">Attempt to return to baseline culture</div>
-              </button>
-              <button
-                onClick={() => onCulturalAction('accept_evolution', { legacy: evolution.legacy })}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition-colors text-left"
-              >
-                <div className="font-medium">Accept Evolution</div>
-                <div className="text-xs text-purple-200">Embrace the cultural change as new baseline</div>
-              </button>
+              <TerminalText variant="primary" className="font-mono mb-1">
+                ▶ CULTURAL REFORM INITIATIVE
+              </TerminalText>
+              <TerminalText variant="dim" className="text-xs">
+                ACTIVELY GUIDE CULTURAL DEVELOPMENT
+              </TerminalText>
             </div>
           </div>
+        </TerminalWindow>
+
+        {Math.abs(evolution.baselineDeviation) > 50 && (
+          <TerminalWindow title="EMERGENCY MEASURES" statusLine="CRITICAL ALERT" className="border-terminal-error">
+            <TerminalText variant="error" className="mb-3 text-sm">
+              HIGH CULTURAL DEVIATION DETECTED. CONSIDER EMERGENCY STABILIZATION MEASURES.
+            </TerminalText>
+            <div className="space-y-3">
+              <div 
+                className="border border-terminal-error p-3 cursor-pointer hover:bg-terminal-error hover:bg-opacity-10 transition-colors"
+                onClick={() => onCulturalAction('cultural_restoration', { legacy: evolution.legacy })}
+              >
+                <TerminalText variant="error" className="font-mono mb-1">
+                  ⚠ CULTURAL RESTORATION
+                </TerminalText>
+                <TerminalText variant="dim" className="text-xs">
+                  ATTEMPT TO RETURN TO BASELINE CULTURE
+                </TerminalText>
+              </div>
+              <div 
+                className="border border-terminal-warning p-3 cursor-pointer hover:bg-terminal-warning hover:bg-opacity-10 transition-colors"
+                onClick={() => onCulturalAction('accept_evolution', { legacy: evolution.legacy })}
+              >
+                <TerminalText variant="warning" className="font-mono mb-1">
+                  ⚡ ACCEPT EVOLUTION
+                </TerminalText>
+                <TerminalText variant="dim" className="text-xs">
+                  EMBRACE THE CULTURAL CHANGE AS NEW BASELINE
+                </TerminalText>
+              </div>
+            </div>
+          </TerminalWindow>
         )}
       </div>
     );
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-400 mb-2">⟡ Cultural Evolution</h1>
-        <p className="text-gray-300">
-          Track how your civilization's culture evolves and adapts across generations of space travel.
-        </p>
-      </div>
+    <TerminalWindow title="⟡ CULTURAL EVOLUTION">
+      <TerminalText className="mb-4">
+        Track how your civilization's culture evolves and adapts across generations of space travel.
+      </TerminalText>
 
       {selectedLegacy ? renderLegacyDetail() : renderOverview()}
-    </div>
+    </TerminalWindow>
   );
 };
 
