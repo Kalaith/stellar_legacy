@@ -3,6 +3,15 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { GameState, GameData, CrewMember, StarSystem, Planet, Notification, ShipStats, ComponentCost } from '../types/game';
 import type { CulturalEvolution } from '../types/generationalMissions';
+import type { Chronicle, ChronicleEntry, ChronicleDecision } from '../types/chronicle';
+import type { HeritageModifier, HeritageApplicationResult } from '../types/heritage';
+import type { PacingState, PacingPreferences, PlannedMilestone } from '../types/pacing';
+import type { LegacyCard, LegacyDeck, CardTriggerResult } from '../types/legacyDecks';
+import { ChronicleService } from '../services/ChronicleService';
+import { HeritageService } from '../services/HeritageService';
+import { PacingService } from '../services/PacingService';
+import { LegacyDeckService } from '../services/LegacyDeckService';
+import { DecisionTrackingService, type DecisionInput } from '../services/DecisionTrackingService';
 import { GAME_CONSTANTS } from '../constants/gameConstants';
 import type { TabIdType, TradeActionType, LegacyTypeType } from '../types/enums';
 import { TabId } from '../types/enums';
@@ -155,6 +164,20 @@ const initialGameData: GameData = {
 };
 
 interface GameStore extends GameState {
+  // Chronicle System State
+  chronicle: Chronicle | null;
+  availableHeritageModifiers: HeritageModifier[];
+  selectedHeritageModifiers: HeritageModifier[];
+
+  // Pacing System State
+  pacingState: PacingState | null;
+  pacingPreferences: PacingPreferences;
+
+  // Legacy Deck System State
+  legacyDecks: Record<LegacyTypeType, LegacyDeck>;
+  activeCards: LegacyCard[];
+  pendingCardChoices: CardTriggerResult[];
+
   // Actions
   initializeGame: () => void;
   switchTab: (tabName: TabIdType) => void;
@@ -178,6 +201,31 @@ interface GameStore extends GameState {
   legacyAction: (targetLegacy: LegacyTypeType, action: string) => void;
   culturalAction: (action: string, parameters?: any) => void;
   initializeDynasties: (legacy: LegacyTypeType) => void;
+
+  // Chronicle System Actions
+  loadChronicle: () => Promise<void>;
+  saveChronicleEntry: (entry: ChronicleEntry) => Promise<void>;
+  generateHeritageModifiers: (entry: ChronicleEntry) => Promise<void>;
+  selectHeritageModifiers: (modifiers: HeritageModifier[]) => void;
+  applyHeritageModifiers: () => Promise<void>;
+  exportChronicle: () => string | null;
+  recordDecision: (decision: DecisionInput) => void;
+
+  // Pacing System Actions
+  initializePacing: (mission?: any) => Promise<void>;
+  updatePacingState: (updates: Partial<PacingState>) => void;
+  updatePacingPreferences: (preferences: PacingPreferences) => void;
+  pauseTime: () => void;
+  resumeTime: () => void;
+  forceTimeAcceleration: (acceleration: number) => void;
+
+  // Legacy Deck Actions
+  initializeLegacyDecks: () => Promise<void>;
+  checkCardTriggers: () => void;
+  triggerCard: (cardId: string) => void;
+  resolveCardChoice: (cardId: string, choiceId: string) => void;
+  rateCard: (cardId: string, rating: number) => void;
+  customizeCard: (cardId: string, modifications: any[]) => void;
 
   // Helper methods
   canAffordComponent: (cost: ComponentCost) => boolean;
@@ -243,6 +291,40 @@ export const useGameStore = create<GameStore>()(
           currentTrends: []
         }
       ] as CulturalEvolution[],
+
+      // Chronicle System State
+      chronicle: null,
+      availableHeritageModifiers: [],
+      selectedHeritageModifiers: [],
+
+      // Pacing System State
+      pacingState: null,
+      pacingPreferences: {
+        preferredSpeed: 'medium',
+        crisisHandling: 'guided',
+        milestoneFrequency: 'moderate',
+        narrativeStyle: 'concise',
+        automationThreshold: 0.3,
+        interactionBudget: 2,
+        contentPreferences: {
+          dynastyFocus: 0.5,
+          legacyFocus: 0.5,
+          explorationFocus: 0.5,
+          culturalFocus: 0.5,
+          contentComplexity: 'moderate',
+          narrativeDepth: 'moderate',
+          choiceConsequences: 'mixed'
+        }
+      },
+
+      // Legacy Deck System State
+      legacyDecks: {
+        preservers: { legacy: 'preservers', cards: [], activeCards: [], discardPile: [], baseCards: [], chronicleCards: [], customCards: [], totalPlays: 0, averageImpact: 0, playerSatisfaction: 0, balanceRating: 0, playerFilters: [], cardRatings: {}, disabledCards: [] },
+        adaptors: { legacy: 'adaptors', cards: [], activeCards: [], discardPile: [], baseCards: [], chronicleCards: [], customCards: [], totalPlays: 0, averageImpact: 0, playerSatisfaction: 0, balanceRating: 0, playerFilters: [], cardRatings: {}, disabledCards: [] },
+        wanderers: { legacy: 'wanderers', cards: [], activeCards: [], discardPile: [], baseCards: [], chronicleCards: [], customCards: [], totalPlays: 0, averageImpact: 0, playerSatisfaction: 0, balanceRating: 0, playerFilters: [], cardRatings: {}, disabledCards: [] }
+      },
+      activeCards: [],
+      pendingCardChoices: [],
 
       initializeGame: () => {
         Logger.info('Initializing game store');
@@ -685,6 +767,275 @@ export const useGameStore = create<GameStore>()(
           Logger.error('Dynasty initialization failed', error);
           get().showNotification('Failed to initialize dynasties', 'error');
         }
+      },
+
+      // Chronicle System Actions
+      loadChronicle: async () => {
+        try {
+          const chronicle = await ChronicleService.loadPlayerChronicle();
+          set({ chronicle });
+          if (chronicle) {
+            Logger.info('Chronicle loaded', { entryCount: chronicle.entries.length });
+          }
+        } catch (error) {
+          Logger.error('Failed to load chronicle', error);
+          get().showNotification('Failed to load chronicle', 'error');
+        }
+      },
+
+      saveChronicleEntry: async (entry: ChronicleEntry) => {
+        try {
+          await ChronicleService.saveChronicleEntry(entry);
+          await get().loadChronicle(); // Reload to get updated chronicle
+          get().showNotification('Chronicle entry saved', 'success');
+          Logger.info('Chronicle entry saved', { missionId: entry.missionId });
+        } catch (error) {
+          Logger.error('Failed to save chronicle entry', error);
+          get().showNotification('Failed to save chronicle entry', 'error');
+        }
+      },
+
+      generateHeritageModifiers: async (entry: ChronicleEntry) => {
+        try {
+          const modifiers = ChronicleService.generateHeritageModifiers(entry);
+          set({ availableHeritageModifiers: modifiers });
+          get().showNotification(`Generated ${modifiers.length} heritage modifiers`, 'success');
+          Logger.info('Heritage modifiers generated', { count: modifiers.length });
+        } catch (error) {
+          Logger.error('Failed to generate heritage modifiers', error);
+          get().showNotification('Failed to generate heritage modifiers', 'error');
+        }
+      },
+
+      selectHeritageModifiers: (modifiers: HeritageModifier[]) => {
+        set({ selectedHeritageModifiers: modifiers });
+        Logger.info('Heritage modifiers selected', { count: modifiers.length });
+      },
+
+      applyHeritageModifiers: async () => {
+        try {
+          const { selectedHeritageModifiers, selectedMission } = get();
+          if (!selectedMission) {
+            get().showNotification('No mission selected for heritage application', 'error');
+            return;
+          }
+
+          const result = HeritageService.applyHeritageModifiers(selectedHeritageModifiers, selectedMission);
+
+          // Apply resource changes to current resources
+          const currentResources = get().resources;
+          const updatedResources = { ...currentResources };
+          Object.entries(result.resourceChanges).forEach(([resource, change]) => {
+            if (updatedResources[resource as keyof typeof updatedResources] !== undefined) {
+              (updatedResources as any)[resource] += change;
+            }
+          });
+
+          set({ resources: updatedResources });
+          get().showNotification(`Applied ${result.appliedModifiers.length} heritage modifiers`, 'success');
+          Logger.info('Heritage modifiers applied', {
+            count: result.appliedModifiers.length,
+            warnings: result.warnings.length
+          });
+        } catch (error) {
+          Logger.error('Failed to apply heritage modifiers', error);
+          get().showNotification('Failed to apply heritage modifiers', 'error');
+        }
+      },
+
+      exportChronicle: () => {
+        try {
+          const { chronicle } = get();
+          if (!chronicle) {
+            get().showNotification('No chronicle to export', 'error');
+            return null;
+          }
+
+          const exportData = ChronicleService.exportChronicle(chronicle);
+          Logger.info('Chronicle exported');
+          return exportData;
+        } catch (error) {
+          Logger.error('Failed to export chronicle', error);
+          get().showNotification('Failed to export chronicle', 'error');
+          return null;
+        }
+      },
+
+      recordDecision: (decision: DecisionInput) => {
+        try {
+          const { selectedMission } = get();
+          if (!selectedMission) {
+            Logger.warn('Cannot record decision without active mission');
+            return;
+          }
+
+          const entry = DecisionTrackingService.recordDecision(decision, selectedMission);
+          get().showNotification('Decision recorded in chronicle', 'success');
+          Logger.info('Decision recorded', { decisionId: entry.id, title: decision.title });
+        } catch (error) {
+          Logger.error('Failed to record decision', error);
+          get().showNotification('Failed to record decision', 'error');
+        }
+      },
+
+      // Pacing System Actions
+      initializePacing: async (mission?: any) => {
+        try {
+          const { pacingPreferences, chronicle } = get();
+          const targetMission = mission || get().selectedMission;
+
+          if (!targetMission) {
+            Logger.warn('Cannot initialize pacing without mission');
+            return;
+          }
+
+          const pacingState = PacingService.calculateOptimalPacing(
+            targetMission,
+            pacingPreferences,
+            chronicle || undefined
+          );
+
+          set({ pacingState });
+          await PacingService.savePacingState(pacingState);
+          get().showNotification('Pacing system initialized', 'success');
+          Logger.info('Pacing system initialized', { phase: pacingState.currentPhase });
+        } catch (error) {
+          Logger.error('Failed to initialize pacing', error);
+          get().showNotification('Failed to initialize pacing', 'error');
+        }
+      },
+
+      updatePacingState: (updates: Partial<PacingState>) => {
+        const { pacingState } = get();
+        if (!pacingState) return;
+
+        const newState = { ...pacingState, ...updates };
+        set({ pacingState: newState });
+        PacingService.savePacingState(newState).catch(error => {
+          Logger.error('Failed to save pacing state', error);
+        });
+      },
+
+      updatePacingPreferences: (preferences: PacingPreferences) => {
+        set({ pacingPreferences: preferences });
+        Logger.info('Pacing preferences updated');
+      },
+
+      pauseTime: () => {
+        get().updatePacingState({ timeAcceleration: 0 });
+        get().showNotification('Time paused', 'info');
+      },
+
+      resumeTime: () => {
+        const { pacingPreferences } = get();
+        const defaultAcceleration = pacingPreferences.preferredSpeed === 'slow' ? 0.5 :
+                                   pacingPreferences.preferredSpeed === 'fast' ? 2.0 : 1.0;
+        get().updatePacingState({ timeAcceleration: defaultAcceleration });
+        get().showNotification('Time resumed', 'info');
+      },
+
+      forceTimeAcceleration: (acceleration: number) => {
+        get().updatePacingState({ timeAcceleration: acceleration });
+        get().showNotification(`Time acceleration set to ${acceleration}x`, 'info');
+      },
+
+      // Legacy Deck Actions
+      initializeLegacyDecks: async () => {
+        try {
+          const { playerLegacy, availableHeritageModifiers } = get();
+
+          // For now, just initialize empty decks
+          // In a full implementation, this would load cards from heritage modifiers
+          Logger.info('Legacy decks initialized', { legacy: playerLegacy });
+          get().showNotification('Legacy decks initialized', 'success');
+        } catch (error) {
+          Logger.error('Failed to initialize legacy decks', error);
+          get().showNotification('Failed to initialize legacy decks', 'error');
+        }
+      },
+
+      checkCardTriggers: () => {
+        try {
+          const { legacyDecks, playerLegacy, selectedMission } = get();
+          if (!selectedMission) return;
+
+          const currentDeck = legacyDecks[playerLegacy];
+          const triggers = LegacyDeckService.checkCardTriggers(currentDeck, selectedMission);
+
+          set({ pendingCardChoices: triggers });
+          if (triggers.length > 0) {
+            get().showNotification(`${triggers.length} legacy cards triggered`, 'info');
+          }
+        } catch (error) {
+          Logger.error('Failed to check card triggers', error);
+        }
+      },
+
+      triggerCard: (cardId: string) => {
+        const { pendingCardChoices } = get();
+        const trigger = pendingCardChoices.find(t => t.card.id === cardId);
+
+        if (trigger) {
+          set({ activeCards: [...get().activeCards, trigger.card] });
+          get().showNotification(`Legacy card activated: ${trigger.card.name}`, 'info');
+          Logger.info('Legacy card triggered', { cardId, cardName: trigger.card.name });
+        }
+      },
+
+      resolveCardChoice: (cardId: string, choiceId: string) => {
+        try {
+          const { activeCards, selectedMission } = get();
+          const card = activeCards.find(c => c.id === cardId);
+          const choice = card?.choices.find(c => c.id === choiceId);
+
+          if (!card || !choice || !selectedMission) {
+            Logger.warn('Invalid card choice resolution', { cardId, choiceId });
+            return;
+          }
+
+          const result = LegacyDeckService.resolveCardChoice(card, choice, selectedMission);
+
+          // Remove card from active cards
+          set({ activeCards: activeCards.filter(c => c.id !== cardId) });
+
+          get().showNotification(`Card resolved: ${result.narrativeOutcome}`, 'success');
+          Logger.info('Card choice resolved', { cardId, choiceId, outcome: result.narrativeOutcome });
+        } catch (error) {
+          Logger.error('Failed to resolve card choice', error);
+          get().showNotification('Failed to resolve card choice', 'error');
+        }
+      },
+
+      rateCard: (cardId: string, rating: number) => {
+        const { legacyDecks, playerLegacy } = get();
+        const deck = legacyDecks[playerLegacy];
+
+        const updatedDeck = LegacyDeckService.applyCuration(deck, cardId, 'rate', rating);
+
+        set({
+          legacyDecks: {
+            ...legacyDecks,
+            [playerLegacy]: updatedDeck
+          }
+        });
+
+        get().showNotification(`Card rated: ${rating}/5`, 'success');
+      },
+
+      customizeCard: (cardId: string, modifications: any[]) => {
+        const { legacyDecks, playerLegacy } = get();
+        const deck = legacyDecks[playerLegacy];
+
+        const updatedDeck = LegacyDeckService.applyCuration(deck, cardId, 'modify', modifications);
+
+        set({
+          legacyDecks: {
+            ...legacyDecks,
+            [playerLegacy]: updatedDeck
+          }
+        });
+
+        get().showNotification('Card customized', 'success');
       },
 
       cleanup: () => {

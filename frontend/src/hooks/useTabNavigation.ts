@@ -26,7 +26,8 @@ const createTabDefinitions = (activeMissionCount: number): TabDefinition[] => [
   },
   { id: 'dynasty-hall' as TabIdType, label: 'DYNASTY HALL', category: 'GENERATIONAL' },
   { id: 'legacy-relations' as TabIdType, label: 'LEGACY RELATIONS', category: 'GENERATIONAL' },
-  { id: 'cultural-evolution' as TabIdType, label: 'CULTURAL EVOLUTION', category: 'GENERATIONAL' }
+  { id: 'cultural-evolution' as TabIdType, label: 'CULTURAL EVOLUTION', category: 'GENERATIONAL' },
+  { id: 'chronicle' as TabIdType, label: 'CHRONICLE', category: 'GENERATIONAL' }
 ];
 
 export const useTabNavigation = () => {

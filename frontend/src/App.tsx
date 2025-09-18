@@ -13,6 +13,9 @@ import { MissionCommandCenter } from './components/game/missions/MissionCommandC
 import DynastyHall from './components/game/DynastyHall';
 import LegacyRelations from './components/game/LegacyRelations';
 import CulturalEvolution from './components/game/CulturalEvolution';
+import { ChronicleViewer } from './components/chronicle/ChronicleViewer';
+import { HeritageSelector } from './components/chronicle/HeritageSelector';
+import { TimeController } from './components/pacing/TimeController';
 import NotificationSystem from './components/ui/NotificationSystem';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import './styles/terminal.css';
@@ -30,11 +33,24 @@ const App: React.FC = () => {
     culturalEvolution,
     currentGeneration,
     culturalAction,
-    initializeDynasties
+    initializeDynasties,
+    // Chronicle system
+    loadChronicle,
+    availableHeritageModifiers,
+    generateHeritageModifiers,
+    selectHeritageModifiers,
+    applyHeritageModifiers,
+    // Pacing system
+    pacingState,
+    updatePacingState,
+    updatePacingPreferences,
+    pauseTime,
+    resumeTime
   } = useGameStore();
 
   useEffect(() => {
     initializeGame();
+    loadChronicle(); // Load chronicle on startup
 
     // Initialize dynasties if none exist
     if (dynasties.length === 0) {
@@ -45,7 +61,7 @@ const App: React.FC = () => {
       // Cleanup on unmount
       useGameStore.getState().cleanup();
     };
-  }, [initializeGame, dynasties.length, initializeDynasties]);
+  }, [initializeGame, dynasties.length, initializeDynasties, loadChronicle]);
 
   const renderCurrentTab = () => {
     switch (currentTab) {
@@ -81,6 +97,30 @@ const App: React.FC = () => {
             currentGeneration={currentGeneration}
             onCulturalAction={culturalAction}
           />
+        );
+      case 'chronicle':
+        return (
+          <div className="space-y-6">
+            <ChronicleViewer
+              onHeritageGenerate={generateHeritageModifiers}
+            />
+            {availableHeritageModifiers.length > 0 && (
+              <HeritageSelector
+                availableModifiers={availableHeritageModifiers}
+                onSelectionChange={selectHeritageModifiers}
+                onApply={applyHeritageModifiers}
+              />
+            )}
+            {pacingState && (
+              <TimeController
+                pacingState={pacingState}
+                onPacingChange={(changes) => updatePacingState(changes)}
+                onPreferencesChange={updatePacingPreferences}
+                onEmergencyPause={pauseTime}
+                onForceResume={resumeTime}
+              />
+            )}
+          </div>
         );
       default:
         return <TerminalDashboard />;

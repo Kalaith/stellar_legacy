@@ -19,6 +19,7 @@ const TerminalTabNavigation: React.FC = React.memo(() => {
       case 'dynasty-hall': return '⬢';   // Dynasty
       case 'legacy-relations': return '◎';  // Legacy Relations
       case 'cultural-evolution': return '⟡'; // Culture
+      case 'chronicle': return '⟬';      // Chronicle/History
       default: return '▫';
     }
   };

@@ -9,7 +9,8 @@ export const TabId = {
   MISSION_COMMAND: 'mission-command',
   DYNASTY_HALL: 'dynasty-hall',
   LEGACY_RELATIONS: 'legacy-relations',
-  CULTURAL_EVOLUTION: 'cultural-evolution'
+  CULTURAL_EVOLUTION: 'cultural-evolution',
+  CHRONICLE: 'chronicle'
 } as const;
 
 export type TabIdType = typeof TabId[keyof typeof TabId];
