@@ -41,9 +41,9 @@ interface CrewMemberItemProps {
 
 const CrewMemberItem: React.FC<CrewMemberItemProps> = React.memo(({ member }) => {
   const getMoraleColor = useMemo(() => (morale: number) => {
-    if (morale > 70) return 'bg-green-500';
-    if (morale > 50) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (morale > 70) return 'bg-green-400';  // Keep green for morale visual - semantic use
+    if (morale > 50) return 'bg-yellow-600'; // Yellow for warning state
+    return 'bg-red-500';                     // Red for low morale
   }, []);
 
   return (

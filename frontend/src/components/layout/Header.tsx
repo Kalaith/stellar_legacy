@@ -27,7 +27,7 @@ const Header: React.FC = React.memo(() => {
             <ResourceItem icon="⚡" label="Energy" value={Math.floor(resources.energy)} />
             <ResourceItem icon="⛏️" label="Minerals" value={Math.floor(resources.minerals)} />
             <ResourceItem icon="🍎" label="Food" value={Math.floor(resources.food)} />
-            <ResourceItem icon="🎖️" label="Influence" value={Math.floor(resources.influence)} />
+            <ResourceItem icon="🎖️" label="Influence" value={Number(resources.influence.toFixed(2))} />
           </div>
         </div>
       </div>

@@ -2,82 +2,109 @@
 import React from 'react';
 import { useTabNavigation } from '../../hooks/useTabNavigation';
 import { UI_CONSTANTS } from '../../constants/uiConstants';
+import { generateTerminalBorder } from '../../utils/terminalBorders';
 
 const TerminalTabNavigation: React.FC = React.memo(() => {
   const { currentTab, coreSystemTabs, generationalTabs, handleTabSwitch } = useTabNavigation();
 
-  const coreTabsWidth = UI_CONSTANTS.NAVIGATION.CORE_TABS_WIDTH;
-  const genTabsWidth = UI_CONSTANTS.NAVIGATION.GENERATIONAL_TABS_WIDTH;
+  // Terminal icons for different tab types
+  const getTabIcon = (tabId: string) => {
+    switch (tabId) {
+      case 'dashboard': return '⊡';      // Console/Dashboard
+      case 'ship-builder': return '⚙';   // Engineering
+      case 'crew-quarters': return '◈';  // Crew/Personnel
+      case 'galaxy-map': return '※';     // Navigation/Map
+      case 'market': return '⟐';        // Commerce
+      case 'legacy': return '⟡';        // Legacy/Records
+      case 'mission-command': return '⟐'; // Command
+      case 'dynasty-hall': return '⬢';   // Dynasty
+      case 'sect-relations': return '◎';  // Relations
+      case 'cultural-evolution': return '⟡'; // Culture
+      default: return '▫';
+    }
+  };
 
   return (
-    <nav className="terminal-navigation">
-      {/* Core Systems Section */}
-      <div className="terminal-nav-section">
-        <div className="terminal-nav-header">
-          ┌─[CORE SYSTEMS]{"─".repeat(coreTabsWidth - UI_CONSTANTS.NAVIGATION.CORE_SYSTEMS_HEADER_LENGTH)}┐
-        </div>
-        <div className="terminal-nav-content">
-          <div className="terminal-nav-grid">
-            {coreSystemTabs.map((tab, index) => {
-              const isActive = currentTab === tab.id;
-              const tabDisplay = tab.label.padEnd(UI_CONSTANTS.NAVIGATION.TAB_LABEL_PADDING.CORE);
+    <nav className="terminal-navigation" style={{ padding: '0.5rem 1rem', display: 'block' }}>
+      {/* Side-by-Side Vertical Navigation */}
+      <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
 
+        {/* Core Systems - Horizontal Tabs */}
+        <div className="terminal-nav-section" style={{ flex: '1', maxWidth: '50%' }}>
+          <div className="terminal-nav-header" style={{ marginBottom: '0.25rem' }}>
+            {generateTerminalBorder('CORE SYSTEMS', 65).top}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', padding: '0.25rem 0.5rem' }}>
+            {coreSystemTabs.map((tab) => {
+              const isActive = currentTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabSwitch(tab.id)}
-                  className={`terminal-nav-item ${
-                    isActive ? 'active' : 'inactive'
-                  }`}
+                  className={`terminal-nav-item ${isActive ? 'active' : ''}`}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    border: `1px solid ${isActive ? '#FFB000' : '#444444'}`,
+                    background: isActive ? 'rgba(255, 176, 0, 0.1)' : 'transparent',
+                    color: isActive ? '#FFB000' : '#AA7700',
+                    fontSize: '0.85rem',
+                    fontFamily: 'monospace',
+                    whiteSpace: 'nowrap',
+                    flex: 'none',
+                    display: 'inline-block'
+                  }}
                 >
-                  │ {isActive ? '►' : ' '} {tabDisplay} │
+                  {getTabIcon(tab.id)} {tab.label}
                 </button>
               );
             })}
           </div>
+          <div className="terminal-nav-footer">
+            {generateTerminalBorder('CORE SYSTEMS', 65).bottom}
+          </div>
         </div>
-        <div className="terminal-nav-footer">
-          └{"─".repeat(coreTabsWidth)}┘
-        </div>
-      </div>
 
-      {/* Generational Systems Section */}
-      <div className="terminal-nav-section">
-        <div className="terminal-nav-header">
-          ┌─[GENERATIONAL SYSTEMS]{"─".repeat(genTabsWidth - UI_CONSTANTS.NAVIGATION.GENERATIONAL_SYSTEMS_HEADER_LENGTH)}┐
-        </div>
-        <div className="terminal-nav-content">
-          <div className="terminal-nav-grid">
-            {generationalTabs.map((tab, index) => {
+        {/* Generational Systems - Horizontal Tabs */}
+        <div className="terminal-nav-section" style={{ flex: '1', maxWidth: '50%' }}>
+          <div className="terminal-nav-header" style={{ marginBottom: '0.25rem' }}>
+            {generateTerminalBorder('GENERATIONAL SYSTEMS', 80).top}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', padding: '0.25rem 0.5rem' }}>
+            {generationalTabs.map((tab) => {
               const isActive = currentTab === tab.id;
               const hasAlert = tab.alert;
-              const tabDisplay = tab.label.padEnd(UI_CONSTANTS.NAVIGATION.TAB_LABEL_PADDING.GENERATIONAL);
-
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabSwitch(tab.id)}
-                  className={`terminal-nav-item ${
-                    isActive ? 'active' : 'inactive'
-                  } ${
-                    hasAlert ? 'alert' : ''
-                  }`}
+                  className={`terminal-nav-item ${isActive ? 'active' : ''} ${hasAlert ? 'alert' : ''}`}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    border: `1px solid ${isActive ? '#FFB000' : hasAlert ? '#FF3300' : '#444444'}`,
+                    background: isActive ? 'rgba(255, 176, 0, 0.1)' : hasAlert ? 'rgba(255, 51, 0, 0.1)' : 'transparent',
+                    color: isActive ? '#FFB000' : hasAlert ? '#FF3300' : '#AA7700',
+                    fontSize: '0.85rem',
+                    fontFamily: 'monospace',
+                    whiteSpace: 'nowrap',
+                    flex: 'none',
+                    display: 'inline-block'
+                  }}
                 >
-                  │ {isActive ? '►' : ' '} {tabDisplay} {hasAlert ? '[!]' : '   '} │
+                  {getTabIcon(tab.id)} {tab.label} {hasAlert ? ' [!]' : ''}
                 </button>
               );
             })}
           </div>
-        </div>
-        <div className="terminal-nav-footer">
-          └{"─".repeat(genTabsWidth)}┘
+          <div className="terminal-nav-footer">
+            {generateTerminalBorder('GENERATIONAL SYSTEMS', 80).bottom}
+          </div>
         </div>
       </div>
 
-      {/* Command Line Indicator */}
-      <div className="terminal-command-line">
+      {/* Compact Command Line Indicator */}
+      <div style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.75rem' }}>
         <div className="terminal-text dim">
-          CURRENT SYSTEM: [{currentTab.toUpperCase().replace('-', '_')}] │ AWAITING COMMANDS...
+          ACTIVE: [{currentTab.toUpperCase().replace('-', '_')}] │ STATUS: READY
         </div>
       </div>
     </nav>

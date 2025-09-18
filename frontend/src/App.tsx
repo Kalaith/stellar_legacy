@@ -10,21 +10,42 @@ import GalaxyMap from './components/game/galaxymap/GalaxyMap';
 import Market from './components/game/market/Market';
 import Legacy from './components/game/legacy/Legacy';
 import { MissionCommandCenter } from './components/game/missions/MissionCommandCenter';
+import DynastyHall from './components/game/DynastyHall';
+import SectRelations from './components/game/SectRelations';
+import CulturalEvolution from './components/game/CulturalEvolution';
 import NotificationSystem from './components/ui/NotificationSystem';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import './styles/terminal.css';
 
 const App: React.FC = () => {
-  const { currentTab, initializeGame } = useGameStore();
+  const {
+    currentTab,
+    initializeGame,
+    dynasties,
+    dynastyAction,
+    sectRelations,
+    playerSect,
+    playerSectAffinity,
+    sectAction,
+    culturalEvolution,
+    currentGeneration,
+    culturalAction,
+    initializeDynasties
+  } = useGameStore();
 
   useEffect(() => {
     initializeGame();
-    
+
+    // Initialize dynasties if none exist
+    if (dynasties.length === 0) {
+      initializeDynasties('preservers'); // Default to preservers sect
+    }
+
     return () => {
       // Cleanup on unmount
       useGameStore.getState().cleanup();
     };
-  }, [initializeGame]);
+  }, [initializeGame, dynasties.length, initializeDynasties]);
 
   const renderCurrentTab = () => {
     switch (currentTab) {
@@ -43,11 +64,24 @@ const App: React.FC = () => {
       case 'mission-command':
         return <MissionCommandCenter />;
       case 'dynasty-hall':
-        return <div className="terminal-content"><h2 className="terminal-h2">Dynasty Hall - Coming Soon</h2></div>;
+        return <DynastyHall dynasties={dynasties} onDynastyAction={dynastyAction} />;
       case 'sect-relations':
-        return <div className="terminal-content"><h2 className="terminal-h2">Sect Relations - Coming Soon</h2></div>;
+        return (
+          <SectRelations
+            sectRelations={sectRelations}
+            playerSect={playerSect}
+            playerSectAffinity={playerSectAffinity}
+            onSectAction={sectAction}
+          />
+        );
       case 'cultural-evolution':
-        return <div className="terminal-content"><h2 className="terminal-h2">Cultural Evolution - Coming Soon</h2></div>;
+        return (
+          <CulturalEvolution
+            culturalEvolution={culturalEvolution}
+            currentGeneration={currentGeneration}
+            onCulturalAction={culturalAction}
+          />
+        );
       default:
         return <TerminalDashboard />;
     }

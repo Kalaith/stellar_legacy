@@ -41,9 +41,9 @@ interface CrewCardProps {
 
 const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
   const getMoraleColor = useMemo(() => (morale: number) => {
-    if (morale > 70) return 'bg-green-500';
-    if (morale > 50) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (morale > 70) return 'bg-green-400';  // Keep green for morale visual - semantic use
+    if (morale > 50) return 'bg-yellow-600'; // Yellow for warning state
+    return 'bg-red-500';                     // Red for low morale
   }, []);
 
   const getSkillBarWidth = useMemo(() => (level: number) => `${(level / 10) * 100}%`, []);
@@ -66,7 +66,7 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
           </div>
         </div>
         {member.isHeir && (
-          <span className={`${UI_CONSTANTS.COLORS.BG_WARNING} text-yellow-100 text-xs px-2 py-1 rounded`}>
+          <span className={`${UI_CONSTANTS.COLORS.BG_WARNING} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} text-xs px-2 py-1 rounded`}>
             Heir
           </span>
         )}

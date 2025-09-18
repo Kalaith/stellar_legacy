@@ -156,6 +156,12 @@ export interface GameState extends GameData {
   // Sect Relations
   sectRelations: import('./generationalMissions').SectRelation[];
   playerSectAffinity: Record<import('../types/enums').SectTypeType, number>;
+
+  // Dynasty System
+  dynasties: import('./generationalMissions').Dynasty[];
+  playerSect: import('../types/enums').SectTypeType;
+  currentGeneration: number;
+  culturalEvolution: import('./generationalMissions').CulturalEvolution[];
 }
 
 export interface Notification {

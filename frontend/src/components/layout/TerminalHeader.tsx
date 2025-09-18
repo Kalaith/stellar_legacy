@@ -12,7 +12,8 @@ const TerminalHeader: React.FC = () => {
     } else if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}K`;
     }
-    return num.toString();
+    // Round to 2 decimal places to avoid floating point precision errors
+    return Number(num.toFixed(2)).toString();
   };
 
   const getStatusColor = (value: number, threshold: number) => {
@@ -22,100 +23,49 @@ const TerminalHeader: React.FC = () => {
   };
 
   return (
-    <header className="terminal-header-main">
-      {/* ASCII Art Title */}
-      <div className="terminal-title-section">
-        <div className="terminal-ascii-title">
-          <pre className="terminal-text bright">
-{`
-╔═══════════════════════════════════════════════════════════════╗
-║   ███████╗████████╗███████╗██╗     ██╗      █████╗ ██████╗   ║
-║   ██╔════╝╚══██╔══╝██╔════╝██║     ██║     ██╔══██╗██╔══██╗  ║
-║   ███████╗   ██║   █████╗  ██║     ██║     ███████║██████╔╝  ║
-║   ╚════██║   ██║   ██╔══╝  ██║     ██║     ██╔══██║██╔══██╗  ║
-║   ███████║   ██║   ███████╗███████╗███████╗██║  ██║██║  ██║  ║
-║   ╚══════╝   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝  ║
-║                    LEGACY COMMAND INTERFACE                  ║
-╚═══════════════════════════════════════════════════════════════╝`}
-          </pre>
-        </div>
+    <header className="terminal-header-main" style={{ padding: '0.5rem 1rem' }}>
+      {/* Compact Title */}
+      <div className="terminal-text bright" style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+        STELLAR LEGACY COMMAND INTERFACE
       </div>
 
-      {/* System Status Bar */}
-      <div className="terminal-status-bar">
-        <div className="terminal-status-section">
+      {/* Compact Status Display */}
+      <div className="terminal-status-bar" style={{ marginBottom: '0.25rem' }}>
+        <div className="terminal-status-section" style={{ marginBottom: '0.25rem' }}>
           ┌─[SYSTEM STATUS]─────────────────────────────────────────────────────────────┐
         </div>
-
-        <div className="terminal-status-grid">
-          {/* Ship Info */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0' }}>
           <div className="terminal-status-item">
-            │ VESSEL: {ship.name.toUpperCase().padEnd(20)} │
-          </div>
-
-          <div className="terminal-status-item">
-            │ HULL: {ship.hull.toUpperCase().padEnd(22)} │
-          </div>
-
-          <div className="terminal-status-item">
-            │ LEGACY: {legacy.familyName.toUpperCase()} GEN-{legacy.generation.toString().padStart(2, '0')}{' '.repeat(10)} │
+            │ VESSEL: {ship.name.toUpperCase()} │ HULL: {ship.hull.toUpperCase()} │ LEGACY: {legacy.familyName.toUpperCase()} GEN-{legacy.generation.toString().padStart(2, '0')} │
           </div>
         </div>
-
-        <div className="terminal-status-section">
+        <div className="terminal-status-section" style={{ margin: '0.25rem 0' }}>
           ├─[RESOURCE MANIFEST]───────────────────────────────────────────────────────┤
         </div>
-
-        {/* Resource Display */}
-        <div className="terminal-resource-grid">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0' }}>
           <div className="terminal-resource-item">
-            │ CREDITS: <TerminalText variant={getStatusColor(resources.credits, 5000)}>
-              {formatNumber(resources.credits).padStart(8)}
-            </TerminalText> │
-          </div>
-
-          <div className="terminal-resource-item">
-            │ ENERGY:  <TerminalText variant={getStatusColor(resources.energy, 1000)}>
-              {formatNumber(resources.energy).padStart(8)}
-            </TerminalText> │
-          </div>
-
-          <div className="terminal-resource-item">
-            │ MINERAL: <TerminalText variant={getStatusColor(resources.minerals, 500)}>
-              {formatNumber(resources.minerals).padStart(8)}
-            </TerminalText> │
-          </div>
-
-          <div className="terminal-resource-item">
-            │ FOOD:    <TerminalText variant={getStatusColor(resources.food, 800)}>
-              {formatNumber(resources.food).padStart(8)}
-            </TerminalText> │
-          </div>
-
-          <div className="terminal-resource-item">
-            │ INFLUENCE: <TerminalText variant={getStatusColor(resources.influence, 200)}>
-              {formatNumber(resources.influence).padStart(6)}
-            </TerminalText> │
+            │ CREDITS: <TerminalText variant={getStatusColor(resources.credits, 5000)}>{formatNumber(resources.credits)}</TerminalText> │
+            ENERGY: <TerminalText variant={getStatusColor(resources.energy, 1000)}>{formatNumber(resources.energy)}</TerminalText> │
+            MINERAL: <TerminalText variant={getStatusColor(resources.minerals, 500)}>{formatNumber(resources.minerals)}</TerminalText> │
+            FOOD: <TerminalText variant={getStatusColor(resources.food, 800)}>{formatNumber(resources.food)}</TerminalText> │
+            INFLUENCE: <TerminalText variant={getStatusColor(resources.influence, 200)}>{formatNumber(resources.influence)}</TerminalText> │
           </div>
         </div>
-
-        <div className="terminal-status-section">
+        <div className="terminal-status-section" style={{ marginTop: '0.25rem' }}>
           └─────────────────────────────────────────────────────────────────────────────┘
         </div>
       </div>
 
-      {/* System Time and Status */}
-      <div className="terminal-system-info">
-        <div className="terminal-flex between">
-          <div className="terminal-text dim">
-            STARDATE: {new Date().toISOString().split('T')[0].replace(/-/g, '.')}
-          </div>
-          <div className="terminal-text dim">
-            COORD: [CLASSIFIED]
-          </div>
-          <div className="terminal-text success">
-            STATUS: OPERATIONAL
-          </div>
+      {/* Compact System Info */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+        <div className="terminal-text dim">
+          STARDATE: {new Date().toISOString().split('T')[0].replace(/-/g, '.')}
+        </div>
+        <div className="terminal-text dim">
+          COORD: [CLASSIFIED]
+        </div>
+        <div className="terminal-text success">
+          STATUS: OPERATIONAL
         </div>
       </div>
     </header>

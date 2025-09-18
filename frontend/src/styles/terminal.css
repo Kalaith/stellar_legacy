@@ -1,7 +1,5 @@
 /* terminal.css - Core Terminal Design System */
 
-@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
-
 /* ===== TERMINAL VARIABLES ===== */
 :root {
   /* Typography */
@@ -531,7 +529,7 @@ body {
   cursor: pointer;
   transition: var(--terminal-transition);
   text-align: left;
-  width: 100%;
+  width: auto;
 }
 
 .terminal-nav-item:hover {

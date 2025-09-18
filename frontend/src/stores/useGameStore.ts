@@ -2,9 +2,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { GameState, GameData, CrewMember, StarSystem, Planet, Notification, ShipStats, ComponentCost } from '../types/game';
+import type { Dynasty, CulturalEvolution } from '../types/generationalMissions';
 import { GAME_CONSTANTS } from '../constants/gameConstants';
-import type { TabIdType, TradeActionType } from '../types/enums';
+import type { TabIdType, TradeActionType, SectTypeType } from '../types/enums';
 import { TabId } from '../types/enums';
+import { DynastyService } from '../services/DynastyService';
 import { CrewIdGenerator, NotificationIdGenerator } from '../types/branded';
 import type { CrewMemberId, NotificationId } from '../types/branded';
 import { NotificationManager } from '../services/NotificationManager';
@@ -171,6 +173,12 @@ interface GameStore extends GameState {
   clearNotification: (id: NotificationId) => void;
   tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: TradeActionType) => void;
 
+  // Dynasty System Actions
+  dynastyAction: (dynastyId: string, action: string) => void;
+  sectAction: (targetSect: SectTypeType, action: string) => void;
+  culturalAction: (action: string, parameters?: any) => void;
+  initializeDynasties: (sect: SectTypeType) => void;
+
   // Helper methods
   canAffordComponent: (cost: ComponentCost) => boolean;
   generateRandomCrew: () => CrewMember;
@@ -210,6 +218,31 @@ export const useGameStore = create<GameStore>()(
         adaptors: 0,
         wanderers: 0
       },
+
+      // Dynasty System State
+      dynasties: [],
+      playerSect: 'preservers' as SectTypeType,
+      currentGeneration: 1,
+      culturalEvolution: [
+        {
+          sect: 'preservers',
+          baselineDeviation: 0,
+          majorChanges: [],
+          currentTrends: []
+        },
+        {
+          sect: 'adaptors',
+          baselineDeviation: 0,
+          majorChanges: [],
+          currentTrends: []
+        },
+        {
+          sect: 'wanderers',
+          baselineDeviation: 0,
+          majorChanges: [],
+          currentTrends: []
+        }
+      ] as CulturalEvolution[],
 
       initializeGame: () => {
         Logger.info('Initializing game store');
@@ -519,6 +552,140 @@ export const useGameStore = create<GameStore>()(
         } catch (error) {
           Logger.error('Resource trade failed', error);
           get().showNotification('An error occurred during resource trade.', 'error');
+        }
+      },
+
+      // Dynasty System Actions
+      dynastyAction: (dynastyId: string, action: string) => {
+        try {
+          const { dynasties } = get();
+          const dynasty = dynasties.find(d => d.id === dynastyId);
+
+          if (!dynasty) {
+            get().showNotification('Dynasty not found', 'error');
+            return;
+          }
+
+          let message = '';
+          let updatedDynasties = [...dynasties];
+
+          switch (action) {
+            case 'grant_autonomy':
+              message = `Granted autonomy to ${dynasty.name}`;
+              // Update dynasty influence or other properties
+              updatedDynasties = dynasties.map(d =>
+                d.id === dynastyId ? { ...d, influence: Math.min(100, d.influence + 10) } : d
+              );
+              break;
+            case 'assign_mission':
+              message = `Assigned special mission to ${dynasty.name}`;
+              break;
+            case 'promote_member':
+              message = `Promoted a member in ${dynasty.name}`;
+              break;
+            case 'expand_influence':
+              message = `Expanded influence for ${dynasty.name}`;
+              updatedDynasties = dynasties.map(d =>
+                d.id === dynastyId ? { ...d, influence: Math.min(100, d.influence + 5) } : d
+              );
+              break;
+            default:
+              message = `Unknown action: ${action}`;
+          }
+
+          set({ dynasties: updatedDynasties });
+          get().showNotification(message, 'success');
+          Logger.gameAction('dynasty_action', { dynastyId, action });
+        } catch (error) {
+          Logger.error('Dynasty action failed', error);
+          get().showNotification('Dynasty action failed', 'error');
+        }
+      },
+
+      sectAction: (targetSect: SectTypeType, action: string) => {
+        try {
+          const { sectRelations, playerSect } = get();
+          let message = '';
+
+          switch (action) {
+            case 'improve_relations':
+              message = `Attempting to improve relations with ${targetSect}`;
+              break;
+            case 'formal_alliance':
+              message = `Proposing formal alliance with ${targetSect}`;
+              break;
+            case 'cultural_exchange':
+              message = `Initiating cultural exchange with ${targetSect}`;
+              break;
+            case 'issue_warning':
+              message = `Issued warning to ${targetSect}`;
+              break;
+            default:
+              message = `Unknown sect action: ${action}`;
+          }
+
+          get().showNotification(message, 'success');
+          Logger.gameAction('sect_action', { targetSect, action });
+        } catch (error) {
+          Logger.error('Sect action failed', error);
+          get().showNotification('Sect action failed', 'error');
+        }
+      },
+
+      culturalAction: (action: string, parameters?: any) => {
+        try {
+          const { culturalEvolution } = get();
+          let message = '';
+
+          switch (action) {
+            case 'preserve_traditions':
+              message = 'Implementing traditional preservation measures';
+              break;
+            case 'encourage_innovation':
+              message = 'Encouraging cultural innovation';
+              break;
+            case 'cultural_festival':
+              message = 'Organizing cultural festival';
+              break;
+            case 'generational_dialogue':
+              message = 'Facilitating generational dialogue';
+              break;
+            case 'cultural_census':
+              message = 'Conducting cultural census';
+              break;
+            case 'cultural_education':
+              message = 'Starting cultural education program';
+              break;
+            case 'cultural_reform':
+              message = 'Implementing cultural reform initiative';
+              break;
+            case 'cultural_restoration':
+              message = 'Attempting cultural restoration';
+              break;
+            case 'accept_evolution':
+              message = 'Accepting cultural evolution as new baseline';
+              break;
+            default:
+              message = `Unknown cultural action: ${action}`;
+          }
+
+          get().showNotification(message, 'success');
+          Logger.gameAction('cultural_action', { action, parameters });
+        } catch (error) {
+          Logger.error('Cultural action failed', error);
+          get().showNotification('Cultural action failed', 'error');
+        }
+      },
+
+      initializeDynasties: (sect: SectTypeType) => {
+        try {
+          const dynasties = DynastyService.generateInitialDynasties(sect, 50000); // 50k population
+          set({ dynasties, playerSect: sect });
+          get().showNotification(`Initialized ${dynasties.length} dynasties for ${sect} sect`, 'success');
+          Logger.gameAction('dynasties_initialized', { sect, count: dynasties.length });
+        } catch (error) {
+          Logger.error('Dynasty initialization failed', error);
+          get().showNotification('Failed to initialize dynasties', 'error');
         }
       },
 

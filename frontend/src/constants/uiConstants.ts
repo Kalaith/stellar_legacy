@@ -1,4 +1,4 @@
-// constants/uiConstants.ts
+// constants/uiConstants.ts - Terminal UI Design System per Terminal_UI_Redesign_Plan.md
 export const UI_CONSTANTS = {
   NAVIGATION: {
     CORE_SYSTEMS_HEADER_LENGTH: 15,
@@ -12,8 +12,8 @@ export const UI_CONSTANTS = {
   },
   SHIP_STATUS: {
     ICON_SIZE: 'w-32 h-32',
-    ICON_BG: 'bg-slate-700',
-    STAT_ITEM_BG: 'bg-slate-700',
+    ICON_BG: 'bg-black',           // Terminal black background
+    STAT_ITEM_BG: 'bg-black',      // Terminal black background
     GRID_COLUMNS: 2,
     GRID_GAP: 4
   },
@@ -29,47 +29,61 @@ export const UI_CONSTANTS = {
     SECTION_MARGIN_LG: 'mb-8'
   },
   COLORS: {
-    TEXT_PRIMARY: 'text-white',
-    TEXT_SECONDARY: 'text-slate-300',
-    TEXT_MUTED: 'text-slate-400',
-    TEXT_SUCCESS: 'text-green-400',
-    TEXT_WARNING: 'text-yellow-400',
-    TEXT_ERROR: 'text-red-400',
-    BORDER: 'border-slate-700',
-    BORDER_LIGHT: 'border-slate-600',
-    BORDER_DARK: 'border-slate-800',
-    BG_PRIMARY: 'bg-slate-800',
-    BG_SECONDARY: 'bg-slate-700',
-    BG_TERTIARY: 'bg-slate-600',
-    BG_SUCCESS: 'bg-green-600',
-    BG_WARNING: 'bg-yellow-600',
-    BG_ERROR: 'bg-red-600'
+    // Terminal phosphor colors - exact match to design plan CSS variables
+    TEXT_PRIMARY: 'terminal-text',                    // --terminal-primary: #FFB000
+    TEXT_SECONDARY: 'terminal-text dim',              // --terminal-secondary: #AA7700
+    TEXT_MUTED: 'text-gray-600',                      // --terminal-text-dim: #666666
+    TEXT_SUCCESS: 'terminal-text success',            // --terminal-success: #00FF66
+    TEXT_WARNING: 'terminal-text warning',            // --terminal-warning: #FFAA00
+    TEXT_ERROR: 'terminal-text error',                // --terminal-error: #FF3300
+    BORDER: 'border-gray-600',                        // --terminal-border: #444444
+    BORDER_LIGHT: 'border-gray-500',
+    BORDER_DARK: 'border-gray-700',
+    BG_PRIMARY: 'bg-black',                          // --terminal-bg: #000000
+    BG_SECONDARY: 'bg-black',                        // Terminal secondary should also be pure black
+    BG_TERTIARY: 'bg-black',                         // Keep consistent with terminal aesthetic
+    BG_SUCCESS: 'bg-black',              // Terminal uses black bg with colored text/borders
+    BG_WARNING: 'bg-black',              // Terminal uses black bg with colored text/borders
+    BG_ERROR: 'bg-black',                // Terminal uses black bg with colored text/borders
+    HOVER_TEXT_PRIMARY: 'hover:text-amber-300',
+    HOVER_TEXT_MUTED: 'hover:text-gray-400',
+    HOVER_BG_SECONDARY: 'hover:bg-black',     // Keep pure black for terminal consistency
+    HOVER_BG_TERTIARY: 'hover:bg-black'       // Use amber glow effects instead of gray backgrounds
   },
   BUTTONS: {
-    BASE_CLASSES: 'font-medium transition-colors rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800',
+    BASE_CLASSES: 'terminal-button',  // Use terminal button class from terminal.css
     SIZE: {
       SM: 'px-3 py-1 text-sm',
       MD: 'px-4 py-2',
       LG: 'px-6 py-3 text-lg'
     },
     VARIANT: {
-      PRIMARY: 'bg-teal-600 hover:bg-teal-700 text-white focus:ring-teal-500',
-      SECONDARY: 'bg-slate-600 hover:bg-slate-700 text-white focus:ring-slate-500',
-      DANGER: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500'
+      PRIMARY: 'terminal-button primary',
+      SECONDARY: 'terminal-button',
+      DANGER: 'terminal-button error'
     },
     DISABLED: 'opacity-50 cursor-not-allowed'
   },
   CARDS: {
-    BASE: 'rounded-lg',
-    BACKGROUND: 'bg-slate-800',
-    BORDER: 'border border-slate-700',
-    HEADER: 'text-lg font-bold text-white px-6 py-4 border-b border-slate-700'
+    BASE: 'terminal-window',  // Use terminal window class from terminal.css
+    BACKGROUND: 'terminal-window',  // Terminal window includes background
+    BORDER: 'border border-gray-600',  // Gray terminal borders
+    HEADER: 'terminal-header terminal-text'  // Terminal header styling
   },
   NOTIFICATIONS: {
-    BASE: 'rounded-lg border p-4 mb-4',
-    SUCCESS: 'bg-green-900 border-green-600 text-green-100',
-    WARNING: 'bg-yellow-900 border-yellow-600 text-yellow-100',
-    ERROR: 'bg-red-900 border-red-600 text-red-100',
-    INFO: 'bg-blue-900 border-blue-600 text-blue-100'
+    BASE: 'border p-4 mb-4 font-mono',
+    SUCCESS: 'bg-black border-green-600 text-green-400',     // Terminal green on black
+    WARNING: 'bg-black border-orange-600 text-orange-400',   // Terminal orange on black
+    ERROR: 'bg-black border-red-600 text-red-400',           // Terminal red on black
+    INFO: 'bg-black border-gray-600 text-amber-400'          // Terminal amber on black
+  },
+
+  // Terminal-specific styling
+  TERMINAL: {
+    FONT: 'font-mono tracking-wide',
+    GLOW: 'drop-shadow-sm', // Subtle phosphor glow effect
+    HEADER_STYLE: 'text-center tracking-widest uppercase',
+    DATA_TABLE: 'font-mono text-sm leading-relaxed',
+    ASCII_BORDER: 'border-gray-600 border-2'
   }
 } as const;

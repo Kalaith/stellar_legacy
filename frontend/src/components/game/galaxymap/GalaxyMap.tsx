@@ -104,8 +104,8 @@ const GalaxyMap: React.FC = React.memo(() => {
                       </span>
                       <span className={`text-xs px-2 py-1 rounded ${
                         planet.developed
-                          ? 'bg-green-600 text-green-100'
-                          : 'bg-blue-600 text-blue-100'
+                          ? 'bg-black border border-green-400 text-green-400'
+                          : 'bg-black border border-amber-400 text-amber-400'
                       }`}>
                         {planet.developed ? 'Developed' : 'Undeveloped'}
                       </span>
