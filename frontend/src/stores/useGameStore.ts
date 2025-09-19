@@ -772,10 +772,15 @@ export const useGameStore = create<GameStore>()(
       // Chronicle System Actions
       loadChronicle: async () => {
         try {
-          const chronicle = await ChronicleService.loadPlayerChronicle();
-          set({ chronicle });
-          if (chronicle) {
-            Logger.info('Chronicle loaded', { entryCount: chronicle.entries.length });
+          const result = await ChronicleService.loadPlayerChronicle();
+          if (result.success) {
+            set({ chronicle: result.data });
+            if (result.data) {
+              Logger.info('Chronicle loaded', { entryCount: result.data.entries.length });
+            }
+          } else {
+            Logger.error('Failed to load chronicle', result.error);
+            get().showNotification(result.error.message, 'error');
           }
         } catch (error) {
           Logger.error('Failed to load chronicle', error);
@@ -785,10 +790,15 @@ export const useGameStore = create<GameStore>()(
 
       saveChronicleEntry: async (entry: ChronicleEntry) => {
         try {
-          await ChronicleService.saveChronicleEntry(entry);
-          await get().loadChronicle(); // Reload to get updated chronicle
-          get().showNotification('Chronicle entry saved', 'success');
-          Logger.info('Chronicle entry saved', { missionId: entry.missionId });
+          const result = await ChronicleService.saveChronicleEntry(entry);
+          if (result.success) {
+            await get().loadChronicle(); // Reload to get updated chronicle
+            get().showNotification('Chronicle entry saved', 'success');
+            Logger.info('Chronicle entry saved', { missionId: entry.missionId });
+          } else {
+            Logger.error('Failed to save chronicle entry', result.error);
+            get().showNotification(result.error.message, 'error');
+          }
         } catch (error) {
           Logger.error('Failed to save chronicle entry', error);
           get().showNotification('Failed to save chronicle entry', 'error');
@@ -797,10 +807,15 @@ export const useGameStore = create<GameStore>()(
 
       generateHeritageModifiers: async (entry: ChronicleEntry) => {
         try {
-          const modifiers = ChronicleService.generateHeritageModifiers(entry);
-          set({ availableHeritageModifiers: modifiers });
-          get().showNotification(`Generated ${modifiers.length} heritage modifiers`, 'success');
-          Logger.info('Heritage modifiers generated', { count: modifiers.length });
+          const result = ChronicleService.generateHeritageModifiers(entry);
+          if (result.success) {
+            set({ availableHeritageModifiers: result.data });
+            get().showNotification(`Generated ${result.data.length} heritage modifiers`, 'success');
+            Logger.info('Heritage modifiers generated', { count: result.data.length });
+          } else {
+            Logger.error('Failed to generate heritage modifiers', result.error);
+            get().showNotification(result.error.message, 'error');
+          }
         } catch (error) {
           Logger.error('Failed to generate heritage modifiers', error);
           get().showNotification('Failed to generate heritage modifiers', 'error');

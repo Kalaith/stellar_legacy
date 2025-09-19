@@ -13,6 +13,10 @@ import type {
 import type { HeritageModifier } from '../types/heritage';
 import type { GenerationalMission } from '../types/generationalMissions';
 import type { LegacyTypeType } from '../types/enums';
+import type { Result } from '../utils/result';
+import { ResultHelpers, ERROR_CODES } from '../utils/result';
+import { validate } from '../utils/validation';
+import { GAME_BALANCE } from '../constants/game-balance';
 import Logger from '../utils/logger';
 
 export class ChronicleService {
@@ -78,12 +82,28 @@ export class ChronicleService {
   /**
    * Save a chronicle entry to storage
    */
-  static async saveChronicleEntry(entry: ChronicleEntry): Promise<void> {
+  static async saveChronicleEntry(entry: ChronicleEntry): Promise<Result<void>> {
     try {
-      let chronicle = await this.loadPlayerChronicle();
+      // Validate input
+      validate.chronicleEntry(entry);
 
+      const chronicleResult = await this.loadPlayerChronicle();
+      if (!chronicleResult.success) {
+        return chronicleResult;
+      }
+
+      let chronicle = chronicleResult.data;
       if (!chronicle) {
         chronicle = this.createNewChronicle();
+      }
+
+      // Validate chronicle doesn't exceed maximum entries
+      if (chronicle.entries.length >= GAME_BALANCE.CHRONICLE.MAX_ENTRIES_PER_MISSION) {
+        return ResultHelpers.error(
+          'Chronicle has reached maximum entries',
+          ERROR_CODES.CHRONICLE_GENERATION_FAILED,
+          { maxEntries: GAME_BALANCE.CHRONICLE.MAX_ENTRIES_PER_MISSION, currentCount: chronicle.entries.length }
+        );
       }
 
       // Add entry to chronicle
@@ -100,27 +120,38 @@ export class ChronicleService {
         chronicleId: chronicle.id,
         entryCount: chronicle.entries.length
       });
+
+      return ResultHelpers.success(undefined);
     } catch (error) {
       Logger.error('Failed to save chronicle entry', error);
-      throw error;
+      return ResultHelpers.error(
+        'Failed to save chronicle entry',
+        ERROR_CODES.CHRONICLE_GENERATION_FAILED,
+        { entry },
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
   /**
    * Generate heritage modifiers from a chronicle entry
    */
-  static generateHeritageModifiers(entry: ChronicleEntry): HeritageModifier[] {
-    const modifiers: HeritageModifier[] = [];
+  static generateHeritageModifiers(entry: ChronicleEntry): Result<HeritageModifier[]> {
+    try {
+      // Validate input
+      validate.chronicleEntry(entry);
 
-    // Generate modifiers based on key decisions
-    for (const decision of entry.keyDecisions) {
-      if (decision.chronicleWeight > 0.7) { // Only high-impact decisions
-        const modifier = this.createModifierFromDecision(decision, entry);
-        if (modifier) {
-          modifiers.push(modifier);
+      const modifiers: HeritageModifier[] = [];
+
+      // Generate modifiers based on key decisions
+      for (const decision of entry.keyDecisions) {
+        if (decision.chronicleWeight > GAME_BALANCE.CHRONICLE.HIGH_IMPACT_THRESHOLD) {
+          const modifier = this.createModifierFromDecision(decision, entry);
+          if (modifier) {
+            modifiers.push(modifier);
+          }
         }
       }
-    }
 
     // Generate modifiers based on artifacts
     for (const artifact of entry.artifacts) {
@@ -138,19 +169,28 @@ export class ChronicleService {
       }
     }
 
-    Logger.info('Generated heritage modifiers', {
-      missionId: entry.missionId,
-      modifierCount: modifiers.length
-    });
+      Logger.info('Generated heritage modifiers', {
+        missionId: entry.missionId,
+        modifierCount: modifiers.length
+      });
 
-    return modifiers;
+      return ResultHelpers.success(modifiers);
+    } catch (error) {
+      Logger.error('Failed to generate heritage modifiers', error);
+      return ResultHelpers.error(
+        'Failed to generate heritage modifiers',
+        ERROR_CODES.HERITAGE_GENERATION_FAILED,
+        { entry },
+        error instanceof Error ? error : new Error(String(error))
+      );
+    }
   }
 
   /**
    * Load the player's main chronicle
    */
-  static async loadPlayerChronicle(): Promise<Chronicle | null> {
-    try {
+  static async loadPlayerChronicle(): Promise<Result<Chronicle | null>> {
+    return ResultHelpers.fromThrowable(() => {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (!stored) return null;
 
@@ -160,14 +200,11 @@ export class ChronicleService {
       const validation = this.validateChronicleData(data);
       if (!validation.isValid) {
         Logger.warn('Invalid chronicle data found', validation.errors);
-        return null;
+        throw new Error(`Invalid chronicle data: ${validation.errors.join(', ')}`);
       }
 
       return this.migrateChronicleVersion(data, this.VERSION);
-    } catch (error) {
-      Logger.error('Failed to load chronicle', error);
-      return null;
-    }
+    }, { operation: 'loadPlayerChronicle' });
   }
 
   /**
