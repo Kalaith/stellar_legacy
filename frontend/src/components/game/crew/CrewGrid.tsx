@@ -77,10 +77,15 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
           <div key={skill} className="flex items-center justify-between">
             <span className={`${UI_CONSTANTS.COLORS.TEXT_SECONDARY} text-sm capitalize w-20`}>{skill}</span>
             <div className="flex-1 mx-2">
-              <div className={`w-full ${UI_CONSTANTS.COLORS.BG_TERTIARY} rounded-full h-2`}>
+              <div className="w-full bg-gray-800 border border-gray-600 h-2" style={{ borderRadius: 0 }}>
                 <div
-                  className={`${UI_CONSTANTS.COLORS.BG_SUCCESS} h-2 rounded-full transition-all duration-300`}
-                  style={{ width: getSkillBarWidth(level) }}
+                  className="h-2 transition-all duration-300"
+                  style={{
+                    width: getSkillBarWidth(level),
+                    backgroundColor: '#FFB000', // Terminal amber phosphor color
+                    boxShadow: '0 0 6px rgba(255, 176, 0, 0.8)', // Terminal glow effect
+                    borderRadius: 0
+                  }}
                 />
               </div>
             </div>

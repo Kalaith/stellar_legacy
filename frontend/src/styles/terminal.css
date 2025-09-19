@@ -693,7 +693,11 @@ body {
 
   .terminal-window {
     margin-bottom: 1rem;
-    min-height: 40vh;
+    min-height: 300px; /* Fixed height instead of viewport units */
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    box-sizing: border-box;
   }
 
   .terminal-button {
@@ -742,6 +746,10 @@ body {
   .terminal-navigation {
     grid-template-columns: 1fr;
     gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
   }
 
   .terminal-nav-item {
@@ -750,6 +758,35 @@ body {
     min-height: 44px;
     display: flex;
     align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Prevent content overflow */
+  .terminal-content {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .terminal-table {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+
+  .terminal-table tbody {
+    display: table;
+    width: 100%;
   }
 }
 
