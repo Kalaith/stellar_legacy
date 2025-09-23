@@ -415,7 +415,7 @@ function Build-Frontend {
         }
     }
     
-    $environment = if ($Production) { "production" } else { "preview" }
+    $environment = if ($Production -or $FTP) { "production" } else { "preview" }
     Write-Info "Setting up $environment environment for frontend build..."
     $envSrc = ".env.$environment"
     $envTemp = ".env.local"
@@ -611,7 +611,7 @@ function Publish-Backend {
         Copy-WithExclusions $BACKEND_SRC $BACKEND_DEST $excludePatterns
         
         # Handle environment configuration
-        $environment = if ($Production) { "production" } else { "preview" }
+        $environment = if ($Production -or $FTP) { "production" } else { "preview" }
         Write-Info "Setting up $environment environment configuration..."
         $envSrc = "$BACKEND_SRC\.env.$environment"
         $envDest = "$BACKEND_DEST\.env"
@@ -657,7 +657,7 @@ function Publish-Backend {
             Upload-DirectoryToFTP -LocalPath $BACKEND_SRC -RemotePath $backendRemotePath -Config $FTPConfig -ExcludePatterns $excludePatterns
             
             # Upload environment file
-            $environment = if ($Production) { "production" } else { "preview" }
+            $environment = if ($Production -or $FTP) { "production" } else { "preview" }
             $envSrc = "$BACKEND_SRC\.env.$environment"
             if (Test-Path $envSrc) {
                 $envRemotePath = "$backendRemotePath/.env"
