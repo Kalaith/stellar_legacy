@@ -248,5 +248,11 @@ If you have questions or need help:
 
 **Happy exploring! 🚀✨**
 
-*Built with ❤️ for spacefaring adventurers everywhere*</content>
+*Built with ❤️ for spacefaring adventurers everywhere*
+
+## License
+
+This project is licensed under the MIT License - see the individual component README files for details.
+
+Part of the WebHatchery game collection.</content>
 <parameter name="filePath">h:\WebHatchery\game_apps\stellar_legacy\README.md
