@@ -149,7 +149,8 @@ describe('ValidationService', () => {
     });
 
     it('should return invalid for selling when resource is insufficient', () => {
-      const result = ValidationService.validateTrade(mockResources, 'influence', 'sell', 10);
+      const lowInfluenceResources = { ...mockResources, influence: 0 };
+      const result = ValidationService.validateTrade(lowInfluenceResources, 'influence', 'sell', 10);
       expect(result.isValid).toBe(false);
       expect(result.message).toBe('Not enough influence!');
     });
