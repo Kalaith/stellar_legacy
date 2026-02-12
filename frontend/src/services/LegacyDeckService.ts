@@ -9,18 +9,15 @@ import type {
   DeckBalanceReport,
   BalanceIssue,
   CardModification,
-  CustomCard,
   CurationAction,
   CardChoice,
   CardEffect,
   CardTrigger,
   CardTier,
   CardType,
-  CardImpact
 } from '../types/legacyDecks';
 import type { ChronicleEntry, ChronicleDecision, ChronicleArtifact } from '../types/chronicle';
 import type { GenerationalMission } from '../types/generationalMissions';
-import type { LegacyTypeType } from '../types/enums';
 import Logger from '../utils/logger';
 
 export class LegacyDeckService {
@@ -422,24 +419,24 @@ export class LegacyDeckService {
   }
 
   private static createCardFromArtifact(
-    artifact: ChronicleArtifact,
-    entry: ChronicleEntry
+    _artifact: ChronicleArtifact,
+    _entry: ChronicleEntry
   ): LegacyCardTemplate | null {
     // Implementation for artifact-based cards
     return null;
   }
 
-  private static createCardFromDiscovery(discovery: any, entry: ChronicleEntry): LegacyCardTemplate | null {
+  private static createCardFromDiscovery(_discovery: any, _entry: ChronicleEntry): LegacyCardTemplate | null {
     // Implementation for discovery-based cards
     return null;
   }
 
-  private static createCardFromEvolution(evolution: any, entry: ChronicleEntry): LegacyCardTemplate | null {
+  private static createCardFromEvolution(_evolution: any, _entry: ChronicleEntry): LegacyCardTemplate | null {
     // Implementation for evolution-based cards
     return null;
   }
 
-  private static createCardFromPopulationOutcome(entry: ChronicleEntry): LegacyCardTemplate | null {
+  private static createCardFromPopulationOutcome(_entry: ChronicleEntry): LegacyCardTemplate | null {
     // Implementation for population outcome cards
     return null;
   }
@@ -461,13 +458,15 @@ export class LegacyDeckService {
       const condition = trigger.condition;
 
       switch (condition.type) {
-        case 'resource':
+        case 'resource': {
           const resourceValue = (gameState.resources as any)[condition.target] || 0;
           return this.evaluateComparison(resourceValue, condition.operator, condition.value);
+        }
 
-        case 'population':
+        case 'population': {
           const popValue = gameState.population.total;
           return this.evaluateComparison(popValue, condition.operator, condition.value);
+        }
 
         case 'year':
           return this.evaluateComparison(gameState.currentYear, condition.operator, condition.value);
@@ -514,7 +513,7 @@ export class LegacyDeckService {
     }
   }
 
-  private static calculateCardPriority(card: LegacyCard, gameState: GenerationalMission): number {
+  private static calculateCardPriority(card: LegacyCard, _gameState: GenerationalMission): number {
     // Calculate priority based on multiple factors
     let priority = card.weight;
 
@@ -747,7 +746,7 @@ export class LegacyDeckService {
     return Math.min(1.0, decision.chronicleWeight * 1.2);
   }
 
-  private static generateEffectTemplatesFromDecision(decision: ChronicleDecision): any[] {
+  private static generateEffectTemplatesFromDecision(_decision: ChronicleDecision): any[] {
     // Generate effect templates based on decision category and impact
     return [];
   }

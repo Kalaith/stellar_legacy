@@ -100,10 +100,11 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
         case 'completedAt':
           comparison = a.completedAt.getTime() - b.completedAt.getTime();
           break;
-        case 'successLevel':
+        case 'successLevel': {
           const successOrder = ['failure', 'partial', 'success', 'major_success'];
           comparison = successOrder.indexOf(a.successLevel) - successOrder.indexOf(b.successLevel);
           break;
+        }
         case 'dominantLegacy':
           comparison = a.dominantLegacy.localeCompare(b.dominantLegacy);
           break;
@@ -266,7 +267,7 @@ export const useHeritageGeneration = () => {
   const [generatedModifiers, setGeneratedModifiers] = useState<HeritageModifier[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const generateModifiers = useCallback(async (entry: ChronicleEntry) => {
+  const generateModifiers = useCallback(async (_entry: ChronicleEntry) => {
     setIsGenerating(true);
     setError(null);
 

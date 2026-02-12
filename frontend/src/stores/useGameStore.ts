@@ -3,9 +3,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { GameState, GameData, CrewMember, StarSystem, Planet, Notification, ShipStats, ComponentCost } from '../types/game';
 import type { CulturalEvolution } from '../types/generationalMissions';
-import type { Chronicle, ChronicleEntry, ChronicleDecision } from '../types/chronicle';
-import type { HeritageModifier, HeritageApplicationResult } from '../types/heritage';
-import type { PacingState, PacingPreferences, PlannedMilestone } from '../types/pacing';
+import type { Chronicle, ChronicleEntry } from '../types/chronicle';
+import type { HeritageModifier } from '../types/heritage';
+import type { PacingState, PacingPreferences } from '../types/pacing';
 import type { LegacyCard, LegacyDeck, CardTriggerResult } from '../types/legacyDecks';
 import { ChronicleService } from '../services/ChronicleService';
 import { HeritageService } from '../services/HeritageService';
@@ -957,7 +957,7 @@ export const useGameStore = create<GameStore>()(
       // Legacy Deck Actions
       initializeLegacyDecks: async () => {
         try {
-          const { playerLegacy, availableHeritageModifiers } = get();
+          const { playerLegacy } = get();
 
           // For now, just initialize empty decks
           // In a full implementation, this would load cards from heritage modifiers

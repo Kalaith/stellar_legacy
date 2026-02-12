@@ -9,7 +9,6 @@ import type {
   HeritageRecommendation,
   HeritageAnalysis,
   ModifierCombination,
-  ModifierSynergy,
   ResourceModifier,
   PopulationModifier,
   EventModifier,
@@ -19,8 +18,7 @@ import type {
   HeritageTier
 } from '../types/heritage';
 import type { ChronicleEntry, ChronicleDecision, ChronicleArtifact } from '../types/chronicle';
-import type { ExtendedResources, GenerationalMission } from '../types/generationalMissions';
-import type { LegacyTypeType } from '../types/enums';
+import type { GenerationalMission } from '../types/generationalMissions';
 import Logger from '../utils/logger';
 
 export class HeritageService {
@@ -377,12 +375,12 @@ export class HeritageService {
     return modifier;
   }
 
-  private static createModifierFromLegacyEvolution(evolution: any, entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromLegacyEvolution(_evolution: any, _entry: ChronicleEntry): HeritageModifier | null {
     // Implementation for legacy evolution modifiers
     return null;
   }
 
-  private static createModifierFromSettlement(settlement: any, entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromSettlement(_settlement: any, _entry: ChronicleEntry): HeritageModifier | null {
     // Implementation for settlement modifiers
     return null;
   }
@@ -412,7 +410,7 @@ export class HeritageService {
 
   private static applyPopulationModifier(
     modifier: PopulationModifier,
-    mission: GenerationalMission,
+    _mission: GenerationalMission,
     result: HeritageApplicationResult
   ): void {
     result.populationEffects.push(modifier);
@@ -480,8 +478,8 @@ export class HeritageService {
   }
 
   private static findBestCombinations(
-    modifiers: HeritageModifier[],
-    criteria: HeritageSelectionCriteria
+    _modifiers: HeritageModifier[],
+    _criteria: HeritageSelectionCriteria
   ): ModifierCombination[] {
     // This would implement a complex algorithm to find synergistic combinations
     // For now, return empty array
@@ -490,7 +488,7 @@ export class HeritageService {
 
   private static analyzeWarnings(
     modifiers: HeritageModifier[],
-    targetMission: Partial<GenerationalMission>
+    _targetMission: Partial<GenerationalMission>
   ): string[] {
     const warnings: string[] = [];
 
@@ -547,17 +545,17 @@ export class HeritageService {
     }
   }
 
-  private static calculateRelevanceScore(modifier: HeritageModifier, mission: Partial<GenerationalMission>): number {
+  private static calculateRelevanceScore(_modifier: HeritageModifier, _mission: Partial<GenerationalMission>): number {
     // Calculate how relevant this modifier is to the target mission
     return 0.5; // Placeholder
   }
 
-  private static calculateBalanceScore(modifier: HeritageModifier): number {
+  private static calculateBalanceScore(_modifier: HeritageModifier): number {
     // Calculate how balanced this modifier is for gameplay
     return 0.7; // Placeholder
   }
 
-  private static calculateNarrativeScore(modifier: HeritageModifier): number {
+  private static calculateNarrativeScore(_modifier: HeritageModifier): number {
     // Calculate how well this modifier fits narratively
     return 0.6; // Placeholder
   }
@@ -569,7 +567,7 @@ export class HeritageService {
 
   private static generateRecommendationReasoning(
     modifier: HeritageModifier,
-    mission: Partial<GenerationalMission>
+    _mission: Partial<GenerationalMission>
   ): string[] {
     return [
       `Based on previous decision: ${modifier.source.specificSource}`,
@@ -578,12 +576,12 @@ export class HeritageService {
     ];
   }
 
-  private static checkResourceConflicts(mod1: HeritageModifier, mod2: HeritageModifier): HeritageConflict | null {
+  private static checkResourceConflicts(_mod1: HeritageModifier, _mod2: HeritageModifier): HeritageConflict | null {
     // Check for resource conflicts between modifiers
     return null; // Placeholder
   }
 
-  private static checkNarrativeConflicts(mod1: HeritageModifier, mod2: HeritageModifier): HeritageConflict | null {
+  private static checkNarrativeConflicts(_mod1: HeritageModifier, _mod2: HeritageModifier): HeritageConflict | null {
     // Check for narrative conflicts between modifiers
     return null; // Placeholder
   }
@@ -598,17 +596,17 @@ export class HeritageService {
   }
 
   // Generation helper methods
-  private static generateResourceModifiersFromDecision(decision: ChronicleDecision): ResourceModifier[] {
+  private static generateResourceModifiersFromDecision(_decision: ChronicleDecision): ResourceModifier[] {
     // Generate resource modifiers based on decision impact
     return [];
   }
 
-  private static generatePopulationModifiersFromDecision(decision: ChronicleDecision): PopulationModifier[] {
+  private static generatePopulationModifiersFromDecision(_decision: ChronicleDecision): PopulationModifier[] {
     // Generate population modifiers based on decision impact
     return [];
   }
 
-  private static generateEventModifiersFromDecision(decision: ChronicleDecision): EventModifier[] {
+  private static generateEventModifiersFromDecision(_decision: ChronicleDecision): EventModifier[] {
     // Generate event modifiers based on decision impact
     return [];
   }
@@ -622,15 +620,15 @@ export class HeritageService {
     }];
   }
 
-  private static generateResourceModifiersFromArtifact(artifact: ChronicleArtifact): ResourceModifier[] {
+  private static generateResourceModifiersFromArtifact(_artifact: ChronicleArtifact): ResourceModifier[] {
     return [];
   }
 
-  private static generateTechnologyModifiersFromArtifact(artifact: ChronicleArtifact): TechnologyModifier[] {
+  private static generateTechnologyModifiersFromArtifact(_artifact: ChronicleArtifact): TechnologyModifier[] {
     return [];
   }
 
-  private static generatePopulationModifiersFromOutcome(outcome: string): PopulationModifier[] {
+  private static generatePopulationModifiersFromOutcome(_outcome: string): PopulationModifier[] {
     return [];
   }
 

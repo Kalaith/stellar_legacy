@@ -374,8 +374,6 @@ export class DecisionTrackingService {
 
         // Check prediction accuracy
         const predictedCount = entry.decision.predictedLongTermEffects.length;
-        const actualCount = entry.longTermConsequences.length;
-
         if (predictedCount > 0) {
           totalPredictions += predictedCount;
           // Simple accuracy check - in reality would be more sophisticated
@@ -546,7 +544,7 @@ export class DecisionTrackingService {
 
   private static calculateChronicleWeight(
     decision: DecisionInput,
-    mission: GenerationalMission
+    _mission: GenerationalMission
   ): number {
     let weight = 0.5; // Base weight
 

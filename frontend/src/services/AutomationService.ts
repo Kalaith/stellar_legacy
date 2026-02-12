@@ -450,7 +450,7 @@ export class AutomationService {
 
     // Simulate protocol effects (would be more detailed in production)
     const effects: string[] = [];
-    let success = true;
+    const success = true;
 
     switch (protocolName) {
       case 'hull_breach':

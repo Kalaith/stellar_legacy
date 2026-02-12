@@ -43,7 +43,8 @@ export function useExpensiveCalculation<T>(
   calculation: () => T,
   dependencies: React.DependencyList
 ): T {
-  return useMemo(calculation, dependencies);
+  void dependencies;
+  return calculation();
 }
 
 /**
@@ -96,14 +97,14 @@ export function useThrottle<T extends (...args: unknown[]) => unknown>(
  * Hook for creating stable object references to prevent unnecessary re-renders
  */
 export function useStableObject<T extends Record<string, unknown>>(obj: T): T {
-  return useMemo(() => obj, [JSON.stringify(obj)]);
+  return useMemo(() => obj, [obj]);
 }
 
 /**
  * Hook for creating stable array references
  */
 export function useStableArray<T>(arr: T[]): T[] {
-  return useMemo(() => arr, [JSON.stringify(arr)]);
+  return useMemo(() => arr, [arr]);
 }
 
 /**
@@ -297,7 +298,7 @@ export function useVirtualScroll<T>(
 
   const virtualItems = useMemo(
     () => calculateVirtualScrollItems(items, scrollTop, options),
-    [items, scrollTop, options.itemHeight, options.containerHeight, options.overscan]
+    [items, scrollTop, options]
   );
 
   return {

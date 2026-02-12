@@ -124,7 +124,7 @@ export class LegacyService {
     const adaptorMetrics = this.getAdaptorMetrics(mission);
 
     switch (enhancement) {
-      case 'genetic':
+      case 'genetic': {
         const geneticSuccess = Math.random() > 0.3; // 70% success rate
         return {
           resourceChanges: {
@@ -155,8 +155,9 @@ export class LegacyService {
             bodyHorrorRisk: geneticSuccess ? 5 : 20
           }
         };
+      }
 
-      case 'cybernetic':
+      case 'cybernetic': {
         const cyberneticSuccess = Math.random() > 0.25; // 75% success rate
         return {
           resourceChanges: {
@@ -185,8 +186,9 @@ export class LegacyService {
             humanityDrift: cyberneticSuccess ? 10 : 5
           }
         };
+      }
 
-      case 'biological':
+      case 'biological': {
         const biologicalSuccess = Math.random() > 0.4; // 60% success rate
         return {
           resourceChanges: {
@@ -215,6 +217,7 @@ export class LegacyService {
             bodyHorrorRisk: biologicalSuccess ? 3 : 15
           }
         };
+      }
 
       case 'reject':
         return {
@@ -253,7 +256,7 @@ export class LegacyService {
     const wandererMetrics = this.getWandererMetrics(mission);
 
     switch (action) {
-      case 'raid':
+      case 'raid': {
         const raidSuccess = Math.random() > 0.4; // 60% success rate
         const raidSeverity = Math.random(); // How severe the raid is
 
@@ -288,8 +291,9 @@ export class LegacyService {
             existentialDread: raidSuccess ? -5 : 10
           }
         };
+      }
 
-      case 'trade':
+      case 'trade': {
         const tradeSuccess = Math.random() > (0.3 + wandererMetrics.piracyReputation * 0.01); // Reputation affects trade
 
         return {
@@ -320,8 +324,9 @@ export class LegacyService {
             existentialDread: tradeSuccess ? -2 : 3
           }
         };
+      }
 
-      case 'scavenge':
+      case 'scavenge': {
         const scavengeFind = Math.random();
 
         return {
@@ -349,6 +354,7 @@ export class LegacyService {
             existentialDread: -1
           }
         };
+      }
 
       case 'conserve':
         return {

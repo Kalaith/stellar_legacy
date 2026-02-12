@@ -10,14 +10,6 @@ import type { PacingState } from '../types/pacing';
  */
 
 /**
- * Base validation interface
- */
-interface ValidationRule<T> {
-  validate: (value: unknown) => value is T;
-  errorMessage: string;
-}
-
-/**
  * Common validation utilities
  */
 export const ValidationUtils = {

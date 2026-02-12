@@ -7,19 +7,14 @@ import type {
   InteractionEvent,
   PhaseTransition,
   PacingPreferences,
-  TimeControlState,
   EngagementAnalysis,
   EngagementLevel,
   AutomationPolicy,
-  NarrativeFlow,
   PacingMetrics,
-  AccelerationLimits,
-  PauseReason,
-  ResumeCondition,
   AdaptiveSettings
 } from '../types/pacing';
 import type { GenerationalMission } from '../types/generationalMissions';
-import type { Chronicle, ChronicleEntry } from '../types/chronicle';
+import type { Chronicle } from '../types/chronicle';
 import Logger from '../utils/logger';
 
 export class PacingService {
@@ -420,7 +415,6 @@ export class PacingService {
   // Private helper methods
 
   private static determineGamePhase(mission: GenerationalMission): GamePhase {
-    const progress = mission.phaseProgress / 100;
     const year = mission.currentYear;
     const estimatedDuration = mission.estimatedDuration;
 
@@ -598,7 +592,7 @@ export class PacingService {
     return critical.reduce((sum, stress) => sum + stress, 0) / critical.length;
   }
 
-  private static createAdaptiveSettings(preferences: PacingPreferences): AdaptiveSettings {
+  private static createAdaptiveSettings(_preferences: PacingPreferences): AdaptiveSettings {
     return {
       learningRate: 0.1,
       sensitivityThreshold: 0.2,
@@ -639,12 +633,12 @@ export class PacingService {
     };
   }
 
-  private static generatePhaseMilestones(mission: GenerationalMission, phase: GamePhase): PlannedMilestone[] {
+  private static generatePhaseMilestones(_mission: GenerationalMission, _phase: GamePhase): PlannedMilestone[] {
     // Generate phase-appropriate milestones
     return [];
   }
 
-  private static generateChronicleInfluencedMilestones(mission: GenerationalMission, chronicle: Chronicle): PlannedMilestone[] {
+  private static generateChronicleInfluencedMilestones(_mission: GenerationalMission, _chronicle: Chronicle): PlannedMilestone[] {
     // Generate milestones influenced by chronicle history
     return [];
   }
@@ -669,38 +663,38 @@ export class PacingService {
     return currentLevel;
   }
 
-  private static updateAdaptiveSettings(settings: AdaptiveSettings, analysis: any): AdaptiveSettings {
+  private static updateAdaptiveSettings(settings: AdaptiveSettings, _analysis: any): AdaptiveSettings {
     return {
       ...settings,
       // Update based on analysis
     };
   }
 
-  private static generateDynastyEmergentEvents(mission: GenerationalMission, pacingState: PacingState): EmergentEvent[] {
+  private static generateDynastyEmergentEvents(_mission: GenerationalMission, _pacingState: PacingState): EmergentEvent[] {
     return [];
   }
 
-  private static generateLegacyEmergentEvents(mission: GenerationalMission, pacingState: PacingState): EmergentEvent[] {
+  private static generateLegacyEmergentEvents(_mission: GenerationalMission, _pacingState: PacingState): EmergentEvent[] {
     return [];
   }
 
-  private static generatePopulationEmergentEvents(mission: GenerationalMission, pacingState: PacingState): EmergentEvent[] {
+  private static generatePopulationEmergentEvents(_mission: GenerationalMission, _pacingState: PacingState): EmergentEvent[] {
     return [];
   }
 
-  private static generateExternalEmergentEvents(mission: GenerationalMission, pacingState: PacingState): EmergentEvent[] {
+  private static generateExternalEmergentEvents(_mission: GenerationalMission, _pacingState: PacingState): EmergentEvent[] {
     return [];
   }
 
-  private static getAvailablePhaseTransitions(currentPhase: GamePhase): PhaseTransition[] {
+  private static getAvailablePhaseTransitions(_currentPhase: GamePhase): PhaseTransition[] {
     // Return possible transitions from current phase
     return [];
   }
 
   private static evaluateTransitionConditions(
-    transition: PhaseTransition,
-    mission: GenerationalMission,
-    pacingState: PacingState
+    _transition: PhaseTransition,
+    _mission: GenerationalMission,
+    _pacingState: PacingState
   ): boolean {
     // Evaluate if transition conditions are met
     return false;
@@ -730,7 +724,7 @@ export class PacingService {
     return 2.0 - engagementScore;
   }
 
-  private static evaluateEscalationCondition(condition: any, event: any, pacingState: PacingState): boolean {
+  private static evaluateEscalationCondition(_condition: any, _event: any, _pacingState: PacingState): boolean {
     // Evaluate specific escalation condition
     return false;
   }
@@ -757,17 +751,17 @@ export class PacingService {
     return 'stable';
   }
 
-  private static identifyEngagementFactors(interactions: InteractionEvent[], pacingState: PacingState): any[] {
+  private static identifyEngagementFactors(_interactions: InteractionEvent[], _pacingState: PacingState): any[] {
     // Identify factors affecting engagement
     return [];
   }
 
-  private static generateEngagementPredictions(interactions: InteractionEvent[], pacingState: PacingState): any[] {
+  private static generateEngagementPredictions(_interactions: InteractionEvent[], _pacingState: PacingState): any[] {
     // Generate predictions about future engagement
     return [];
   }
 
-  private static generateEngagementRecommendations(level: EngagementLevel, trend: string, factors: any[]): any[] {
+  private static generateEngagementRecommendations(_level: EngagementLevel, _trend: string, _factors: any[]): any[] {
     // Generate recommendations to improve engagement
     return [];
   }

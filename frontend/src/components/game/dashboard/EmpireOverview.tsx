@@ -15,7 +15,7 @@ const EmpireOverview: React.FC = React.memo(() => {
       ...empireStats,
       captainAge: captain?.age || 0,
     };
-  }, [starSystems, legacy.generation, captain?.age]);
+  }, [starSystems, legacy, captain?.age]);
 
   return (
     <Card title="Empire Overview">

@@ -1,5 +1,5 @@
 // components/chronicle/ChronicleViewer.tsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TerminalWindow } from '../ui/TerminalWindow';
 import { TerminalText } from '../ui/TerminalWindow';
 import type { Chronicle, ChronicleEntry } from '../../types/chronicle';
@@ -62,12 +62,12 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(({
   const handleEntrySelect = useCallback((entry: ChronicleEntry) => {
     chronicleViewer.selectEntry(entry);
     stableProps.onEntrySelect?.(entry);
-  }, [chronicleViewer.selectEntry, stableProps.onEntrySelect]);
+  }, [chronicleViewer, stableProps]);
 
   const handleHeritageGenerate = useCallback((entry: ChronicleEntry) => {
     chronicleViewer.generateHeritageForEntry(entry);
     stableProps.onHeritageGenerate?.(entry);
-  }, [chronicleViewer.generateHeritageForEntry, stableProps.onHeritageGenerate]);
+  }, [chronicleViewer, stableProps]);
 
   // Debounced search handler to prevent excessive filtering
   const debouncedSearch = useDebounce((...args: unknown[]) => {

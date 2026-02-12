@@ -1,5 +1,5 @@
 // components/chronicle/HeritageSelector.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TerminalWindow } from '../ui/TerminalWindow';
 import { TerminalText } from '../ui/TerminalWindow';
 import type {
@@ -41,19 +41,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
   });
   const [activeTab, setActiveTab] = useState<'available' | 'selected' | 'analysis'>('available');
 
-  useEffect(() => {
-    if (availableModifiers.length > 0 && targetMission) {
-      analyzeOptions();
-    }
-  }, [availableModifiers, targetMission, criteria]);
-
-  useEffect(() => {
-    const newConflicts = HeritageService.detectConflicts(selectedModifiers);
-    setConflicts(newConflicts);
-    onSelectionChange(selectedModifiers);
-  }, [selectedModifiers, onSelectionChange]);
-
-  const analyzeOptions = async () => {
+  const analyzeOptions = useCallback(async () => {
     try {
       const result = await HeritageService.analyzeHeritageOptions(
         availableModifiers,
@@ -64,7 +52,19 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
     } catch (error) {
       console.error('Failed to analyze heritage options:', error);
     }
-  };
+  }, [availableModifiers, criteria, targetMission]);
+
+  useEffect(() => {
+    if (availableModifiers.length > 0 && targetMission) {
+      analyzeOptions();
+    }
+  }, [availableModifiers, analyzeOptions, targetMission]);
+
+  useEffect(() => {
+    const newConflicts = HeritageService.detectConflicts(selectedModifiers);
+    setConflicts(newConflicts);
+    onSelectionChange(selectedModifiers);
+  }, [selectedModifiers, onSelectionChange]);
 
   const toggleModifier = (modifier: HeritageModifier) => {
     const isSelected = selectedModifiers.some(m => m.id === modifier.id);

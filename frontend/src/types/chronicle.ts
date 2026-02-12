@@ -1,5 +1,5 @@
 // types/chronicle.ts
-import type { LegacyTypeType, MissionPhaseType, EventCategoryType } from './enums';
+import type { LegacyTypeType, MissionPhaseType } from './enums';
 import type { ExtendedResources, LegacyRelation } from './generationalMissions';
 
 export class Chronicle {

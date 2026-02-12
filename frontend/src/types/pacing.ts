@@ -1,6 +1,4 @@
 // types/pacing.ts
-import type { MissionPhaseType } from './enums';
-
 export class PacingState {
   currentPhase!: GamePhase;
   phaseProgress!: number; // 0-1 through current phase

@@ -7,7 +7,6 @@ import type {
   ChronicleExportData,
   ChronicleSearchCriteria,
   ChronicleStatistics,
-  SuccessLevel,
   PopulationOutcome
 } from '../types/chronicle';
 import type { HeritageModifier } from '../types/heritage';
@@ -441,7 +440,7 @@ export class ChronicleService {
     };
   }
 
-  private static migrateChronicleVersion(data: any, targetVersion: string): Chronicle {
+  private static migrateChronicleVersion(data: any, _targetVersion: string): Chronicle {
     // For now, just return the data as-is since we're on version 1.0.0
     // Future versions would implement migration logic here
     return data as Chronicle;
@@ -481,13 +480,13 @@ export class ChronicleService {
     return 'extinct';
   }
 
-  private static extractKeyDecisions(mission: GenerationalMission): ChronicleDecision[] {
+  private static extractKeyDecisions(_mission: GenerationalMission): ChronicleDecision[] {
     // Extract significant decisions from mission history
     // This would analyze the mission's event history and decision points
     return [];
   }
 
-  private static calculateDecisionMetrics(mission: GenerationalMission): any {
+  private static calculateDecisionMetrics(_mission: GenerationalMission): any {
     return {
       totalDecisions: 0,
       averageDecisionTime: 30,
@@ -517,7 +516,7 @@ export class ChronicleService {
     };
   }
 
-  private static createCulturalSnapshot(mission: GenerationalMission): any {
+  private static createCulturalSnapshot(_mission: GenerationalMission): any {
     return {
       dominantValues: ['exploration', 'preservation'],
       emergentTraditions: [],
@@ -528,22 +527,22 @@ export class ChronicleService {
     };
   }
 
-  private static generateArtifacts(mission: GenerationalMission): any[] {
+  private static generateArtifacts(_mission: GenerationalMission): any[] {
     // Generate artifacts based on mission achievements and discoveries
     return [];
   }
 
-  private static extractDiscoveries(mission: GenerationalMission): any[] {
+  private static extractDiscoveries(_mission: GenerationalMission): any[] {
     // Extract discoveries from mission history
     return [];
   }
 
-  private static calculateLegacyEvolution(mission: GenerationalMission): any[] {
+  private static calculateLegacyEvolution(_mission: GenerationalMission): any[] {
     // Calculate how legacies evolved during the mission
     return [];
   }
 
-  private static calculateEngagementMetrics(mission: GenerationalMission): any {
+  private static calculateEngagementMetrics(_mission: GenerationalMission): any {
     return {
       totalPlayTime: 10,
       activeDecisionTime: 3,
@@ -555,7 +554,7 @@ export class ChronicleService {
     };
   }
 
-  private static calculateAIPerformance(mission: GenerationalMission): any {
+  private static calculateAIPerformance(_mission: GenerationalMission): any {
     return {
       decisionsAutomated: 30,
       playerOverrides: 5,
@@ -572,18 +571,18 @@ export class ChronicleService {
     }
   }
 
-  private static createModifierFromDecision(decision: ChronicleDecision, entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromDecision(_decision: ChronicleDecision, _entry: ChronicleEntry): HeritageModifier | null {
     // Create heritage modifier based on significant decision
     // This would be a complex algorithm analyzing the decision's impact
     return null;
   }
 
-  private static createModifierFromArtifact(artifact: any, entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromArtifact(_artifact: any, _entry: ChronicleEntry): HeritageModifier | null {
     // Create heritage modifier based on discovered artifact
     return null;
   }
 
-  private static createModifierFromPopulationOutcome(entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromPopulationOutcome(_entry: ChronicleEntry): HeritageModifier | null {
     // Create heritage modifier based on population outcome
     return null;
   }

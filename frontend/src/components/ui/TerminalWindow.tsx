@@ -364,30 +364,6 @@ export const TerminalList: React.FC<TerminalListProps> = ({
   );
 };
 
-// ASCII Art Generator Helper
-export const generateASCIIBorder = (width: number = 50, title?: string) => {
-  if (title) {
-    const titleLength = title.length + 4; // Add brackets and spaces
-    const remainingWidth = Math.max(0, width - titleLength);
-    const leftPadding = Math.floor(remainingWidth / 2);
-    const rightPadding = remainingWidth - leftPadding;
-
-    return {
-      top: `┌${'─'.repeat(leftPadding)}[ ${title.toUpperCase()} ]${'─'.repeat(rightPadding)}┐`,
-      middle: `├${'─'.repeat(width)}┤`,
-      bottom: `└${'─'.repeat(width)}┘`,
-      side: '│'
-    };
-  }
-
-  return {
-    top: `┌${'─'.repeat(width)}┐`,
-    middle: `├${'─'.repeat(width)}┤`,
-    bottom: `└${'─'.repeat(width)}┘`,
-    side: '│'
-  };
-};
-
 // Terminal Screen Boot Sequence Component
 interface TerminalBootProps {
   onComplete?: () => void;

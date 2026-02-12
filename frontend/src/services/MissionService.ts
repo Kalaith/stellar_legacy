@@ -659,17 +659,18 @@ export class MissionService {
   private static updateSuccessMetrics(mission: GenerationalMission): void {
     mission.successMetrics.forEach(metric => {
       switch (metric.id) {
-        case 'population_survival':
+        case 'population_survival': {
           // Calculate survival rate based on starting population
           const initialPopulation = mission.ship.populationCapacity; // Approximation
           metric.currentValue = (mission.population.total / initialPopulation) * 100;
           break;
+        }
 
         case 'mission_completion':
           metric.currentValue = mission.phaseProgress;
           break;
 
-        case 'resource_efficiency':
+        case 'resource_efficiency': {
           // Simple approximation - would be more sophisticated in production
           const resourceHealth = Math.min(
             mission.resources.food / 1000,
@@ -678,6 +679,7 @@ export class MissionService {
           );
           metric.currentValue = resourceHealth * 100;
           break;
+        }
 
         case 'social_cohesion':
           metric.currentValue = mission.resources.unity * 100;
