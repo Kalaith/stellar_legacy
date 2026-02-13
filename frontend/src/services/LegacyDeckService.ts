@@ -1,8 +1,10 @@
+
 // services/LegacyDeckService.ts
 import type {
   LegacyDeck,
   LegacyCard,
   LegacyCardTemplate,
+  EffectTemplate,
   CardTriggerResult,
   CardResolutionResult,
   DeckAnalytics,
@@ -896,7 +898,7 @@ export class LegacyDeckService {
 
   private static generateEffectTemplatesFromDecision(
     _decision: ChronicleDecision
-  ): unknown[] {
+  ): EffectTemplate[] {
     // Generate effect templates based on decision category and impact
     return [];
   }

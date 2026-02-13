@@ -1,3 +1,4 @@
+
 // services/PacingService.ts
 import type {
   PacingState,
@@ -25,6 +26,7 @@ interface PacingEventLike {
   urgency?: string;
   requiresPlayerDecision?: boolean;
   category?: string;
+  importance?: number;
 }
 
 interface InteractionPatternAnalysis {
@@ -406,7 +408,7 @@ export class PacingService {
       }
 
       // Medium engagement - pause for moderate+ importance events
-      return event.importance >= 0.6;
+      return (event.importance ?? 0.5) >= 0.6;
     } catch (error) {
       Logger.error(
         'Failed to determine if should pause for interaction',

@@ -1,3 +1,4 @@
+
 // components/game/missions/MissionCommandCenter.tsx
 import React, { useState } from 'react';
 import {
@@ -535,7 +536,9 @@ const TerminalCreateMission: React.FC<{
             <TerminalText variant="bright">LEGACY ASSIGNMENT:</TerminalText>
             <TerminalSelect
               value={config.legacy}
-              onChange={value => onChange({ ...config, legacy: value })}
+              onChange={value =>
+                onChange({ ...config, legacy: value as LegacyTypeType })
+              }
               options={[
                 { value: 'preservers', label: 'PRESERVERS' },
                 { value: 'adaptors', label: 'ADAPTORS' },
@@ -548,7 +551,9 @@ const TerminalCreateMission: React.FC<{
             <TerminalText variant="bright">MISSION OBJECTIVE:</TerminalText>
             <TerminalSelect
               value={config.objective}
-              onChange={value => onChange({ ...config, objective: value })}
+              onChange={value =>
+                onChange({ ...config, objective: value as MissionObjectiveType })
+              }
               options={[
                 { value: 'colonization', label: 'COLONIZATION' },
                 { value: 'mining', label: 'RESOURCE MINING' },
@@ -563,7 +568,9 @@ const TerminalCreateMission: React.FC<{
               <TerminalText variant="bright">VESSEL SIZE:</TerminalText>
               <TerminalSelect
                 value={config.shipSize}
-                onChange={value => onChange({ ...config, shipSize: value })}
+                onChange={value =>
+                  onChange({ ...config, shipSize: value as ShipSizeType })
+                }
                 options={[
                   { value: 'medium', label: 'MEDIUM (15K)' },
                   { value: 'large', label: 'LARGE (30K)' },
