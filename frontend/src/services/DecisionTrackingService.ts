@@ -5,7 +5,7 @@ import type {
   DecisionCategory,
   DecisionUrgency,
   DecisionScope,
-  ImmediateConsequence
+  ImmediateConsequence,
 } from '../types/chronicle';
 import type { GenerationalMission } from '../types/generationalMissions';
 import type { LegacyTypeType } from '../types/enums';
@@ -103,7 +103,8 @@ export interface DecisionAnalytics {
 }
 
 export class DecisionTrackingService {
-  private static readonly DECISION_STORAGE_KEY = 'stellar-legacy-decision-ledger';
+  private static readonly DECISION_STORAGE_KEY =
+    'stellar-legacy-decision-ledger';
   private static currentLedger: DecisionLedger | null = null;
 
   /**
@@ -132,7 +133,7 @@ export class DecisionTrackingService {
         actualLongTermEffects: [],
         referencedDecisions: this.findReferencedDecisions(decision, mission),
         chronicleWeight: this.calculateChronicleWeight(decision, mission),
-        legacyAlignment: this.calculateLegacyAlignment(decision, mission)
+        legacyAlignment: this.calculateLegacyAlignment(decision, mission),
       };
 
       const entry: DecisionEntry = {
@@ -142,10 +143,14 @@ export class DecisionTrackingService {
         decision: chronicleDecision,
         context: this.generateDecisionContext(decision, mission),
         alternativeChoices: decision.alternatives,
-        immediateConsequences: decision.immediateConsequences.map(c => c.description),
-        resourceChanges: this.extractResourceChanges(decision.immediateConsequences),
+        immediateConsequences: decision.immediateConsequences.map(
+          c => c.description
+        ),
+        resourceChanges: this.extractResourceChanges(
+          decision.immediateConsequences
+        ),
         longTermConsequences: [],
-        chronicleImpact: chronicleDecision.chronicleWeight
+        chronicleImpact: chronicleDecision.chronicleWeight,
       };
 
       // Add to ledger
@@ -158,7 +163,7 @@ export class DecisionTrackingService {
         decisionId: entry.id,
         title: decision.title,
         category: decision.category,
-        chronicleWeight: chronicleDecision.chronicleWeight
+        chronicleWeight: chronicleDecision.chronicleWeight,
       });
 
       return entry;
@@ -181,7 +186,9 @@ export class DecisionTrackingService {
       const entry = ledger.entries.find(e => e.id === decisionId);
 
       if (!entry) {
-        Logger.warn('Decision not found for consequence tracking', { decisionId });
+        Logger.warn('Decision not found for consequence tracking', {
+          decisionId,
+        });
         return;
       }
 
@@ -189,13 +196,15 @@ export class DecisionTrackingService {
       entry.longTermConsequences.push(consequence);
 
       // Update consequence chain
-      const chain = ledger.consequenceChains.find(c => c.originDecisionId === decisionId);
+      const chain = ledger.consequenceChains.find(
+        c => c.originDecisionId === decisionId
+      );
       if (chain) {
         chain.chainEvents.push({
           year: mission.currentYear,
           description: consequence.description,
           severity: consequence.severity,
-          references: [decisionId]
+          references: [decisionId],
         });
 
         // Check if this is a final outcome
@@ -214,7 +223,7 @@ export class DecisionTrackingService {
       Logger.info('Consequence tracked', {
         decisionId,
         consequenceYear: consequence.manifestYear,
-        severity: consequence.severity
+        severity: consequence.severity,
       });
     } catch (error) {
       Logger.error('Failed to track consequence', error);
@@ -231,43 +240,54 @@ export class DecisionTrackingService {
 
       // Apply filters
       if (filters.categories?.length) {
-        entries = entries.filter(entry => filters.categories!.includes(entry.decision.category));
+        entries = entries.filter(entry =>
+          filters.categories!.includes(entry.decision.category)
+        );
       }
 
       if (filters.urgencyLevels?.length) {
-        entries = entries.filter(entry => filters.urgencyLevels!.includes(entry.decision.urgency));
+        entries = entries.filter(entry =>
+          filters.urgencyLevels!.includes(entry.decision.urgency)
+        );
       }
 
       if (filters.scopes?.length) {
-        entries = entries.filter(entry => filters.scopes!.includes(entry.decision.scope));
+        entries = entries.filter(entry =>
+          filters.scopes!.includes(entry.decision.scope)
+        );
       }
 
       if (filters.timeRange) {
-        entries = entries.filter(entry =>
-          entry.year >= filters.timeRange!.startYear &&
-          entry.year <= filters.timeRange!.endYear
+        entries = entries.filter(
+          entry =>
+            entry.year >= filters.timeRange!.startYear &&
+            entry.year <= filters.timeRange!.endYear
         );
       }
 
       if (filters.legacyFilter?.length) {
         entries = entries.filter(entry => {
-          return filters.legacyFilter!.some(legacy =>
-            Object.keys(entry.decision.legacyAlignment).includes(legacy) &&
-            entry.decision.legacyAlignment[legacy] > 0
+          return filters.legacyFilter!.some(
+            legacy =>
+              Object.keys(entry.decision.legacyAlignment).includes(legacy) &&
+              entry.decision.legacyAlignment[legacy] > 0
           );
         });
       }
 
       if (filters.impactThreshold !== undefined) {
-        entries = entries.filter(entry => entry.chronicleImpact >= filters.impactThreshold!);
+        entries = entries.filter(
+          entry => entry.chronicleImpact >= filters.impactThreshold!
+        );
       }
 
       if (filters.textSearch) {
         const searchTerm = filters.textSearch.toLowerCase();
-        entries = entries.filter(entry =>
-          entry.decision.title.toLowerCase().includes(searchTerm) ||
-          entry.decision.description.toLowerCase().includes(searchTerm) ||
-          entry.decision.choice.toLowerCase().includes(searchTerm)
+        entries = entries.filter(
+          entry =>
+            entry.decision.title.toLowerCase().includes(searchTerm) ||
+            entry.decision.description.toLowerCase().includes(searchTerm) ||
+            entry.decision.choice.toLowerCase().includes(searchTerm)
         );
       }
 
@@ -276,7 +296,7 @@ export class DecisionTrackingService {
 
       Logger.info('Decision history reviewed', {
         totalEntries: ledger.entries.length,
-        filteredEntries: entries.length
+        filteredEntries: entries.length,
       });
 
       return entries;
@@ -303,7 +323,7 @@ export class DecisionTrackingService {
         timestamp: new Date(),
         satisfaction,
         wouldChooseDifferently,
-        lessons
+        lessons,
       };
 
       const ledger = this.getLedger();
@@ -313,7 +333,7 @@ export class DecisionTrackingService {
       Logger.info('Player reflection added', {
         decisionId,
         satisfaction,
-        wouldChooseDifferently
+        wouldChooseDifferently,
       });
     } catch (error) {
       Logger.error('Failed to add player reflection', error);
@@ -340,7 +360,7 @@ export class DecisionTrackingService {
         diplomatic: 0,
         crisis: 0,
         exploration: 0,
-        legacy: 0
+        legacy: 0,
       };
 
       // Count decisions by urgency
@@ -348,7 +368,7 @@ export class DecisionTrackingService {
         immediate: 0,
         urgent: 0,
         moderate: 0,
-        routine: 0
+        routine: 0,
       };
 
       // Count decisions by scope
@@ -357,7 +377,7 @@ export class DecisionTrackingService {
         cohort: 0,
         dynasty: 0,
         legacy: 0,
-        civilization: 0
+        civilization: 0,
       };
 
       let totalImpact = 0;
@@ -377,11 +397,14 @@ export class DecisionTrackingService {
         if (predictedCount > 0) {
           totalPredictions += predictedCount;
           // Simple accuracy check - in reality would be more sophisticated
-          const matchingPredictions = entry.decision.predictedLongTermEffects.filter(prediction =>
-            entry.longTermConsequences.some(actual =>
-              actual.description.toLowerCase().includes(prediction.toLowerCase())
-            )
-          ).length;
+          const matchingPredictions =
+            entry.decision.predictedLongTermEffects.filter(prediction =>
+              entry.longTermConsequences.some(actual =>
+                actual.description
+                  .toLowerCase()
+                  .includes(prediction.toLowerCase())
+              )
+            ).length;
           correctPredictions += matchingPredictions;
         }
       });
@@ -401,9 +424,11 @@ export class DecisionTrackingService {
         decisionsByUrgency,
         decisionsByScope,
         averageImpact: totalImpact / entries.length,
-        averageSatisfaction: satisfactionCount > 0 ? totalSatisfaction / satisfactionCount : 0,
+        averageSatisfaction:
+          satisfactionCount > 0 ? totalSatisfaction / satisfactionCount : 0,
         commonPatterns,
-        consequenceAccuracy: totalPredictions > 0 ? correctPredictions / totalPredictions : 0
+        consequenceAccuracy:
+          totalPredictions > 0 ? correctPredictions / totalPredictions : 0,
       };
     } catch (error) {
       Logger.error('Failed to analyze decision patterns', error);
@@ -420,7 +445,10 @@ export class DecisionTrackingService {
   ): string[] {
     try {
       const ledger = this.getLedger();
-      const relevantDecisions = this.findRelevantDecisions(currentContext, ledger.entries);
+      const relevantDecisions = this.findRelevantDecisions(
+        currentContext,
+        ledger.entries
+      );
 
       return relevantDecisions.map(entry => {
         const timeAgo = mission.currentYear - entry.year;
@@ -446,7 +474,11 @@ export class DecisionTrackingService {
   static getConsequenceChain(decisionId: string): ConsequenceChain | null {
     try {
       const ledger = this.getLedger();
-      return ledger.consequenceChains.find(chain => chain.originDecisionId === decisionId) || null;
+      return (
+        ledger.consequenceChains.find(
+          chain => chain.originDecisionId === decisionId
+        ) || null
+      );
     } catch (error) {
       Logger.error('Failed to get consequence chain', error);
       return null;
@@ -470,7 +502,7 @@ export class DecisionTrackingService {
 
       Logger.info('Decision ledger imported', {
         entryCount: ledger.entries.length,
-        chainCount: ledger.consequenceChains.length
+        chainCount: ledger.consequenceChains.length,
       });
     } catch (error) {
       Logger.error('Failed to import decision ledger', error);
@@ -500,7 +532,7 @@ export class DecisionTrackingService {
     return {
       entries: [],
       consequenceChains: [],
-      playerReflections: []
+      playerReflections: [],
     };
   }
 
@@ -528,13 +560,16 @@ export class DecisionTrackingService {
     const references: string[] = [];
 
     // Find decisions in the same category within recent years
-    const recentDecisions = ledger.entries.filter(entry =>
-      entry.decision.category === decision.category &&
-      mission.currentYear - entry.year <= 50 // Within 50 years
+    const recentDecisions = ledger.entries.filter(
+      entry =>
+        entry.decision.category === decision.category &&
+        mission.currentYear - entry.year <= 50 // Within 50 years
     );
 
     // Add the most impactful recent decision as a reference
-    const mostImpactful = recentDecisions.sort((a, b) => b.chronicleImpact - a.chronicleImpact)[0];
+    const mostImpactful = recentDecisions.sort(
+      (a, b) => b.chronicleImpact - a.chronicleImpact
+    )[0];
     if (mostImpactful) {
       references.push(mostImpactful.id);
     }
@@ -550,19 +585,35 @@ export class DecisionTrackingService {
 
     // Increase weight based on urgency
     switch (decision.urgency) {
-      case 'immediate': weight += 0.3; break;
-      case 'urgent': weight += 0.2; break;
-      case 'moderate': weight += 0.1; break;
-      case 'routine': break;
+      case 'immediate':
+        weight += 0.3;
+        break;
+      case 'urgent':
+        weight += 0.2;
+        break;
+      case 'moderate':
+        weight += 0.1;
+        break;
+      case 'routine':
+        break;
     }
 
     // Increase weight based on scope
     switch (decision.scope) {
-      case 'civilization': weight += 0.4; break;
-      case 'legacy': weight += 0.3; break;
-      case 'dynasty': weight += 0.2; break;
-      case 'cohort': weight += 0.1; break;
-      case 'individual': break;
+      case 'civilization':
+        weight += 0.4;
+        break;
+      case 'legacy':
+        weight += 0.3;
+        break;
+      case 'dynasty':
+        weight += 0.2;
+        break;
+      case 'cohort':
+        weight += 0.1;
+        break;
+      case 'individual':
+        break;
     }
 
     // Increase weight based on number of predicted long-term effects
@@ -585,7 +636,7 @@ export class DecisionTrackingService {
     const alignment: Record<LegacyTypeType, number> = {
       preservers: 0,
       adaptors: 0,
-      wanderers: 0
+      wanderers: 0,
     };
 
     // Simple alignment calculation based on decision category and choice
@@ -618,14 +669,16 @@ export class DecisionTrackingService {
     return `During ${mission.currentPhase} phase of year ${mission.currentYear}, facing ${decision.urgency} ${decision.category} decision affecting ${decision.scope} level.`;
   }
 
-  private static extractResourceChanges(consequences: ImmediateConsequence[]): Record<string, number> {
+  private static extractResourceChanges(
+    consequences: ImmediateConsequence[]
+  ): Record<string, number> {
     const changes: Record<string, number> = {};
 
     consequences
       .filter(c => c.type === 'resource')
       .forEach(c => {
         c.affectedTargets.forEach(target => {
-          changes[target] = (changes[target] || 0) + (c.magnitude * 100); // Scale magnitude
+          changes[target] = (changes[target] || 0) + c.magnitude * 100; // Scale magnitude
         });
       });
 
@@ -637,34 +690,44 @@ export class DecisionTrackingService {
 
     const chain: ConsequenceChain = {
       originDecisionId: entry.id,
-      chainEvents: [{
-        year: entry.year,
-        description: `Decision made: ${entry.decision.choice}`,
-        severity: 'minor',
-        references: [entry.id]
-      }],
+      chainEvents: [
+        {
+          year: entry.year,
+          description: `Decision made: ${entry.decision.choice}`,
+          severity: 'minor',
+          references: [entry.id],
+        },
+      ],
       stillActive: true,
-      finalOutcome: null
+      finalOutcome: null,
     };
 
     ledger.consequenceChains.push(chain);
     this.saveLedger(ledger);
   }
 
-  private static updateChronicleWeight(entry: DecisionEntry, consequence: LongTermEffect): void {
+  private static updateChronicleWeight(
+    entry: DecisionEntry,
+    consequence: LongTermEffect
+  ): void {
     // Increase chronicle weight based on the severity of actual consequences
     const weightIncrease = {
-      'minor': 0.05,
-      'moderate': 0.1,
-      'major': 0.2,
-      'civilization-defining': 0.4
+      minor: 0.05,
+      moderate: 0.1,
+      major: 0.2,
+      'civilization-defining': 0.4,
     }[consequence.severity];
 
-    entry.chronicleImpact = Math.min(1.0, entry.chronicleImpact + weightIncrease);
+    entry.chronicleImpact = Math.min(
+      1.0,
+      entry.chronicleImpact + weightIncrease
+    );
     entry.decision.chronicleWeight = entry.chronicleImpact;
   }
 
-  private static identifyDecisionPatterns(entries: DecisionEntry[]): DecisionPattern[] {
+  private static identifyDecisionPatterns(
+    entries: DecisionEntry[]
+  ): DecisionPattern[] {
     const patterns: Map<string, DecisionPattern> = new Map();
 
     entries.forEach(entry => {
@@ -676,7 +739,7 @@ export class DecisionTrackingService {
           frequency: 0,
           outcomes: [],
           averageImpact: 0,
-          playerSatisfaction: 0
+          playerSatisfaction: 0,
         });
       }
 
@@ -687,26 +750,39 @@ export class DecisionTrackingService {
     });
 
     // Convert to array and calculate averages
-    return Array.from(patterns.values()).map(pattern => ({
-      ...pattern,
-      averageImpact: pattern.averageImpact / pattern.frequency,
-      // Player satisfaction would be calculated from reflections in a real implementation
-      playerSatisfaction: 3.5 // Placeholder
-    })).sort((a, b) => b.frequency - a.frequency);
+    return Array.from(patterns.values())
+      .map(pattern => ({
+        ...pattern,
+        averageImpact: pattern.averageImpact / pattern.frequency,
+        // Player satisfaction would be calculated from reflections in a real implementation
+        playerSatisfaction: 3.5, // Placeholder
+      }))
+      .sort((a, b) => b.frequency - a.frequency);
   }
 
-  private static findRelevantDecisions(context: string, entries: DecisionEntry[]): DecisionEntry[] {
+  private static findRelevantDecisions(
+    context: string,
+    entries: DecisionEntry[]
+  ): DecisionEntry[] {
     const contextLower = context.toLowerCase();
 
     // Find decisions with similar context or category keywords
     const relevant = entries.filter(entry => {
-      const entryContext = `${entry.decision.title} ${entry.decision.description} ${entry.decision.category}`.toLowerCase();
-      return entryContext.split(' ').some(word => contextLower.includes(word) && word.length > 3);
+      const entryContext =
+        `${entry.decision.title} ${entry.decision.description} ${entry.decision.category}`.toLowerCase();
+      return entryContext
+        .split(' ')
+        .some(word => contextLower.includes(word) && word.length > 3);
     });
 
     // Sort by impact and recency
     return relevant
-      .sort((a, b) => (b.chronicleImpact + (100 - b.year) / 1000) - (a.chronicleImpact + (100 - a.year) / 1000))
+      .sort(
+        (a, b) =>
+          b.chronicleImpact +
+          (100 - b.year) / 1000 -
+          (a.chronicleImpact + (100 - a.year) / 1000)
+      )
       .slice(0, 3); // Return top 3 most relevant
   }
 
@@ -720,25 +796,25 @@ export class DecisionTrackingService {
         diplomatic: 0,
         crisis: 0,
         exploration: 0,
-        legacy: 0
+        legacy: 0,
       },
       decisionsByUrgency: {
         immediate: 0,
         urgent: 0,
         moderate: 0,
-        routine: 0
+        routine: 0,
       },
       decisionsByScope: {
         individual: 0,
         cohort: 0,
         dynasty: 0,
         legacy: 0,
-        civilization: 0
+        civilization: 0,
       },
       averageImpact: 0,
       averageSatisfaction: 0,
       commonPatterns: [],
-      consequenceAccuracy: 0
+      consequenceAccuracy: 0,
     };
   }
 

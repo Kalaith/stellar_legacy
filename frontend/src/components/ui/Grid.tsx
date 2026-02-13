@@ -8,20 +8,13 @@ interface GridProps {
   className?: string;
 }
 
-const Grid: React.FC<GridProps> = React.memo(({
-  columns = 1,
-  gap = 4,
-  children,
-  className = ''
-}) => {
-  const gridClasses = `grid gap-${gap} grid-cols-${columns}`;
+const Grid: React.FC<GridProps> = React.memo(
+  ({ columns = 1, gap = 4, children, className = '' }) => {
+    const gridClasses = `grid gap-${gap} grid-cols-${columns}`;
 
-  return (
-    <div className={`${gridClasses} ${className}`}>
-      {children}
-    </div>
-  );
-});
+    return <div className={`${gridClasses} ${className}`}>{children}</div>;
+  }
+);
 
 Grid.displayName = 'Grid';
 

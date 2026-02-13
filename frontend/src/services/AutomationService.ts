@@ -7,7 +7,7 @@ import type {
   Dynasty,
   PopulationCohort,
   AIDecision,
-  GenerationalMission
+  GenerationalMission,
 } from '../types/generationalMissions';
 import type { LegacyTypeType } from '../types/enums';
 import { DynastyService } from './DynastyService';
@@ -15,18 +15,22 @@ import Logger from '../utils/logger';
 
 export class AutomationService {
   // Initialize Default Automation Config for New Mission
-  static createDefaultAutomationConfig(legacy: LegacyTypeType): AutomationConfig {
+  static createDefaultAutomationConfig(
+    legacy: LegacyTypeType
+  ): AutomationConfig {
     return {
       resourceThresholds: this.getDefaultResourceThresholds(legacy),
       crisisEscalationRules: this.getDefaultEscalationRules(legacy),
       councilMembers: [], // Will be populated when dynasties are assigned
       delegationRules: this.getDefaultDelegationRules(legacy),
-      emergencyProtocols: this.getDefaultEmergencyProtocols(legacy)
+      emergencyProtocols: this.getDefaultEmergencyProtocols(legacy),
     };
   }
 
   // Default Resource Thresholds by Sect
-  private static getDefaultResourceThresholds(legacy: LegacyTypeType): Record<string, number> {
+  private static getDefaultResourceThresholds(
+    legacy: LegacyTypeType
+  ): Record<string, number> {
     const baseThresholds = {
       credits: 1000,
       energy: 500,
@@ -36,7 +40,7 @@ export class AutomationService {
       hullIntegrity: 0.7,
       lifeSupport: 0.8,
       morale: 0.6,
-      unity: 0.5
+      unity: 0.5,
     };
 
     // Legacy-specific adjustments
@@ -46,7 +50,7 @@ export class AutomationService {
           ...baseThresholds,
           food: 400, // More conservative food reserves
           hullIntegrity: 0.8, // Higher safety standards
-          unity: 0.7 // Value social cohesion more
+          unity: 0.7, // Value social cohesion more
         };
 
       case 'adaptors':
@@ -54,7 +58,7 @@ export class AutomationService {
           ...baseThresholds,
           energy: 800, // Higher energy needs for modifications
           lifeSupport: 0.6, // More tolerant of system variations
-          morale: 0.4 // Accept lower traditional morale
+          morale: 0.4, // Accept lower traditional morale
         };
 
       case 'wanderers':
@@ -63,7 +67,7 @@ export class AutomationService {
           fuel: 200, // Critical for constant travel
           credits: 500, // Lower credit dependency
           food: 150, // Efficient consumption
-          unity: 0.3 // Used to fragmentation
+          unity: 0.3, // Used to fragmentation
         };
 
       default:
@@ -72,7 +76,9 @@ export class AutomationService {
   }
 
   // Default Crisis Escalation Rules
-  private static getDefaultEscalationRules(legacy: LegacyTypeType): DelegationRule[] {
+  private static getDefaultEscalationRules(
+    legacy: LegacyTypeType
+  ): DelegationRule[] {
     const rules: DelegationRule[] = [
       {
         id: 'critical_resources',
@@ -80,7 +86,7 @@ export class AutomationService {
         condition: 'any_resource < critical_threshold',
         action: 'escalate_to_player',
         isActive: true,
-        dynastyResponsible: null
+        dynastyResponsible: null,
       },
       {
         id: 'system_failure',
@@ -88,7 +94,7 @@ export class AutomationService {
         condition: 'hull_integrity < 0.5 OR life_support < 0.5',
         action: 'immediate_escalation',
         isActive: true,
-        dynastyResponsible: null
+        dynastyResponsible: null,
       },
       {
         id: 'population_crisis',
@@ -96,8 +102,8 @@ export class AutomationService {
         condition: 'morale < 0.3 OR unity < 0.2',
         action: 'escalate_to_player',
         isActive: true,
-        dynastyResponsible: null
-      }
+        dynastyResponsible: null,
+      },
     ];
 
     // Add legacy-specific escalation rules
@@ -109,7 +115,7 @@ export class AutomationService {
           condition: 'cultural_drift > 0.5',
           action: 'escalate_to_player',
           isActive: true,
-          dynastyResponsible: null
+          dynastyResponsible: null,
         });
         break;
 
@@ -120,7 +126,7 @@ export class AutomationService {
           condition: 'failed_mutations > 3',
           action: 'immediate_escalation',
           isActive: true,
-          dynastyResponsible: null
+          dynastyResponsible: null,
         });
         break;
 
@@ -131,7 +137,7 @@ export class AutomationService {
           condition: 'ships_lost > 1',
           action: 'escalate_to_player',
           isActive: true,
-          dynastyResponsible: null
+          dynastyResponsible: null,
         });
         break;
     }
@@ -140,7 +146,9 @@ export class AutomationService {
   }
 
   // Default Delegation Rules
-  private static getDefaultDelegationRules(_legacy: LegacyTypeType): DelegationRule[] {
+  private static getDefaultDelegationRules(
+    _legacy: LegacyTypeType
+  ): DelegationRule[] {
     return [
       {
         id: 'routine_maintenance',
@@ -148,7 +156,7 @@ export class AutomationService {
         condition: 'no_critical_issues',
         action: 'auto_approve_maintenance',
         isActive: true,
-        dynastyResponsible: 'Engineering'
+        dynastyResponsible: 'Engineering',
       },
       {
         id: 'food_production',
@@ -156,7 +164,7 @@ export class AutomationService {
         condition: 'food_level_stable',
         action: 'auto_manage_agriculture',
         isActive: true,
-        dynastyResponsible: 'Agriculture'
+        dynastyResponsible: 'Agriculture',
       },
       {
         id: 'education_continuity',
@@ -164,7 +172,7 @@ export class AutomationService {
         condition: 'stable_population',
         action: 'auto_manage_education',
         isActive: true,
-        dynastyResponsible: 'Leadership'
+        dynastyResponsible: 'Leadership',
       },
       {
         id: 'security_patrols',
@@ -172,20 +180,24 @@ export class AutomationService {
         condition: 'no_threats_detected',
         action: 'auto_security_operations',
         isActive: true,
-        dynastyResponsible: 'Security'
-      }
+        dynastyResponsible: 'Security',
+      },
     ];
   }
 
   // Default Emergency Protocols
-  private static getDefaultEmergencyProtocols(legacy: LegacyTypeType): Record<string, string> {
+  private static getDefaultEmergencyProtocols(
+    legacy: LegacyTypeType
+  ): Record<string, string> {
     const baseProtocols = {
-      'hull_breach': 'seal_compartments_evacuate_affected_areas',
-      'life_support_failure': 'activate_emergency_systems_reduce_population_activity',
-      'food_shortage': 'implement_rationing_activate_emergency_reserves',
-      'energy_crisis': 'power_down_non_essential_systems',
-      'population_unrest': 'deploy_security_open_communication_channels',
-      'system_cascade_failure': 'activate_all_emergency_protocols_wake_leadership'
+      hull_breach: 'seal_compartments_evacuate_affected_areas',
+      life_support_failure:
+        'activate_emergency_systems_reduce_population_activity',
+      food_shortage: 'implement_rationing_activate_emergency_reserves',
+      energy_crisis: 'power_down_non_essential_systems',
+      population_unrest: 'deploy_security_open_communication_channels',
+      system_cascade_failure:
+        'activate_all_emergency_protocols_wake_leadership',
     };
 
     // Add legacy-specific protocols
@@ -193,22 +205,22 @@ export class AutomationService {
       case 'preservers':
         return {
           ...baseProtocols,
-          'cultural_crisis': 'convene_elder_council_review_traditions',
-          'tradition_violation': 'cultural_mediation_committee'
+          cultural_crisis: 'convene_elder_council_review_traditions',
+          tradition_violation: 'cultural_mediation_committee',
         };
 
       case 'adaptors':
         return {
           ...baseProtocols,
-          'mutation_outbreak': 'quarantine_affected_isolate_cause',
-          'enhancement_failure': 'medical_intervention_genetic_counseling'
+          mutation_outbreak: 'quarantine_affected_isolate_cause',
+          enhancement_failure: 'medical_intervention_genetic_counseling',
         };
 
       case 'wanderers':
         return {
           ...baseProtocols,
-          'fleet_separation': 'activate_emergency_beacons_coordinate_rendezvous',
-          'resource_depletion': 'implement_survival_protocols_seek_opportunities'
+          fleet_separation: 'activate_emergency_beacons_coordinate_rendezvous',
+          resource_depletion: 'implement_survival_protocols_seek_opportunities',
         };
 
       default:
@@ -222,11 +234,31 @@ export class AutomationService {
     _automationConfig: AutomationConfig
   ): CouncilMember[] {
     const councilPositions = [
-      { role: 'Chief Administrator', authority: ['resources', 'population', 'general'], priority: 'leadership' },
-      { role: 'Engineering Director', authority: ['systems', 'maintenance', 'construction'], priority: 'engineering' },
-      { role: 'Life Support Manager', authority: ['agriculture', 'health', 'environment'], priority: 'agriculture' },
-      { role: 'Security Chief', authority: ['security', 'emergency', 'defense'], priority: 'security' },
-      { role: 'Cultural Coordinator', authority: ['education', 'culture', 'morale'], priority: 'diplomacy' }
+      {
+        role: 'Chief Administrator',
+        authority: ['resources', 'population', 'general'],
+        priority: 'leadership',
+      },
+      {
+        role: 'Engineering Director',
+        authority: ['systems', 'maintenance', 'construction'],
+        priority: 'engineering',
+      },
+      {
+        role: 'Life Support Manager',
+        authority: ['agriculture', 'health', 'environment'],
+        priority: 'agriculture',
+      },
+      {
+        role: 'Security Chief',
+        authority: ['security', 'emergency', 'defense'],
+        priority: 'security',
+      },
+      {
+        role: 'Cultural Coordinator',
+        authority: ['education', 'culture', 'morale'],
+        priority: 'diplomacy',
+      },
     ];
 
     const councilMembers: CouncilMember[] = [];
@@ -235,8 +267,11 @@ export class AutomationService {
       // Find best dynasty for this role
       const suitableDynasties = dynasties
         .filter(d => this.isDynastyQualified(d, position.priority))
-        .sort((a, b) => this.calculateDynastyFitness(b, position.priority) -
-                        this.calculateDynastyFitness(a, position.priority));
+        .sort(
+          (a, b) =>
+            this.calculateDynastyFitness(b, position.priority) -
+            this.calculateDynastyFitness(a, position.priority)
+        );
 
       if (suitableDynasties.length > 0) {
         const chosenDynasty = suitableDynasties[0];
@@ -245,7 +280,7 @@ export class AutomationService {
           role: position.role,
           authority: position.authority,
           performance: 0.7, // Starting performance
-          autonomyLevel: 0.8 // High autonomy for routine decisions
+          autonomyLevel: 0.8, // High autonomy for routine decisions
         });
       }
     });
@@ -254,7 +289,10 @@ export class AutomationService {
   }
 
   // Check if Dynasty is Qualified for Role
-  private static isDynastyQualified(dynasty: Dynasty, priority: string): boolean {
+  private static isDynastyQualified(
+    dynasty: Dynasty,
+    priority: string
+  ): boolean {
     const specialization = dynasty.specialization.toLowerCase();
     const influence = dynasty.influence;
 
@@ -263,20 +301,25 @@ export class AutomationService {
 
     // Check specialization match
     const specializationMatches: Record<string, string[]> = {
-      'leadership': ['leadership', 'diplomacy'],
-      'engineering': ['engineering', 'research'],
-      'agriculture': ['agriculture', 'medicine'],
-      'security': ['security'],
-      'diplomacy': ['diplomacy', 'trade', 'culture']
+      leadership: ['leadership', 'diplomacy'],
+      engineering: ['engineering', 'research'],
+      agriculture: ['agriculture', 'medicine'],
+      security: ['security'],
+      diplomacy: ['diplomacy', 'trade', 'culture'],
     };
 
-    return specializationMatches[priority]?.some(spec =>
-      specialization.includes(spec)
-    ) || false;
+    return (
+      specializationMatches[priority]?.some(spec =>
+        specialization.includes(spec)
+      ) || false
+    );
   }
 
   // Calculate Dynasty Fitness for Role
-  private static calculateDynastyFitness(dynasty: Dynasty, priority: string): number {
+  private static calculateDynastyFitness(
+    dynasty: Dynasty,
+    priority: string
+  ): number {
     let fitness = dynasty.influence; // Base fitness from influence
 
     // Add leader skill bonus
@@ -312,11 +355,15 @@ export class AutomationService {
   // Check if Trait is Relevant to Role
   private static isRelevantTrait(trait: string, priority: string): boolean {
     const traitRelevance: Record<string, string[]> = {
-      'leadership': ['Natural Leader', 'Strategic Thinker', 'Inspiring Presence'],
-      'engineering': ['Technical Genius', 'System Optimizer', 'Problem Solver'],
-      'agriculture': ['Life Cultivator', 'Resource Manager', 'Ecosystem Guardian'],
-      'security': ['Threat Assessor', 'Tactical Thinker', 'Guardian Spirit'],
-      'diplomacy': ['Negotiator', 'Cultural Bridge', 'Conflict Resolver']
+      leadership: ['Natural Leader', 'Strategic Thinker', 'Inspiring Presence'],
+      engineering: ['Technical Genius', 'System Optimizer', 'Problem Solver'],
+      agriculture: [
+        'Life Cultivator',
+        'Resource Manager',
+        'Ecosystem Guardian',
+      ],
+      security: ['Threat Assessor', 'Tactical Thinker', 'Guardian Spirit'],
+      diplomacy: ['Negotiator', 'Cultural Bridge', 'Conflict Resolver'],
     };
 
     return traitRelevance[priority]?.includes(trait) || false;
@@ -332,7 +379,9 @@ export class AutomationService {
 
     // Check each council member's domain
     config.councilMembers.forEach(councilMember => {
-      const dynasty = mission.population.dynasties.find(d => d.id === councilMember.dynastyId);
+      const dynasty = mission.population.dynasties.find(
+        d => d.id === councilMember.dynastyId
+      );
       if (!dynasty) return;
 
       // Evaluate if automated action is needed
@@ -345,7 +394,9 @@ export class AutomationService {
       if (needsAction) {
         const decision = DynastyService.makeAutomatedDecision(dynasty, {
           availableResources: mission.resources,
-          populationNeeds: this.assessPopulationNeeds(mission.population.cohorts)
+          populationNeeds: this.assessPopulationNeeds(
+            mission.population.cohorts
+          ),
         });
 
         decisions.push(decision);
@@ -365,25 +416,31 @@ export class AutomationService {
 
     // Check resource thresholds
     if (authority.includes('resources')) {
-      if (resources.credits < thresholds.credits ||
-          resources.energy < thresholds.energy ||
-          resources.food < thresholds.food) {
+      if (
+        resources.credits < thresholds.credits ||
+        resources.energy < thresholds.energy ||
+        resources.food < thresholds.food
+      ) {
         return true;
       }
     }
 
     // Check system thresholds
     if (authority.includes('systems')) {
-      if (resources.hullIntegrity < thresholds.hullIntegrity ||
-          resources.lifeSupport < thresholds.lifeSupport) {
+      if (
+        resources.hullIntegrity < thresholds.hullIntegrity ||
+        resources.lifeSupport < thresholds.lifeSupport
+      ) {
         return true;
       }
     }
 
     // Check population thresholds
     if (authority.includes('population')) {
-      if (resources.morale < thresholds.morale ||
-          resources.unity < thresholds.unity) {
+      if (
+        resources.morale < thresholds.morale ||
+        resources.unity < thresholds.unity
+      ) {
         return true;
       }
     }
@@ -420,12 +477,17 @@ export class AutomationService {
       if (!rule.isActive) return false;
 
       // Simple rule evaluation (would be more sophisticated in production)
-      if (event.category === 'immediate_crisis' && rule.condition.includes('immediate')) {
+      if (
+        event.category === 'immediate_crisis' &&
+        rule.condition.includes('immediate')
+      ) {
         return true;
       }
 
-      if (event.title.toLowerCase().includes('critical') &&
-          rule.condition.includes('critical_threshold')) {
+      if (
+        event.title.toLowerCase().includes('critical') &&
+        rule.condition.includes('critical_threshold')
+      ) {
         return true;
       }
 
@@ -444,7 +506,7 @@ export class AutomationService {
       return {
         success: false,
         effects: [],
-        message: `Unknown emergency protocol: ${protocolName}`
+        message: `Unknown emergency protocol: ${protocolName}`,
       };
     }
 
@@ -455,12 +517,21 @@ export class AutomationService {
     switch (protocolName) {
       case 'hull_breach':
         effects.push('Sealed compartments', 'Evacuated affected areas');
-        mission.resources.hullIntegrity = Math.max(0.3, mission.resources.hullIntegrity);
+        mission.resources.hullIntegrity = Math.max(
+          0.3,
+          mission.resources.hullIntegrity
+        );
         break;
 
       case 'life_support_failure':
-        effects.push('Activated emergency systems', 'Reduced population activity');
-        mission.resources.lifeSupport = Math.max(0.4, mission.resources.lifeSupport);
+        effects.push(
+          'Activated emergency systems',
+          'Reduced population activity'
+        );
+        mission.resources.lifeSupport = Math.max(
+          0.4,
+          mission.resources.lifeSupport
+        );
         break;
 
       case 'food_shortage':
@@ -470,7 +541,10 @@ export class AutomationService {
 
       case 'energy_crisis':
         effects.push('Powered down non-essential systems');
-        mission.resources.energy = Math.max(100, mission.resources.energy + 200);
+        mission.resources.energy = Math.max(
+          100,
+          mission.resources.energy + 200
+        );
         break;
 
       default:
@@ -479,13 +553,13 @@ export class AutomationService {
 
     Logger.info(`Emergency protocol applied: ${protocolName}`, {
       effects,
-      missionId: mission.id
+      missionId: mission.id,
     });
 
     return {
       success,
       effects,
-      message: `Emergency protocol "${protocolName}" executed successfully`
+      message: `Emergency protocol "${protocolName}" executed successfully`,
     };
   }
 
@@ -495,15 +569,22 @@ export class AutomationService {
     outcomeSuccess: boolean
   ): void {
     const performanceDelta = outcomeSuccess ? 0.05 : -0.1;
-    councilMember.performance = Math.max(0.1, Math.min(1.0,
-      councilMember.performance + performanceDelta
-    ));
+    councilMember.performance = Math.max(
+      0.1,
+      Math.min(1.0, councilMember.performance + performanceDelta)
+    );
 
     // Adjust autonomy based on performance
     if (councilMember.performance > 0.8) {
-      councilMember.autonomyLevel = Math.min(0.95, councilMember.autonomyLevel + 0.02);
+      councilMember.autonomyLevel = Math.min(
+        0.95,
+        councilMember.autonomyLevel + 0.02
+      );
     } else if (councilMember.performance < 0.4) {
-      councilMember.autonomyLevel = Math.max(0.3, councilMember.autonomyLevel - 0.05);
+      councilMember.autonomyLevel = Math.max(
+        0.3,
+        councilMember.autonomyLevel - 0.05
+      );
     }
   }
 }

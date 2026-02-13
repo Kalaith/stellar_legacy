@@ -1,20 +1,41 @@
 // stores/useGameStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameState, GameData, CrewMember, StarSystem, Planet, Notification, ShipStats, ComponentCost } from '../types/game';
+import type {
+  GameState,
+  GameData,
+  CrewMember,
+  StarSystem,
+  Planet,
+  Notification,
+  ShipStats,
+  ComponentCost,
+} from '../types/game';
 import type { CulturalEvolution } from '../types/generationalMissions';
 import type { Chronicle, ChronicleEntry } from '../types/chronicle';
 import type { HeritageModifier } from '../types/heritage';
 import type { PacingState, PacingPreferences } from '../types/pacing';
-import type { CardModification, LegacyCard, LegacyDeck, CardTriggerResult } from '../types/legacyDecks';
+import type {
+  CardModification,
+  LegacyCard,
+  LegacyDeck,
+  CardTriggerResult,
+} from '../types/legacyDecks';
 import type { GenerationalMission } from '../types/generationalMissions';
 import { ChronicleService } from '../services/ChronicleService';
 import { HeritageService } from '../services/HeritageService';
 import { PacingService } from '../services/PacingService';
 import { LegacyDeckService } from '../services/LegacyDeckService';
-import { DecisionTrackingService, type DecisionInput } from '../services/DecisionTrackingService';
+import {
+  DecisionTrackingService,
+  type DecisionInput,
+} from '../services/DecisionTrackingService';
 import { gameConstants } from '../constants/gameConstants';
-import type { TabIdType, TradeActionType, LegacyTypeType } from '../types/enums';
+import type {
+  TabIdType,
+  TradeActionType,
+  LegacyTypeType,
+} from '../types/enums';
 import { TabId } from '../types/enums';
 import { DynastyService } from '../services/DynastyService';
 import { CrewIdGenerator } from '../types/branded';
@@ -32,136 +53,212 @@ const initialGameData: GameData = {
     energy: 100,
     minerals: 50,
     food: 80,
-    influence: 25
+    influence: 25,
   },
   ship: {
     name: "Pioneer's Dream",
-    hull: "Light Corvette",
+    hull: 'Light Corvette',
     components: {
-      engine: "Basic Thruster",
-      cargo: "Standard Bay",
-      weapons: "Light Laser",
-      research: "Basic Scanner",
-      quarters: "Crew Quarters"
+      engine: 'Basic Thruster',
+      cargo: 'Standard Bay',
+      weapons: 'Light Laser',
+      research: 'Basic Scanner',
+      quarters: 'Crew Quarters',
     },
     stats: {
       speed: 3,
       cargo: 100,
       combat: 2,
       research: 1,
-      crewCapacity: 6
-    }
+      crewCapacity: 6,
+    },
   },
   crew: [
     {
       id: CrewIdGenerator.generate(),
-      name: "Captain Elena Voss",
-      role: "Captain",
-      skills: {engineering: 6, navigation: 8, combat: 7, diplomacy: 9, trade: 5},
+      name: 'Captain Elena Voss',
+      role: 'Captain',
+      skills: {
+        engineering: 6,
+        navigation: 8,
+        combat: 7,
+        diplomacy: 9,
+        trade: 5,
+      },
       morale: 85,
-      background: "Former military officer turned explorer",
+      background: 'Former military officer turned explorer',
       age: 35,
-      isHeir: false
+      isHeir: false,
     },
     {
       id: CrewIdGenerator.generate(),
-      name: "Chief Engineer Marcus Cole",
-      role: "Engineer",
-      skills: {engineering: 9, navigation: 4, combat: 5, diplomacy: 3, trade: 2},
+      name: 'Chief Engineer Marcus Cole',
+      role: 'Engineer',
+      skills: {
+        engineering: 9,
+        navigation: 4,
+        combat: 5,
+        diplomacy: 3,
+        trade: 2,
+      },
       morale: 90,
-      background: "Shipyard veteran with decades of experience",
+      background: 'Shipyard veteran with decades of experience',
       age: 28,
-      isHeir: false
+      isHeir: false,
     },
     {
       id: CrewIdGenerator.generate(),
-      name: "Navigator Zara Chen",
-      role: "Pilot",
-      skills: {engineering: 3, navigation: 9, combat: 6, diplomacy: 5, trade: 4},
+      name: 'Navigator Zara Chen',
+      role: 'Pilot',
+      skills: {
+        engineering: 3,
+        navigation: 9,
+        combat: 6,
+        diplomacy: 5,
+        trade: 4,
+      },
       morale: 80,
-      background: "Ace pilot from the outer colonies",
+      background: 'Ace pilot from the outer colonies',
       age: 26,
-      isHeir: false
+      isHeir: false,
     },
     {
       id: CrewIdGenerator.generate(),
-      name: "Trader Kex Thorne",
-      role: "Diplomat",
-      skills: {engineering: 2, navigation: 3, combat: 4, diplomacy: 8, trade: 9},
+      name: 'Trader Kex Thorne',
+      role: 'Diplomat',
+      skills: {
+        engineering: 2,
+        navigation: 3,
+        combat: 4,
+        diplomacy: 8,
+        trade: 9,
+      },
       morale: 75,
-      background: "Smooth-talking merchant with connections",
+      background: 'Smooth-talking merchant with connections',
       age: 32,
-      isHeir: false
-    }
+      isHeir: false,
+    },
   ],
   starSystems: [
     {
-      name: "Sol Alpha",
-      status: "explored",
+      name: 'Sol Alpha',
+      status: 'explored',
       planets: [
-        {name: "Terra Prime", type: "Rocky", resources: ["minerals", "energy"], developed: true},
-        {name: "Gas Giant Beta", type: "Gas Giant", resources: ["energy", "food"], developed: false}
+        {
+          name: 'Terra Prime',
+          type: 'Rocky',
+          resources: ['minerals', 'energy'],
+          developed: true,
+        },
+        {
+          name: 'Gas Giant Beta',
+          type: 'Gas Giant',
+          resources: ['energy', 'food'],
+          developed: false,
+        },
       ],
       tradeRoutes: [],
-      coordinates: {x: 100, y: 100}
+      coordinates: { x: 100, y: 100 },
     },
     {
-      name: "Kepler Station",
-      status: "unexplored",
-      planets: [{name: "Unknown", type: "Unknown", resources: ["unknown"], developed: false}],
+      name: 'Kepler Station',
+      status: 'unexplored',
+      planets: [
+        {
+          name: 'Unknown',
+          type: 'Unknown',
+          resources: ['unknown'],
+          developed: false,
+        },
+      ],
       tradeRoutes: [],
-      coordinates: {x: 200, y: 150}
+      coordinates: { x: 200, y: 150 },
     },
     {
-      name: "Vega Outpost",
-      status: "unexplored",
-      planets: [{name: "Unknown", type: "Unknown", resources: ["unknown"], developed: false}],
+      name: 'Vega Outpost',
+      status: 'unexplored',
+      planets: [
+        {
+          name: 'Unknown',
+          type: 'Unknown',
+          resources: ['unknown'],
+          developed: false,
+        },
+      ],
       tradeRoutes: [],
-      coordinates: {x: 150, y: 250}
-    }
+      coordinates: { x: 150, y: 250 },
+    },
   ],
   market: {
     prices: {
       minerals: 15,
       energy: 12,
       food: 8,
-      influence: 25
+      influence: 25,
     },
     trends: {
-      minerals: "rising",
-      energy: "stable",
-      food: "falling",
-      influence: "rising"
-    }
+      minerals: 'rising',
+      energy: 'stable',
+      food: 'falling',
+      influence: 'rising',
+    },
   },
   legacy: {
     generation: 1,
-    familyName: "Voss",
-    achievements: ["First Command", "System Explorer"],
-    traits: ["Natural Leader", "Tech Savvy"],
+    familyName: 'Voss',
+    achievements: ['First Command', 'System Explorer'],
+    traits: ['Natural Leader', 'Tech Savvy'],
     reputation: {
       military: 20,
       traders: 15,
-      scientists: 10
-    }
+      scientists: 10,
+    },
   },
   shipComponents: {
     hulls: [
-      {name: "Light Corvette", cost: {credits: 500}, stats: {speed: 3, cargo: 100, combat: 2}},
-      {name: "Heavy Frigate", cost: {credits: 1500, minerals: 200}, stats: {speed: 2, cargo: 200, combat: 5}},
-      {name: "Exploration Vessel", cost: {credits: 1200, energy: 150}, stats: {speed: 4, cargo: 150, research: 3}}
+      {
+        name: 'Light Corvette',
+        cost: { credits: 500 },
+        stats: { speed: 3, cargo: 100, combat: 2 },
+      },
+      {
+        name: 'Heavy Frigate',
+        cost: { credits: 1500, minerals: 200 },
+        stats: { speed: 2, cargo: 200, combat: 5 },
+      },
+      {
+        name: 'Exploration Vessel',
+        cost: { credits: 1200, energy: 150 },
+        stats: { speed: 4, cargo: 150, research: 3 },
+      },
     ],
     engines: [
-      {name: "Basic Thruster", cost: {credits: 200}, stats: {speed: 1}},
-      {name: "Ion Drive", cost: {credits: 800, energy: 100}, stats: {speed: 3}},
-      {name: "Warp Core", cost: {credits: 2000, energy: 300, minerals: 100}, stats: {speed: 5}}
+      { name: 'Basic Thruster', cost: { credits: 200 }, stats: { speed: 1 } },
+      {
+        name: 'Ion Drive',
+        cost: { credits: 800, energy: 100 },
+        stats: { speed: 3 },
+      },
+      {
+        name: 'Warp Core',
+        cost: { credits: 2000, energy: 300, minerals: 100 },
+        stats: { speed: 5 },
+      },
     ],
     weapons: [
-      {name: "Light Laser", cost: {credits: 300}, stats: {combat: 2}},
-      {name: "Pulse Cannon", cost: {credits: 800, minerals: 50}, stats: {combat: 4}},
-      {name: "Plasma Artillery", cost: {credits: 1500, minerals: 150, energy: 100}, stats: {combat: 7}}
-    ]
-  }
+      { name: 'Light Laser', cost: { credits: 300 }, stats: { combat: 2 } },
+      {
+        name: 'Pulse Cannon',
+        cost: { credits: 800, minerals: 50 },
+        stats: { combat: 4 },
+      },
+      {
+        name: 'Plasma Artillery',
+        cost: { credits: 1500, minerals: 150, energy: 100 },
+        stats: { combat: 7 },
+      },
+    ],
+  },
 };
 
 interface GameStore extends GameState {
@@ -190,12 +287,17 @@ interface GameStore extends GameState {
   selectSystem: (system: StarSystem) => void;
   exploreSystem: () => void;
   establishColony: () => void;
-  switchComponentCategory: (category: keyof typeof initialGameData.shipComponents) => void;
+  switchComponentCategory: (
+    category: keyof typeof initialGameData.shipComponents
+  ) => void;
   purchaseComponent: (category: string, componentName: string) => void;
   selectHeir: (heirId: CrewMemberId) => void;
   showNotification: (message: string, type?: Notification['type']) => void;
   clearNotification: (id: NotificationId) => void;
-  tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: TradeActionType) => void;
+  tradeResource: (
+    resource: 'minerals' | 'energy' | 'food' | 'influence',
+    action: TradeActionType
+  ) => void;
 
   // Dynasty System Actions
   dynastyAction: (dynastyId: string, action: string) => void;
@@ -251,7 +353,7 @@ export const useGameStore = create<GameStore>()(
         energy: gameConstants.RESOURCE_GENERATION.BASE_RATES.ENERGY,
         minerals: gameConstants.RESOURCE_GENERATION.BASE_RATES.MINERALS,
         food: gameConstants.RESOURCE_GENERATION.BASE_RATES.FOOD,
-        influence: gameConstants.RESOURCE_GENERATION.BASE_RATES.INFLUENCE
+        influence: gameConstants.RESOURCE_GENERATION.BASE_RATES.INFLUENCE,
       },
       currentTab: 'dashboard',
       notifications: [],
@@ -265,7 +367,7 @@ export const useGameStore = create<GameStore>()(
       playerLegacyAffinity: {
         preservers: 0,
         adaptors: 0,
-        wanderers: 0
+        wanderers: 0,
       },
 
       // Dynasty System State
@@ -277,20 +379,20 @@ export const useGameStore = create<GameStore>()(
           legacy: 'preservers',
           baselineDeviation: 0,
           majorChanges: [],
-          currentTrends: []
+          currentTrends: [],
         },
         {
           legacy: 'adaptors',
           baselineDeviation: 0,
           majorChanges: [],
-          currentTrends: []
+          currentTrends: [],
         },
         {
           legacy: 'wanderers',
           baselineDeviation: 0,
           majorChanges: [],
-          currentTrends: []
-        }
+          currentTrends: [],
+        },
       ] as CulturalEvolution[],
 
       // Chronicle System State
@@ -314,15 +416,60 @@ export const useGameStore = create<GameStore>()(
           culturalFocus: 0.5,
           contentComplexity: 'moderate',
           narrativeDepth: 'moderate',
-          choiceConsequences: 'mixed'
-        }
+          choiceConsequences: 'mixed',
+        },
       },
 
       // Legacy Deck System State
       legacyDecks: {
-        preservers: { legacy: 'preservers', cards: [], activeCards: [], discardPile: [], baseCards: [], chronicleCards: [], customCards: [], totalPlays: 0, averageImpact: 0, playerSatisfaction: 0, balanceRating: 0, playerFilters: [], cardRatings: {}, disabledCards: [] },
-        adaptors: { legacy: 'adaptors', cards: [], activeCards: [], discardPile: [], baseCards: [], chronicleCards: [], customCards: [], totalPlays: 0, averageImpact: 0, playerSatisfaction: 0, balanceRating: 0, playerFilters: [], cardRatings: {}, disabledCards: [] },
-        wanderers: { legacy: 'wanderers', cards: [], activeCards: [], discardPile: [], baseCards: [], chronicleCards: [], customCards: [], totalPlays: 0, averageImpact: 0, playerSatisfaction: 0, balanceRating: 0, playerFilters: [], cardRatings: {}, disabledCards: [] }
+        preservers: {
+          legacy: 'preservers',
+          cards: [],
+          activeCards: [],
+          discardPile: [],
+          baseCards: [],
+          chronicleCards: [],
+          customCards: [],
+          totalPlays: 0,
+          averageImpact: 0,
+          playerSatisfaction: 0,
+          balanceRating: 0,
+          playerFilters: [],
+          cardRatings: {},
+          disabledCards: [],
+        },
+        adaptors: {
+          legacy: 'adaptors',
+          cards: [],
+          activeCards: [],
+          discardPile: [],
+          baseCards: [],
+          chronicleCards: [],
+          customCards: [],
+          totalPlays: 0,
+          averageImpact: 0,
+          playerSatisfaction: 0,
+          balanceRating: 0,
+          playerFilters: [],
+          cardRatings: {},
+          disabledCards: [],
+        },
+        wanderers: {
+          legacy: 'wanderers',
+          cards: [],
+          activeCards: [],
+          discardPile: [],
+          baseCards: [],
+          chronicleCards: [],
+          customCards: [],
+          totalPlays: 0,
+          averageImpact: 0,
+          playerSatisfaction: 0,
+          balanceRating: 0,
+          playerFilters: [],
+          cardRatings: {},
+          disabledCards: [],
+        },
       },
       activeCards: [],
       pendingCardChoices: [],
@@ -334,7 +481,10 @@ export const useGameStore = create<GameStore>()(
           get().generateResources();
         };
         generateResources();
-        const intervalId = setInterval(generateResources, gameConfig.intervals.resourceGeneration);
+        const intervalId = setInterval(
+          generateResources,
+          gameConfig.intervals.resourceGeneration
+        );
         set({ resourceIntervalId: intervalId });
         Logger.info('Game initialized successfully');
       },
@@ -354,7 +504,10 @@ export const useGameStore = create<GameStore>()(
 
       generateResources: () => {
         const { resources, resourceGenerationRate } = get();
-        const newResources = ResourceService.generateResources(resources, resourceGenerationRate);
+        const newResources = ResourceService.generateResources(
+          resources,
+          resourceGenerationRate
+        );
         set({ resources: newResources });
         Logger.resourceChange('all', 0, 'Resource generation tick');
       },
@@ -374,12 +527,24 @@ export const useGameStore = create<GameStore>()(
           const { updatedCrew, trainedMember, skill } = trainingResult;
 
           set({ resources: newResources, crew: updatedCrew });
-          const message = NotificationManager.createCrewMessage('trained', trainedMember.name, `${skill} skill improved`);
+          const message = NotificationManager.createCrewMessage(
+            'trained',
+            trainedMember.name,
+            `${skill} skill improved`
+          );
           get().showNotification(message, 'success');
-          Logger.crewAction('skill_training', trainedMember.name, { skill, newLevel: updatedCrew.find(c => c.id === trainedMember.id)?.skills[skill as keyof typeof trainedMember.skills] });
+          Logger.crewAction('skill_training', trainedMember.name, {
+            skill,
+            newLevel: updatedCrew.find(c => c.id === trainedMember.id)?.skills[
+              skill as keyof typeof trainedMember.skills
+            ],
+          });
         } catch (error) {
           Logger.error('Crew training failed', error);
-          get().showNotification('An error occurred during crew training.', 'error');
+          get().showNotification(
+            'An error occurred during crew training.',
+            'error'
+          );
         }
       },
 
@@ -398,17 +563,26 @@ export const useGameStore = create<GameStore>()(
 
           set({ resources: newResources, crew: updatedCrew });
           get().showNotification('Crew morale improved!', 'success');
-          Logger.gameAction('morale_boost', { affectedCrew: updatedCrew.length });
+          Logger.gameAction('morale_boost', {
+            affectedCrew: updatedCrew.length,
+          });
         } catch (error) {
           Logger.error('Morale boost failed', error);
-          get().showNotification('An error occurred during morale boost.', 'error');
+          get().showNotification(
+            'An error occurred during morale boost.',
+            'error'
+          );
         }
       },
 
       recruitCrew: () => {
         try {
           const { resources, crew, ship } = get();
-          const result = GameEngine.processCrewRecruitment(resources, crew, ship);
+          const result = GameEngine.processCrewRecruitment(
+            resources,
+            crew,
+            ship
+          );
 
           if (!result.success) {
             get().showNotification(result.error.message, 'error');
@@ -420,12 +594,21 @@ export const useGameStore = create<GameStore>()(
           const updatedCrew = [...crew, newCrew];
 
           set({ resources: newResources, crew: updatedCrew });
-          const message = NotificationManager.createCrewMessage('recruited', newCrew.name, newCrew.role);
+          const message = NotificationManager.createCrewMessage(
+            'recruited',
+            newCrew.name,
+            newCrew.role
+          );
           get().showNotification(message, 'success');
-          Logger.crewAction('recruitment', newCrew.name, { role: newCrew.role });
+          Logger.crewAction('recruitment', newCrew.name, {
+            role: newCrew.role,
+          });
         } catch (error) {
           Logger.error('Crew recruitment failed', error);
-          get().showNotification('An error occurred during crew recruitment.', 'error');
+          get().showNotification(
+            'An error occurred during crew recruitment.',
+            'error'
+          );
         }
       },
 
@@ -444,7 +627,10 @@ export const useGameStore = create<GameStore>()(
       exploreSystem: () => {
         try {
           const { selectedSystem, resources } = get();
-          const result = GameEngine.processSystemExploration(resources, selectedSystem);
+          const result = GameEngine.processSystemExploration(
+            resources,
+            selectedSystem
+          );
 
           if (!result.success) {
             get().showNotification(result.error.message, 'error');
@@ -455,26 +641,46 @@ export const useGameStore = create<GameStore>()(
           const { newResources, planets } = result.data;
 
           if (selectedSystem) {
-            const updatedSystem = { ...selectedSystem, status: 'explored' as const, planets };
+            const updatedSystem = {
+              ...selectedSystem,
+              status: 'explored' as const,
+              planets,
+            };
             const updatedSystems = get().starSystems.map(sys =>
               sys.name === selectedSystem.name ? updatedSystem : sys
             );
 
-            set({ resources: newResources, starSystems: updatedSystems, selectedSystem: updatedSystem });
-            const message = NotificationManager.createSystemMessage('explored', selectedSystem.name, `Discovered ${planets.length} planets`);
+            set({
+              resources: newResources,
+              starSystems: updatedSystems,
+              selectedSystem: updatedSystem,
+            });
+            const message = NotificationManager.createSystemMessage(
+              'explored',
+              selectedSystem.name,
+              `Discovered ${planets.length} planets`
+            );
             get().showNotification(message, 'success');
-            Logger.systemEvent('exploration', selectedSystem.name, { planetsDiscovered: planets.length });
+            Logger.systemEvent('exploration', selectedSystem.name, {
+              planetsDiscovered: planets.length,
+            });
           }
         } catch (error) {
           Logger.error('System exploration failed', error);
-          get().showNotification('An error occurred during system exploration.', 'error');
+          get().showNotification(
+            'An error occurred during system exploration.',
+            'error'
+          );
         }
       },
 
       establishColony: () => {
         try {
           const { selectedSystem, resources, resourceGenerationRate } = get();
-          const result = GameEngine.processColonyEstablishment(resources, selectedSystem);
+          const result = GameEngine.processColonyEstablishment(
+            resources,
+            selectedSystem
+          );
 
           if (!result.success) {
             get().showNotification(result.error.message, 'error');
@@ -489,7 +695,10 @@ export const useGameStore = create<GameStore>()(
               p.name === colonyPlanet.name ? { ...p, developed: true } : p
             );
 
-            const updatedSystem = { ...selectedSystem, planets: updatedPlanets };
+            const updatedSystem = {
+              ...selectedSystem,
+              planets: updatedPlanets,
+            };
             const updatedSystems = get().starSystems.map(sys =>
               sys.name === selectedSystem.name ? updatedSystem : sys
             );
@@ -498,16 +707,27 @@ export const useGameStore = create<GameStore>()(
               resources: newResources,
               starSystems: updatedSystems,
               selectedSystem: updatedSystem,
-              resourceGenerationRate: { ...resourceGenerationRate, ...newGenerationRate }
+              resourceGenerationRate: {
+                ...resourceGenerationRate,
+                ...newGenerationRate,
+              },
             });
 
-            const message = NotificationManager.createSystemMessage('colonized', colonyPlanet.name);
+            const message = NotificationManager.createSystemMessage(
+              'colonized',
+              colonyPlanet.name
+            );
             get().showNotification(message, 'success');
-            Logger.systemEvent('colony_established', selectedSystem.name, { planet: colonyPlanet.name });
+            Logger.systemEvent('colony_established', selectedSystem.name, {
+              planet: colonyPlanet.name,
+            });
           }
         } catch (error) {
           Logger.error('Colony establishment failed', error);
-          get().showNotification('An error occurred during colony establishment.', 'error');
+          get().showNotification(
+            'An error occurred during colony establishment.',
+            'error'
+          );
         }
       },
 
@@ -515,7 +735,7 @@ export const useGameStore = create<GameStore>()(
         return GameEngine.generatePlanets();
       },
 
-      switchComponentCategory: (category) => {
+      switchComponentCategory: category => {
         set({ currentComponentCategory: category });
       },
 
@@ -527,11 +747,16 @@ export const useGameStore = create<GameStore>()(
       purchaseComponent: (category: string, componentName: string) => {
         try {
           const { shipComponents, resources, ship } = get();
-          const component = shipComponents[category as keyof typeof shipComponents].find(c => c.name === componentName);
+          const component = shipComponents[
+            category as keyof typeof shipComponents
+          ].find(c => c.name === componentName);
 
           if (component && get().canAffordComponent(component.cost)) {
             // Deduct cost using ResourceService
-            const newResources = ResourceService.deductCost(resources, component.cost);
+            const newResources = ResourceService.deductCost(
+              resources,
+              component.cost
+            );
 
             let updatedShip = { ...ship };
 
@@ -539,20 +764,24 @@ export const useGameStore = create<GameStore>()(
               updatedShip = {
                 ...updatedShip,
                 hull: component.name,
-                stats: { ...component.stats } as ShipStats // Hull replaces all stats
+                stats: { ...component.stats } as ShipStats, // Hull replaces all stats
               };
             } else {
               const componentType = category.slice(0, -1); // Remove 's' from plural
               updatedShip.components = {
                 ...updatedShip.components,
-                [componentType]: component.name
+                [componentType]: component.name,
               };
 
               // Add component stats to ship
               updatedShip.stats = { ...updatedShip.stats };
               Object.entries(component.stats).forEach(([stat, value]) => {
-                if (updatedShip.stats[stat as keyof typeof updatedShip.stats] !== undefined) {
-                  updatedShip.stats[stat as keyof typeof updatedShip.stats] += value as number;
+                if (
+                  updatedShip.stats[stat as keyof typeof updatedShip.stats] !==
+                  undefined
+                ) {
+                  updatedShip.stats[stat as keyof typeof updatedShip.stats] +=
+                    value as number;
                 }
               });
             }
@@ -562,7 +791,10 @@ export const useGameStore = create<GameStore>()(
           }
         } catch (error) {
           Logger.error('Component purchase failed', error);
-          get().showNotification('An error occurred during component purchase.', 'error');
+          get().showNotification(
+            'An error occurred during component purchase.',
+            'error'
+          );
         }
       },
 
@@ -576,15 +808,27 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        const updatedCrew = crew.map(member => ({ ...member, isHeir: member.id === heirId }));
+        const updatedCrew = crew.map(member => ({
+          ...member,
+          isHeir: member.id === heirId,
+        }));
         set({ crew: updatedCrew });
-        const message = NotificationManager.createCrewMessage('promoted', targetCrew.name, 'selected as heir');
+        const message = NotificationManager.createCrewMessage(
+          'promoted',
+          targetCrew.name,
+          'selected as heir'
+        );
         get().showNotification(message, 'success');
       },
 
-      showNotification: (message: string, type: Notification['type'] = 'info') => {
+      showNotification: (
+        message: string,
+        type: Notification['type'] = 'info'
+      ) => {
         const notification = NotificationManager.create(message, type);
-        set(state => ({ notifications: [...state.notifications, notification] }));
+        set(state => ({
+          notifications: [...state.notifications, notification],
+        }));
 
         // Auto-remove using NotificationManager
         NotificationManager.autoRemove(notification, get().clearNotification);
@@ -592,11 +836,14 @@ export const useGameStore = create<GameStore>()(
 
       clearNotification: (id: NotificationId) => {
         set(state => ({
-          notifications: state.notifications.filter(n => n.id !== id)
+          notifications: state.notifications.filter(n => n.id !== id),
         }));
       },
 
-      tradeResource: (resource: 'minerals' | 'energy' | 'food' | 'influence', action: TradeActionType) => {
+      tradeResource: (
+        resource: 'minerals' | 'energy' | 'food' | 'influence',
+        action: TradeActionType
+      ) => {
         try {
           // Validate inputs
           const validResources = ['minerals', 'energy', 'food', 'influence'];
@@ -616,7 +863,12 @@ export const useGameStore = create<GameStore>()(
 
           const { resources, market } = get();
           const price = market.prices[resource];
-          const validation = ValidationService.validateTrade(resources, resource, action, price);
+          const validation = ValidationService.validateTrade(
+            resources,
+            resource,
+            action,
+            price
+          );
 
           if (!validation.isValid) {
             get().showNotification(validation.message!, 'error');
@@ -626,15 +878,34 @@ export const useGameStore = create<GameStore>()(
           const amount = gameConstants.TRADE.DEFAULT_AMOUNT;
           const cost = ResourceService.calculateTradeCost(price, amount);
           const isBuying = action === 'buy';
-          const newResources = ResourceService.processTrade(resources, cost, resource, amount, isBuying);
+          const newResources = ResourceService.processTrade(
+            resources,
+            cost,
+            resource,
+            amount,
+            isBuying
+          );
 
           set({ resources: newResources });
-          const message = NotificationManager.createResourceMessage(isBuying ? 'bought' : 'sold', amount, resource, cost);
+          const message = NotificationManager.createResourceMessage(
+            isBuying ? 'bought' : 'sold',
+            amount,
+            resource,
+            cost
+          );
           get().showNotification(message, 'success');
-          Logger.gameAction('trade', { resource, action: isBuying ? 'buy' : 'sell', amount, cost });
+          Logger.gameAction('trade', {
+            resource,
+            action: isBuying ? 'buy' : 'sell',
+            amount,
+            cost,
+          });
         } catch (error) {
           Logger.error('Resource trade failed', error);
-          get().showNotification('An error occurred during resource trade.', 'error');
+          get().showNotification(
+            'An error occurred during resource trade.',
+            'error'
+          );
         }
       },
 
@@ -657,7 +928,9 @@ export const useGameStore = create<GameStore>()(
               message = `Granted autonomy to ${dynasty.name}`;
               // Update dynasty influence or other properties
               updatedDynasties = dynasties.map(d =>
-                d.id === dynastyId ? { ...d, influence: Math.min(100, d.influence + 10) } : d
+                d.id === dynastyId
+                  ? { ...d, influence: Math.min(100, d.influence + 10) }
+                  : d
               );
               break;
             case 'assign_mission':
@@ -669,7 +942,9 @@ export const useGameStore = create<GameStore>()(
             case 'expand_influence':
               message = `Expanded influence for ${dynasty.name}`;
               updatedDynasties = dynasties.map(d =>
-                d.id === dynastyId ? { ...d, influence: Math.min(100, d.influence + 5) } : d
+                d.id === dynastyId
+                  ? { ...d, influence: Math.min(100, d.influence + 5) }
+                  : d
               );
               break;
             default:
@@ -760,10 +1035,19 @@ export const useGameStore = create<GameStore>()(
 
       initializeDynasties: (legacy: LegacyTypeType) => {
         try {
-          const dynasties = DynastyService.generateInitialDynasties(legacy, 50000); // 50k population
+          const dynasties = DynastyService.generateInitialDynasties(
+            legacy,
+            50000
+          ); // 50k population
           set({ dynasties, playerLegacy: legacy });
-          get().showNotification(`Initialized ${dynasties.length} dynasties for ${legacy} legacy`, 'success');
-          Logger.gameAction('dynasties_initialized', { legacy, count: dynasties.length });
+          get().showNotification(
+            `Initialized ${dynasties.length} dynasties for ${legacy} legacy`,
+            'success'
+          );
+          Logger.gameAction('dynasties_initialized', {
+            legacy,
+            count: dynasties.length,
+          });
         } catch (error) {
           Logger.error('Dynasty initialization failed', error);
           get().showNotification('Failed to initialize dynasties', 'error');
@@ -777,7 +1061,9 @@ export const useGameStore = create<GameStore>()(
           if (result.success) {
             set({ chronicle: result.data });
             if (result.data) {
-              Logger.info('Chronicle loaded', { entryCount: result.data.entries.length });
+              Logger.info('Chronicle loaded', {
+                entryCount: result.data.entries.length,
+              });
             }
           } else {
             Logger.error('Failed to load chronicle', result.error);
@@ -795,7 +1081,9 @@ export const useGameStore = create<GameStore>()(
           if (result.success) {
             await get().loadChronicle(); // Reload to get updated chronicle
             get().showNotification('Chronicle entry saved', 'success');
-            Logger.info('Chronicle entry saved', { missionId: entry.missionId });
+            Logger.info('Chronicle entry saved', {
+              missionId: entry.missionId,
+            });
           } else {
             Logger.error('Failed to save chronicle entry', result.error);
             get().showNotification(result.error.message, 'error');
@@ -811,15 +1099,23 @@ export const useGameStore = create<GameStore>()(
           const result = ChronicleService.generateHeritageModifiers(entry);
           if (result.success) {
             set({ availableHeritageModifiers: result.data });
-            get().showNotification(`Generated ${result.data.length} heritage modifiers`, 'success');
-            Logger.info('Heritage modifiers generated', { count: result.data.length });
+            get().showNotification(
+              `Generated ${result.data.length} heritage modifiers`,
+              'success'
+            );
+            Logger.info('Heritage modifiers generated', {
+              count: result.data.length,
+            });
           } else {
             Logger.error('Failed to generate heritage modifiers', result.error);
             get().showNotification(result.error.message, 'error');
           }
         } catch (error) {
           Logger.error('Failed to generate heritage modifiers', error);
-          get().showNotification('Failed to generate heritage modifiers', 'error');
+          get().showNotification(
+            'Failed to generate heritage modifiers',
+            'error'
+          );
         }
       },
 
@@ -832,16 +1128,26 @@ export const useGameStore = create<GameStore>()(
         try {
           const { selectedHeritageModifiers, selectedMission } = get();
           if (!selectedMission) {
-            get().showNotification('No mission selected for heritage application', 'error');
+            get().showNotification(
+              'No mission selected for heritage application',
+              'error'
+            );
             return;
           }
 
-          const result = HeritageService.applyHeritageModifiers(selectedHeritageModifiers, selectedMission);
+          const result = HeritageService.applyHeritageModifiers(
+            selectedHeritageModifiers,
+            selectedMission
+          );
 
           // Apply resource changes to current resources
           const currentResources = get().resources;
           const updatedResources = { ...currentResources };
-          (Object.keys(result.resourceChanges) as Array<keyof typeof updatedResources>).forEach((resource) => {
+          (
+            Object.keys(result.resourceChanges) as Array<
+              keyof typeof updatedResources
+            >
+          ).forEach(resource => {
             const change = result.resourceChanges[resource];
             if (typeof change === 'number') {
               updatedResources[resource] += change;
@@ -849,10 +1155,13 @@ export const useGameStore = create<GameStore>()(
           });
 
           set({ resources: updatedResources });
-          get().showNotification(`Applied ${result.appliedModifiers.length} heritage modifiers`, 'success');
+          get().showNotification(
+            `Applied ${result.appliedModifiers.length} heritage modifiers`,
+            'success'
+          );
           Logger.info('Heritage modifiers applied', {
             count: result.appliedModifiers.length,
-            warnings: result.warnings.length
+            warnings: result.warnings.length,
           });
         } catch (error) {
           Logger.error('Failed to apply heritage modifiers', error);
@@ -886,9 +1195,15 @@ export const useGameStore = create<GameStore>()(
             return;
           }
 
-          const entry = DecisionTrackingService.recordDecision(decision, selectedMission);
+          const entry = DecisionTrackingService.recordDecision(
+            decision,
+            selectedMission
+          );
           get().showNotification('Decision recorded in chronicle', 'success');
-          Logger.info('Decision recorded', { decisionId: entry.id, title: decision.title });
+          Logger.info('Decision recorded', {
+            decisionId: entry.id,
+            title: decision.title,
+          });
         } catch (error) {
           Logger.error('Failed to record decision', error);
           get().showNotification('Failed to record decision', 'error');
@@ -915,7 +1230,9 @@ export const useGameStore = create<GameStore>()(
           set({ pacingState });
           await PacingService.savePacingState(pacingState);
           get().showNotification('Pacing system initialized', 'success');
-          Logger.info('Pacing system initialized', { phase: pacingState.currentPhase });
+          Logger.info('Pacing system initialized', {
+            phase: pacingState.currentPhase,
+          });
         } catch (error) {
           Logger.error('Failed to initialize pacing', error);
           get().showNotification('Failed to initialize pacing', 'error');
@@ -945,15 +1262,22 @@ export const useGameStore = create<GameStore>()(
 
       resumeTime: () => {
         const { pacingPreferences } = get();
-        const defaultAcceleration = pacingPreferences.preferredSpeed === 'slow' ? 0.5 :
-                                   pacingPreferences.preferredSpeed === 'fast' ? 2.0 : 1.0;
+        const defaultAcceleration =
+          pacingPreferences.preferredSpeed === 'slow'
+            ? 0.5
+            : pacingPreferences.preferredSpeed === 'fast'
+              ? 2.0
+              : 1.0;
         get().updatePacingState({ timeAcceleration: defaultAcceleration });
         get().showNotification('Time resumed', 'info');
       },
 
       forceTimeAcceleration: (acceleration: number) => {
         get().updatePacingState({ timeAcceleration: acceleration });
-        get().showNotification(`Time acceleration set to ${acceleration}x`, 'info');
+        get().showNotification(
+          `Time acceleration set to ${acceleration}x`,
+          'info'
+        );
       },
 
       // Legacy Deck Actions
@@ -977,11 +1301,17 @@ export const useGameStore = create<GameStore>()(
           if (!selectedMission) return;
 
           const currentDeck = legacyDecks[playerLegacy];
-          const triggers = LegacyDeckService.checkCardTriggers(currentDeck, selectedMission);
+          const triggers = LegacyDeckService.checkCardTriggers(
+            currentDeck,
+            selectedMission
+          );
 
           set({ pendingCardChoices: triggers });
           if (triggers.length > 0) {
-            get().showNotification(`${triggers.length} legacy cards triggered`, 'info');
+            get().showNotification(
+              `${triggers.length} legacy cards triggered`,
+              'info'
+            );
           }
         } catch (error) {
           Logger.error('Failed to check card triggers', error);
@@ -994,8 +1324,14 @@ export const useGameStore = create<GameStore>()(
 
         if (trigger) {
           set({ activeCards: [...get().activeCards, trigger.card] });
-          get().showNotification(`Legacy card activated: ${trigger.card.name}`, 'info');
-          Logger.info('Legacy card triggered', { cardId, cardName: trigger.card.name });
+          get().showNotification(
+            `Legacy card activated: ${trigger.card.name}`,
+            'info'
+          );
+          Logger.info('Legacy card triggered', {
+            cardId,
+            cardName: trigger.card.name,
+          });
         }
       },
 
@@ -1010,13 +1346,24 @@ export const useGameStore = create<GameStore>()(
             return;
           }
 
-          const result = LegacyDeckService.resolveCardChoice(card, choice, selectedMission);
+          const result = LegacyDeckService.resolveCardChoice(
+            card,
+            choice,
+            selectedMission
+          );
 
           // Remove card from active cards
           set({ activeCards: activeCards.filter(c => c.id !== cardId) });
 
-          get().showNotification(`Card resolved: ${result.narrativeOutcome}`, 'success');
-          Logger.info('Card choice resolved', { cardId, choiceId, outcome: result.narrativeOutcome });
+          get().showNotification(
+            `Card resolved: ${result.narrativeOutcome}`,
+            'success'
+          );
+          Logger.info('Card choice resolved', {
+            cardId,
+            choiceId,
+            outcome: result.narrativeOutcome,
+          });
         } catch (error) {
           Logger.error('Failed to resolve card choice', error);
           get().showNotification('Failed to resolve card choice', 'error');
@@ -1027,13 +1374,18 @@ export const useGameStore = create<GameStore>()(
         const { legacyDecks, playerLegacy } = get();
         const deck = legacyDecks[playerLegacy];
 
-        const updatedDeck = LegacyDeckService.applyCuration(deck, cardId, 'rate', rating);
+        const updatedDeck = LegacyDeckService.applyCuration(
+          deck,
+          cardId,
+          'rate',
+          rating
+        );
 
         set({
           legacyDecks: {
             ...legacyDecks,
-            [playerLegacy]: updatedDeck
-          }
+            [playerLegacy]: updatedDeck,
+          },
         });
 
         get().showNotification(`Card rated: ${rating}/5`, 'success');
@@ -1043,13 +1395,18 @@ export const useGameStore = create<GameStore>()(
         const { legacyDecks, playerLegacy } = get();
         const deck = legacyDecks[playerLegacy];
 
-        const updatedDeck = LegacyDeckService.applyCuration(deck, cardId, 'modify', modifications);
+        const updatedDeck = LegacyDeckService.applyCuration(
+          deck,
+          cardId,
+          'modify',
+          modifications
+        );
 
         set({
           legacyDecks: {
             ...legacyDecks,
-            [playerLegacy]: updatedDeck
-          }
+            [playerLegacy]: updatedDeck,
+          },
         });
 
         get().showNotification('Card customized', 'success');
@@ -1062,15 +1419,15 @@ export const useGameStore = create<GameStore>()(
           set({ resourceIntervalId: null });
           Logger.info('Game store cleanup completed');
         }
-      }
+      },
     }),
     {
       name: 'stellar-legacy-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         ...state,
         notifications: [], // Don't persist notifications
         resourceIntervalId: null, // Don't persist interval ID
-      })
+      }),
     }
   )
 );

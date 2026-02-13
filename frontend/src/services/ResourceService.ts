@@ -11,9 +11,15 @@ export class ResourceService {
   }
 
   static deductCost(resources: Resources, cost: ComponentCost): Resources {
-    const validation = ValidationService.validateResourceOperation(resources, 'subtract', cost);
+    const validation = ValidationService.validateResourceOperation(
+      resources,
+      'subtract',
+      cost
+    );
     if (!validation.isValid) {
-      throw new Error(`Resource deduction would violate constraints: ${validation.message}`);
+      throw new Error(
+        `Resource deduction would violate constraints: ${validation.message}`
+      );
     }
 
     const newResources = { ...resources };
@@ -26,10 +32,19 @@ export class ResourceService {
     return newResources;
   }
 
-  static addResources(resources: Resources, addition: Partial<Resources>): Resources {
-    const validation = ValidationService.validateResourceOperation(resources, 'add', addition);
+  static addResources(
+    resources: Resources,
+    addition: Partial<Resources>
+  ): Resources {
+    const validation = ValidationService.validateResourceOperation(
+      resources,
+      'add',
+      addition
+    );
     if (!validation.isValid) {
-      throw new Error(`Resource addition would violate constraints: ${validation.message}`);
+      throw new Error(
+        `Resource addition would violate constraints: ${validation.message}`
+      );
     }
 
     const newResources = { ...resources };
@@ -54,15 +69,31 @@ export class ResourceService {
     return resources.credits >= cost;
   }
 
-  static processTrade(resources: Resources, cost: number, resource: keyof Resources, amount: number, isBuying: boolean): Resources {
+  static processTrade(
+    resources: Resources,
+    cost: number,
+    resource: keyof Resources,
+    amount: number,
+    isBuying: boolean
+  ): Resources {
     // Validate trade limits
-    const tradeValidation = ValidationService.validateTradeLimits(resources, resource, amount, !isBuying);
+    const tradeValidation = ValidationService.validateTradeLimits(
+      resources,
+      resource,
+      amount,
+      !isBuying
+    );
     if (!tradeValidation.isValid) {
       throw new Error(tradeValidation.message);
     }
 
     // Validate credit transaction
-    const creditValidation = ValidationService.validateTradeLimits(resources, 'credits', cost, isBuying);
+    const creditValidation = ValidationService.validateTradeLimits(
+      resources,
+      'credits',
+      cost,
+      isBuying
+    );
     if (!creditValidation.isValid) {
       throw new Error(creditValidation.message);
     }
@@ -80,16 +111,27 @@ export class ResourceService {
     return newResources;
   }
 
-  static generateResources(resources: Resources, rates: Partial<Resources>): Resources {
-    const validation = ValidationService.validateResourceOperation(resources, 'add', rates);
+  static generateResources(
+    resources: Resources,
+    rates: Partial<Resources>
+  ): Resources {
+    const validation = ValidationService.validateResourceOperation(
+      resources,
+      'add',
+      rates
+    );
     if (!validation.isValid) {
       // For generation, we cap at max instead of throwing
       const newResources = { ...resources };
       Object.entries(rates).forEach(([resource, rate]) => {
         const resourceKey = resource as keyof Resources;
         if (rate && newResources[resourceKey] !== undefined) {
-          const constraints = ValidationService.resourceConstraints[resourceKey];
-          newResources[resourceKey] = Math.min(constraints.max, newResources[resourceKey] + rate);
+          const constraints =
+            ValidationService.resourceConstraints[resourceKey];
+          newResources[resourceKey] = Math.min(
+            constraints.max,
+            newResources[resourceKey] + rate
+          );
         }
       });
       return newResources;

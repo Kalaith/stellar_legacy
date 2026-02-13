@@ -2,7 +2,7 @@
 import type {
   GenerationalMission,
   ExtendedResources,
-  PopulationEffect
+  PopulationEffect,
 } from '../types/generationalMissions';
 import type { LegacyTypeType } from '../types/enums';
 
@@ -23,31 +23,33 @@ export class LegacyService {
             unity: 0.1,
             culturalDrift: -0.1,
             morale: preserverMetrics.traditionSupport > 0.6 ? 0.1 : -0.05,
-            technology: -50 // Resist technological advancement
+            technology: -50, // Resist technological advancement
           },
           populationEffects: [
             {
               cohortType: 'leaders',
               effectType: 'morale',
               magnitude: preserverMetrics.traditionSupport > 0.6 ? 15 : -10,
-              description: 'Response to traditional choice'
+              description: 'Response to traditional choice',
             },
             {
               cohortType: 'scholars',
               effectType: 'effectiveness',
               magnitude: -0.05, // Reduced innovation
-              description: 'Constrained by traditional methods'
-            }
+              description: 'Constrained by traditional methods',
+            },
           ],
           longTermConsequences: [
             'Increased resistance to future adaptations',
             'Cultural purity maintained',
-            preserverMetrics.traditionSupport < 0.4 ? 'Growing underground adaptation movement' : ''
+            preserverMetrics.traditionSupport < 0.4
+              ? 'Growing underground adaptation movement'
+              : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             traditionPoints: 20,
-            adaptationPressure: 10
-          }
+            adaptationPressure: 10,
+          },
         };
 
       case 'adaptation':
@@ -56,32 +58,35 @@ export class LegacyService {
             unity: -0.15,
             culturalDrift: 0.2,
             technology: 100,
-            morale: preserverMetrics.adaptationNeed > 0.7 ? 0.05 : -0.1
+            morale: preserverMetrics.adaptationNeed > 0.7 ? 0.05 : -0.1,
           },
           populationEffects: [
             {
               cohortType: 'engineers',
               effectType: 'effectiveness',
               magnitude: 0.1,
-              description: 'Embracing new methods'
+              description: 'Embracing new methods',
             },
             {
               cohortType: 'general',
               effectType: 'morale',
               magnitude: preserverMetrics.adaptationNeed > 0.7 ? 5 : -15,
-              description: 'Cultural disruption response'
-            }
+              description: 'Cultural disruption response',
+            },
           ],
           longTermConsequences: [
             'Permanent cultural shift',
             'Improved adaptability',
-            preserverMetrics.traditionSupport > 0.6 ? 'Traditional faction forms resistance' : ''
+            preserverMetrics.traditionSupport > 0.6
+              ? 'Traditional faction forms resistance'
+              : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             traditionPoints: -15,
             adaptationPressure: -10,
-            culturalSchismRisk: preserverMetrics.traditionSupport > 0.6 ? 25 : 5
-          }
+            culturalSchismRisk:
+              preserverMetrics.traditionSupport > 0.6 ? 25 : 5,
+          },
         };
 
       case 'compromise':
@@ -90,25 +95,25 @@ export class LegacyService {
             unity: -0.05,
             culturalDrift: 0.05,
             technology: 30,
-            morale: -0.02 // Some dissatisfaction from both sides
+            morale: -0.02, // Some dissatisfaction from both sides
           },
           populationEffects: [
             {
               cohortType: 'leaders',
               effectType: 'morale',
               magnitude: -5,
-              description: 'Political compromise stress'
-            }
+              description: 'Political compromise stress',
+            },
           ],
           longTermConsequences: [
             'Gradual cultural evolution',
-            'Delayed decision making in future crises'
+            'Delayed decision making in future crises',
           ],
           legacySpecificEffects: {
             traditionPoints: 5,
             adaptationPressure: 5,
-            compromiseDebt: 10 // Future decisions become harder
-          }
+            compromiseDebt: 10, // Future decisions become harder
+          },
         };
 
       default:
@@ -131,29 +136,33 @@ export class LegacyService {
             technology: geneticSuccess ? 200 : -100,
             energy: -500,
             population: geneticSuccess ? 0 : -200, // Failed modifications
-            adaptationLevel: geneticSuccess ? 0.1 : 0.05
+            adaptationLevel: geneticSuccess ? 0.1 : 0.05,
           },
           populationEffects: [
             {
               cohortType: 'general',
               effectType: 'effectiveness',
               magnitude: geneticSuccess ? 0.15 : -0.1,
-              description: geneticSuccess ? 'Enhanced capabilities' : 'Genetic complications'
-            }
+              description: geneticSuccess
+                ? 'Enhanced capabilities'
+                : 'Genetic complications',
+            },
           ],
-          longTermConsequences: geneticSuccess ? [
-            'Population gains genetic enhancements',
-            'Increased adaptation to space environment'
-          ] : [
-            'Genetic instability in population',
-            'Fear of future modifications',
-            'Medical complications'
-          ],
+          longTermConsequences: geneticSuccess
+            ? [
+                'Population gains genetic enhancements',
+                'Increased adaptation to space environment',
+              ]
+            : [
+                'Genetic instability in population',
+                'Fear of future modifications',
+                'Medical complications',
+              ],
           legacySpecificEffects: {
             mutationEvents: geneticSuccess ? 0 : 1,
             enhancementResistance: geneticSuccess ? -5 : 15,
-            bodyHorrorRisk: geneticSuccess ? 5 : 20
-          }
+            bodyHorrorRisk: geneticSuccess ? 5 : 20,
+          },
         };
       }
 
@@ -164,27 +173,28 @@ export class LegacyService {
             technology: cyberneticSuccess ? 150 : -50,
             minerals: -300,
             energy: cyberneticSuccess ? 100 : -200,
-            adaptationLevel: cyberneticSuccess ? 0.08 : 0.02
+            adaptationLevel: cyberneticSuccess ? 0.08 : 0.02,
           },
           populationEffects: [
             {
               cohortType: 'engineers',
               effectType: 'effectiveness',
               magnitude: cyberneticSuccess ? 0.2 : -0.05,
-              description: cyberneticSuccess ? 'Enhanced technical abilities' : 'Interface problems'
-            }
+              description: cyberneticSuccess
+                ? 'Enhanced technical abilities'
+                : 'Interface problems',
+            },
           ],
-          longTermConsequences: cyberneticSuccess ? [
-            'Enhanced human-machine interface',
-            'Improved ship system integration'
-          ] : [
-            'Cybernetic rejection syndrome',
-            'Technology dependency issues'
-          ],
+          longTermConsequences: cyberneticSuccess
+            ? [
+                'Enhanced human-machine interface',
+                'Improved ship system integration',
+              ]
+            : ['Cybernetic rejection syndrome', 'Technology dependency issues'],
           legacySpecificEffects: {
             cyberneticIntegration: cyberneticSuccess ? 20 : -10,
-            humanityDrift: cyberneticSuccess ? 10 : 5
-          }
+            humanityDrift: cyberneticSuccess ? 10 : 5,
+          },
         };
       }
 
@@ -194,28 +204,29 @@ export class LegacyService {
           resourceChanges: {
             food: biologicalSuccess ? 200 : -100,
             lifeSupport: biologicalSuccess ? 0.1 : -0.05,
-            adaptationLevel: biologicalSuccess ? 0.12 : 0.03
+            adaptationLevel: biologicalSuccess ? 0.12 : 0.03,
           },
           populationEffects: [
             {
               cohortType: 'farmers',
               effectType: 'effectiveness',
               magnitude: biologicalSuccess ? 0.25 : -0.1,
-              description: biologicalSuccess ? 'Enhanced biological efficiency' : 'Biological incompatibility'
-            }
+              description: biologicalSuccess
+                ? 'Enhanced biological efficiency'
+                : 'Biological incompatibility',
+            },
           ],
-          longTermConsequences: biologicalSuccess ? [
-            'Improved space adaptation',
-            'Reduced resource requirements',
-            'Enhanced biological systems'
-          ] : [
-            'Biological system rejection',
-            'Increased medical needs'
-          ],
+          longTermConsequences: biologicalSuccess
+            ? [
+                'Improved space adaptation',
+                'Reduced resource requirements',
+                'Enhanced biological systems',
+              ]
+            : ['Biological system rejection', 'Increased medical needs'],
           legacySpecificEffects: {
             biologicalIntegration: biologicalSuccess ? 25 : -15,
-            bodyHorrorRisk: biologicalSuccess ? 3 : 15
-          }
+            bodyHorrorRisk: biologicalSuccess ? 3 : 15,
+          },
         };
       }
 
@@ -223,24 +234,26 @@ export class LegacyService {
         return {
           resourceChanges: {
             unity: 0.05,
-            morale: adaptorMetrics.enhancementPressure > 0.7 ? -0.1 : 0.02
+            morale: adaptorMetrics.enhancementPressure > 0.7 ? -0.1 : 0.02,
           },
           populationEffects: [
             {
               cohortType: 'general',
               effectType: 'morale',
               magnitude: adaptorMetrics.enhancementPressure > 0.7 ? -10 : 5,
-              description: 'Conservative choice response'
-            }
+              description: 'Conservative choice response',
+            },
           ],
           longTermConsequences: [
             'Delayed adaptation progress',
-            adaptorMetrics.enhancementPressure > 0.7 ? 'Rogue enhancement groups may form' : ''
+            adaptorMetrics.enhancementPressure > 0.7
+              ? 'Rogue enhancement groups may form'
+              : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             enhancementPressure: 15,
-            purityFactionStrength: 10
-          }
+            purityFactionStrength: 10,
+          },
         };
 
       default:
@@ -262,67 +275,75 @@ export class LegacyService {
 
         return {
           resourceChanges: {
-            credits: raidSuccess ? 1000 + (raidSeverity * 2000) : -500,
+            credits: raidSuccess ? 1000 + raidSeverity * 2000 : -500,
             energy: raidSuccess ? 500 : -200,
             food: raidSuccess ? 300 : -100,
             influence: -50, // Reputation damage
-            unity: raidSuccess ? 0.05 : -0.1
+            unity: raidSuccess ? 0.05 : -0.1,
           },
           populationEffects: [
             {
               cohortType: 'security',
               effectType: 'morale',
               magnitude: raidSuccess ? 10 : -15,
-              description: raidSuccess ? 'Successful raid morale boost' : 'Failed raid demoralization'
-            }
+              description: raidSuccess
+                ? 'Successful raid morale boost'
+                : 'Failed raid demoralization',
+            },
           ],
-          longTermConsequences: raidSuccess ? [
-            'Reputation as raiders spreads',
-            'Other vessels become more hostile',
-            raidSeverity > 0.7 ? 'Severe diplomatic consequences' : 'Minor diplomatic impact'
-          ] : [
-            'Failed raid weakens position',
-            'Potential retaliation from target',
-            'Crew questions leadership'
-          ],
+          longTermConsequences: raidSuccess
+            ? [
+                'Reputation as raiders spreads',
+                'Other vessels become more hostile',
+                raidSeverity > 0.7
+                  ? 'Severe diplomatic consequences'
+                  : 'Minor diplomatic impact',
+              ]
+            : [
+                'Failed raid weakens position',
+                'Potential retaliation from target',
+                'Crew questions leadership',
+              ],
           legacySpecificEffects: {
-            piracyReputation: raidSuccess ? (10 + raidSeverity * 20) : 5,
+            piracyReputation: raidSuccess ? 10 + raidSeverity * 20 : 5,
             moralCode: -(5 + raidSeverity * 10),
-            existentialDread: raidSuccess ? -5 : 10
-          }
+            existentialDread: raidSuccess ? -5 : 10,
+          },
         };
       }
 
       case 'trade': {
-        const tradeSuccess = Math.random() > (0.3 + wandererMetrics.piracyReputation * 0.01); // Reputation affects trade
+        const tradeSuccess =
+          Math.random() > 0.3 + wandererMetrics.piracyReputation * 0.01; // Reputation affects trade
 
         return {
           resourceChanges: {
             credits: tradeSuccess ? 300 : -100,
             energy: tradeSuccess ? 200 : -50,
             minerals: tradeSuccess ? 150 : -30,
-            influence: tradeSuccess ? 10 : -5
+            influence: tradeSuccess ? 10 : -5,
           },
           populationEffects: [
             {
               cohortType: 'general',
               effectType: 'morale',
               magnitude: tradeSuccess ? 5 : -5,
-              description: tradeSuccess ? 'Successful peaceful exchange' : 'Trade rejection'
-            }
+              description: tradeSuccess
+                ? 'Successful peaceful exchange'
+                : 'Trade rejection',
+            },
           ],
-          longTermConsequences: tradeSuccess ? [
-            'Improved relations with traders',
-            'Trade route opportunities'
-          ] : [
-            'Decreased trust from trading partners',
-            'Limited future trade options'
-          ],
+          longTermConsequences: tradeSuccess
+            ? ['Improved relations with traders', 'Trade route opportunities']
+            : [
+                'Decreased trust from trading partners',
+                'Limited future trade options',
+              ],
           legacySpecificEffects: {
             tradeReputation: tradeSuccess ? 5 : -3,
             moralCode: tradeSuccess ? 2 : -1,
-            existentialDread: tradeSuccess ? -2 : 3
-          }
+            existentialDread: tradeSuccess ? -2 : 3,
+          },
         };
       }
 
@@ -331,28 +352,28 @@ export class LegacyService {
 
         return {
           resourceChanges: {
-            minerals: 50 + (scavengeFind * 200),
-            energy: 30 + (scavengeFind * 150),
-            spareParts: 20 + (scavengeFind * 100),
-            fuel: 10 + (scavengeFind * 50)
+            minerals: 50 + scavengeFind * 200,
+            energy: 30 + scavengeFind * 150,
+            spareParts: 20 + scavengeFind * 100,
+            fuel: 10 + scavengeFind * 50,
           },
           populationEffects: [
             {
               cohortType: 'engineers',
               effectType: 'effectiveness',
               magnitude: 0.02,
-              description: 'Experience with salvage operations'
-            }
+              description: 'Experience with salvage operations',
+            },
           ],
           longTermConsequences: [
             'Improved scavenging capabilities',
-            scavengeFind > 0.8 ? 'Discovered valuable technology cache' : ''
+            scavengeFind > 0.8 ? 'Discovered valuable technology cache' : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             scavengingSkill: 3,
             resourceConservation: 2,
-            existentialDread: -1
-          }
+            existentialDread: -1,
+          },
         };
       }
 
@@ -361,26 +382,28 @@ export class LegacyService {
           resourceChanges: {
             fuel: -Math.max(10, mission.resources.fuel * 0.05), // Reduce consumption
             energy: -Math.max(20, mission.resources.energy * 0.03),
-            morale: -0.05 // Hardship from conservation
+            morale: -0.05, // Hardship from conservation
           },
           populationEffects: [
             {
               cohortType: 'general',
               effectType: 'morale',
               magnitude: -8,
-              description: 'Conservation hardships'
-            }
+              description: 'Conservation hardships',
+            },
           ],
           longTermConsequences: [
             'Extended operational range',
             'Improved resource efficiency',
-            wandererMetrics.existentialDread > 50 ? 'Growing despair over endless journey' : ''
+            wandererMetrics.existentialDread > 50
+              ? 'Growing despair over endless journey'
+              : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             resourceConservation: 5,
             survivalSkills: 3,
-            existentialDread: wandererMetrics.existentialDread > 50 ? 8 : 2
-          }
+            existentialDread: wandererMetrics.existentialDread > 50 ? 8 : 2,
+          },
         };
 
       default:
@@ -389,56 +412,80 @@ export class LegacyService {
   }
 
   // Get Preservers Specific Metrics
-  private static getPreserverMetrics(mission: GenerationalMission): PreserverMetrics {
+  private static getPreserverMetrics(
+    mission: GenerationalMission
+  ): PreserverMetrics {
     const culturalDrift = mission.resources.culturalDrift || 0;
 
     return {
-      traditionSupport: Math.max(0, 1 - culturalDrift - (mission.currentYear / mission.estimatedDuration)),
-      adaptationNeed: Math.min(1, culturalDrift + (mission.currentYear / mission.estimatedDuration * 0.5)),
+      traditionSupport: Math.max(
+        0,
+        1 - culturalDrift - mission.currentYear / mission.estimatedDuration
+      ),
+      adaptationNeed: Math.min(
+        1,
+        culturalDrift + (mission.currentYear / mission.estimatedDuration) * 0.5
+      ),
       culturalStress: Math.abs(culturalDrift - 0.3), // Stress when too much or too little change
-      generationGap: Math.floor(mission.currentYear / 25) * 0.1
+      generationGap: Math.floor(mission.currentYear / 25) * 0.1,
     };
   }
 
   // Get Adaptors Specific Metrics
-  private static getAdaptorMetrics(mission: GenerationalMission): AdaptorMetrics {
+  private static getAdaptorMetrics(
+    mission: GenerationalMission
+  ): AdaptorMetrics {
     const adaptationLevel = mission.resources.adaptationLevel || 0;
     const technology = mission.resources.technology || 0;
 
     return {
-      enhancementPressure: Math.min(1, (mission.currentYear / mission.estimatedDuration) + (adaptationLevel * 0.5)),
+      enhancementPressure: Math.min(
+        1,
+        mission.currentYear / mission.estimatedDuration + adaptationLevel * 0.5
+      ),
       humanityDrift: adaptationLevel,
       enhancementResistance: Math.max(0, 0.5 - adaptationLevel),
-      innovationPotential: Math.min(1, technology / 1000)
+      innovationPotential: Math.min(1, technology / 1000),
     };
   }
 
   // Get Wanderers Specific Metrics
-  private static getWandererMetrics(mission: GenerationalMission): WandererMetrics {
+  private static getWandererMetrics(
+    mission: GenerationalMission
+  ): WandererMetrics {
     // These would be stored as legacy-specific resources in a full implementation
     return {
       resourceScarcity: this.calculateResourceScarcity(mission.resources),
       piracyReputation: 20, // Would be tracked over time
       existentialDread: Math.min(100, mission.currentYear / 10), // Increases with time
-      fleetCohesion: Math.max(0, 1 - (mission.currentYear / mission.estimatedDuration * 0.3))
+      fleetCohesion: Math.max(
+        0,
+        1 - (mission.currentYear / mission.estimatedDuration) * 0.3
+      ),
     };
   }
 
   // Calculate Resource Scarcity
-  private static calculateResourceScarcity(resources: ExtendedResources): number {
+  private static calculateResourceScarcity(
+    resources: ExtendedResources
+  ): number {
     const criticalResources = [
       resources.fuel / 1000,
       resources.food / 1000,
       resources.energy / 2000,
-      resources.spareParts / 500
+      resources.spareParts / 500,
     ];
 
-    const avgScarcity = criticalResources.reduce((sum, val) => sum + Math.min(1, val), 0) / criticalResources.length;
+    const avgScarcity =
+      criticalResources.reduce((sum, val) => sum + Math.min(1, val), 0) /
+      criticalResources.length;
     return Math.max(0, 1 - avgScarcity);
   }
 
   // Apply Legacy-Specific Failure Conditions
-  static checkLegacyFailureConditions(mission: GenerationalMission): LegacyFailureCheck {
+  static checkLegacyFailureConditions(
+    mission: GenerationalMission
+  ): LegacyFailureCheck {
     switch (mission.legacy) {
       case 'preservers':
         return this.checkPreserversFailure(mission);
@@ -452,7 +499,9 @@ export class LegacyService {
   }
 
   // Check Preservers Failure: Cultural Collapse
-  private static checkPreserversFailure(mission: GenerationalMission): LegacyFailureCheck {
+  private static checkPreserversFailure(
+    mission: GenerationalMission
+  ): LegacyFailureCheck {
     const culturalDrift = mission.resources.culturalDrift || 0;
     const unity = mission.resources.unity || 0.5;
     const traditionPoints = 50; // Would be tracked in legacy-specific data
@@ -479,7 +528,9 @@ export class LegacyService {
     const warnings = [];
 
     if (riskLevel > 30) {
-      warnings.push('Cultural collapse warning: Society losing traditional identity');
+      warnings.push(
+        'Cultural collapse warning: Society losing traditional identity'
+      );
     }
     if (riskLevel > 60) {
       warnings.push('CRITICAL: Cultural fragmentation imminent');
@@ -489,7 +540,9 @@ export class LegacyService {
   }
 
   // Check Adaptors Failure: Humanity Loss
-  private static checkAdaptorsFailure(mission: GenerationalMission): LegacyFailureCheck {
+  private static checkAdaptorsFailure(
+    mission: GenerationalMission
+  ): LegacyFailureCheck {
     const adaptationLevel = mission.resources.adaptationLevel || 0;
     const unity = mission.resources.unity || 0.5;
     const bodyHorrorEvents = 2; // Would be tracked
@@ -516,7 +569,9 @@ export class LegacyService {
     const warnings = [];
 
     if (riskLevel > 30) {
-      warnings.push('Humanity loss warning: Population becoming unrecognizably altered');
+      warnings.push(
+        'Humanity loss warning: Population becoming unrecognizably altered'
+      );
     }
     if (riskLevel > 60) {
       warnings.push('CRITICAL: Imminent speciation event - civil war likely');
@@ -526,7 +581,9 @@ export class LegacyService {
   }
 
   // Check Wanderers Failure: Fleet Dissolution
-  private static checkWanderersFailure(mission: GenerationalMission): LegacyFailureCheck {
+  private static checkWanderersFailure(
+    mission: GenerationalMission
+  ): LegacyFailureCheck {
     const fuel = mission.resources.fuel || 0;
     const unity = mission.resources.unity || 0.5;
     const existentialDread = 40; // Would be tracked
@@ -559,7 +616,9 @@ export class LegacyService {
     const warnings = [];
 
     if (riskLevel > 30) {
-      warnings.push('Fleet dissolution warning: Ships may separate permanently');
+      warnings.push(
+        'Fleet dissolution warning: Ships may separate permanently'
+      );
     }
     if (riskLevel > 60) {
       warnings.push('CRITICAL: Fleet breakup imminent - ships going rogue');
@@ -569,29 +628,32 @@ export class LegacyService {
   }
 
   // Get Legacy-Specific Event Modifiers
-  static getLegacyEventModifiers(legacy: LegacyTypeType, eventCategory: string): number {
+  static getLegacyEventModifiers(
+    legacy: LegacyTypeType,
+    eventCategory: string
+  ): number {
     const modifiers: Record<LegacyTypeType, Record<string, number>> = {
       preservers: {
-        'cultural': 0.3,
-        'tradition': 0.4,
-        'stability': 0.2,
-        'innovation': -0.2,
-        'risk': -0.3
+        cultural: 0.3,
+        tradition: 0.4,
+        stability: 0.2,
+        innovation: -0.2,
+        risk: -0.3,
       },
       adaptors: {
-        'evolution': 0.4,
-        'innovation': 0.3,
-        'risk': 0.2,
-        'stability': -0.2,
-        'tradition': -0.4
+        evolution: 0.4,
+        innovation: 0.3,
+        risk: 0.2,
+        stability: -0.2,
+        tradition: -0.4,
       },
       wanderers: {
-        'survival': 0.4,
-        'resource': 0.3,
-        'mobility': 0.3,
-        'stability': -0.3,
-        'long_term': -0.2
-      }
+        survival: 0.4,
+        resource: 0.3,
+        mobility: 0.3,
+        stability: -0.3,
+        long_term: -0.2,
+      },
     };
 
     return modifiers[legacy][eventCategory] || 0;

@@ -11,13 +11,23 @@ const ShipStatus: React.FC = React.memo(() => {
   return (
     <Card title={`Ship Status: ${ship.name}`}>
       <div className="text-center">
-        <div className={`${uiConstants.SHIP_STATUS.ICON_SIZE} ${uiConstants.SHIP_STATUS.ICON_BG} rounded-lg flex items-center justify-center mx-auto mb-4`}>
+        <div
+          className={`${uiConstants.SHIP_STATUS.ICON_SIZE} ${uiConstants.SHIP_STATUS.ICON_BG} rounded-lg flex items-center justify-center mx-auto mb-4`}
+        >
           <div className="text-6xl">🚀</div>
         </div>
-        <h4 className={`text-lg ${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>{ship.name}</h4>
+        <h4
+          className={`text-lg ${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}
+        >
+          {ship.name}
+        </h4>
       </div>
 
-      <Grid columns={uiConstants.SHIP_STATUS.GRID_COLUMNS} gap={uiConstants.SHIP_STATUS.GRID_GAP} className={uiConstants.SPACING.SECTION_MARGIN}>
+      <Grid
+        columns={uiConstants.SHIP_STATUS.GRID_COLUMNS}
+        gap={uiConstants.SHIP_STATUS.GRID_GAP}
+        className={uiConstants.SPACING.SECTION_MARGIN}
+      >
         <StatItem label="Speed" value={ship.stats.speed} />
         <StatItem label="Cargo" value={ship.stats.cargo} />
         <StatItem label="Combat" value={ship.stats.combat} />
@@ -26,7 +36,11 @@ const ShipStatus: React.FC = React.memo(() => {
       </Grid>
 
       <div className={`border-t ${uiConstants.COLORS.BORDER} pt-4`}>
-        <h4 className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY} mb-3`}>Components</h4>
+        <h4
+          className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY} mb-3`}
+        >
+          Components
+        </h4>
         <div className="space-y-2">
           <ComponentItem label="Hull" value={ship.hull} />
           <ComponentItem label="Engine" value={ship.components.engine} />
@@ -48,9 +62,17 @@ interface StatItemProps {
 }
 
 const StatItem: React.FC<StatItemProps> = React.memo(({ label, value }) => (
-  <div className={`${uiConstants.SHIP_STATUS.STAT_ITEM_BG} rounded ${uiConstants.SPACING.CARD_PADDING}`}>
-    <div className={`text-xs ${uiConstants.COLORS.TEXT_MUTED} uppercase tracking-wide`}>{label}</div>
-    <div className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY}`}>{value}</div>
+  <div
+    className={`${uiConstants.SHIP_STATUS.STAT_ITEM_BG} rounded ${uiConstants.SPACING.CARD_PADDING}`}
+  >
+    <div
+      className={`text-xs ${uiConstants.COLORS.TEXT_MUTED} uppercase tracking-wide`}
+    >
+      {label}
+    </div>
+    <div className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY}`}>
+      {value}
+    </div>
   </div>
 ));
 StatItem.displayName = 'StatItem';
@@ -60,12 +82,16 @@ interface ComponentItemProps {
   value: string;
 }
 
-const ComponentItem: React.FC<ComponentItemProps> = React.memo(({ label, value }) => (
-  <div className="flex justify-between items-center py-1">
-    <span className={uiConstants.COLORS.TEXT_SECONDARY}>{label}:</span>
-    <span className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>{value}</span>
-  </div>
-));
+const ComponentItem: React.FC<ComponentItemProps> = React.memo(
+  ({ label, value }) => (
+    <div className="flex justify-between items-center py-1">
+      <span className={uiConstants.COLORS.TEXT_SECONDARY}>{label}:</span>
+      <span className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
+        {value}
+      </span>
+    </div>
+  )
+);
 ComponentItem.displayName = 'ComponentItem';
 
 export default ShipStatus;

@@ -27,17 +27,26 @@ export const useGameActions = () => {
     store.establishColony();
   }, [store]);
 
-  const handlePurchaseComponent = useCallback((category: string, componentName: string) => {
-    store.purchaseComponent(category, componentName);
-  }, [store]);
+  const handlePurchaseComponent = useCallback(
+    (category: string, componentName: string) => {
+      store.purchaseComponent(category, componentName);
+    },
+    [store]
+  );
 
-  const handleSelectHeir = useCallback((heirId: CrewMemberId) => {
-    store.selectHeir(heirId);
-  }, [store]);
+  const handleSelectHeir = useCallback(
+    (heirId: CrewMemberId) => {
+      store.selectHeir(heirId);
+    },
+    [store]
+  );
 
-  const handleSwitchComponentCategory = useCallback((category: keyof ShipComponentsData) => {
-    store.switchComponentCategory(category);
-  }, [store]);
+  const handleSwitchComponentCategory = useCallback(
+    (category: keyof ShipComponentsData) => {
+      store.switchComponentCategory(category);
+    },
+    [store]
+  );
 
   return {
     handleTrainCrew,
@@ -47,6 +56,6 @@ export const useGameActions = () => {
     handleEstablishColony,
     handlePurchaseComponent,
     handleSelectHeir,
-    handleSwitchComponentCategory
+    handleSwitchComponentCategory,
   };
 };

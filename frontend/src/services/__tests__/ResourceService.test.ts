@@ -70,12 +70,16 @@ describe('ResourceService', () => {
     it('should return true for valid amounts', () => {
       expect(ResourceService.validateResourceAmount(0)).toBe(true);
       expect(ResourceService.validateResourceAmount(100)).toBe(true);
-      expect(ResourceService.validateResourceAmount(Number.MAX_SAFE_INTEGER)).toBe(true);
+      expect(
+        ResourceService.validateResourceAmount(Number.MAX_SAFE_INTEGER)
+      ).toBe(true);
     });
 
     it('should return false for invalid amounts', () => {
       expect(ResourceService.validateResourceAmount(-1)).toBe(false);
-      expect(ResourceService.validateResourceAmount(Number.MAX_SAFE_INTEGER + 1)).toBe(false);
+      expect(
+        ResourceService.validateResourceAmount(Number.MAX_SAFE_INTEGER + 1)
+      ).toBe(false);
     });
   });
 
@@ -98,21 +102,39 @@ describe('ResourceService', () => {
 
   describe('processTrade', () => {
     it('should process buying trade correctly', () => {
-      const result = ResourceService.processTrade(mockResources, 200, 'minerals', 10, true);
+      const result = ResourceService.processTrade(
+        mockResources,
+        200,
+        'minerals',
+        10,
+        true
+      );
 
       expect(result.credits).toBe(800);
       expect(result.minerals).toBe(510);
     });
 
     it('should process selling trade correctly', () => {
-      const result = ResourceService.processTrade(mockResources, 200, 'minerals', 10, false);
+      const result = ResourceService.processTrade(
+        mockResources,
+        200,
+        'minerals',
+        10,
+        false
+      );
 
       expect(result.credits).toBe(1200);
       expect(result.minerals).toBe(490);
     });
 
     it('should not mutate original resources object', () => {
-      const result = ResourceService.processTrade(mockResources, 200, 'minerals', 10, true);
+      const result = ResourceService.processTrade(
+        mockResources,
+        200,
+        'minerals',
+        10,
+        true
+      );
 
       expect(mockResources.credits).toBe(1000);
       expect(result).not.toBe(mockResources);

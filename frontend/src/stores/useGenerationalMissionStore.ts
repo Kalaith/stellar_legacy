@@ -6,9 +6,15 @@ import type {
   LegacyRelation,
   AutomationConfig,
   ExtendedResources,
-  PopulationEffect
+  PopulationEffect,
 } from '../types/generationalMissions';
-import type { EventCategoryType, LegacyTypeType, MissionObjectiveType, ShipClassType, ShipSizeType } from '../types/enums';
+import type {
+  EventCategoryType,
+  LegacyTypeType,
+  MissionObjectiveType,
+  ShipClassType,
+  ShipSizeType,
+} from '../types/enums';
 import { MissionService } from '../services/MissionService';
 import { EventService } from '../services/EventService';
 import { LegacyService } from '../services/LegacyService';
@@ -38,8 +44,15 @@ interface GenerationalMissionStore {
   forceEventGeneration: (missionId: string, category?: string) => void;
 
   // Actions - Automation Management
-  updateAutomationConfig: (missionId: string, config: Partial<AutomationConfig>) => void;
-  overrideAIDecision: (missionId: string, decisionId: string, override: unknown) => void;
+  updateAutomationConfig: (
+    missionId: string,
+    config: Partial<AutomationConfig>
+  ) => void;
+  overrideAIDecision: (
+    missionId: string,
+    decisionId: string,
+    override: unknown
+  ) => void;
 
   // Actions - Legacy Management
   processLegacyDilemma: (
@@ -57,11 +70,17 @@ interface GenerationalMissionStore {
       | 'scavenge'
       | 'conserve'
   ) => void;
-  updateLegacyRelations: (fromLegacy: LegacyTypeType, toLegacy: LegacyTypeType, change: number) => void;
+  updateLegacyRelations: (
+    fromLegacy: LegacyTypeType,
+    toLegacy: LegacyTypeType,
+    change: number
+  ) => void;
 
   // Utility Actions
   getAllActiveMissions: () => GenerationalMission[];
-  getMissionsByObjective: (objective: MissionObjectiveType) => GenerationalMission[];
+  getMissionsByObjective: (
+    objective: MissionObjectiveType
+  ) => GenerationalMission[];
   getMissionsByLegacy: (legacy: LegacyTypeType) => GenerationalMission[];
 }
 
@@ -89,27 +108,27 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           toLegacy: 'adaptors',
           relationship: -20,
           recentEvents: [],
-          tradeAgreements: []
+          tradeAgreements: [],
         },
         {
           fromLegacy: 'preservers',
           toLegacy: 'wanderers',
           relationship: 10,
           recentEvents: [],
-          tradeAgreements: []
+          tradeAgreements: [],
         },
         {
           fromLegacy: 'adaptors',
           toLegacy: 'wanderers',
           relationship: -30,
           recentEvents: [],
-          tradeAgreements: []
-        }
+          tradeAgreements: [],
+        },
       ],
       playerLegacyAffinity: {
         preservers: 0,
         adaptors: 0,
-        wanderers: 0
+        wanderers: 0,
       },
 
       // UI State
@@ -120,13 +139,13 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       createMission: (config: MissionCreationConfig) => {
         try {
           const mission = MissionService.createMission({
-            ...config
+            ...config,
           });
 
           set(state => ({
             missions: [...state.missions, mission],
             activeMissions: [...state.activeMissions, mission.id],
-            selectedMission: mission
+            selectedMission: mission,
           }));
 
           // Update legacy affinity
@@ -134,7 +153,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
 
           Logger.info(`Created generational mission: ${mission.name}`, {
             legacy: mission.legacy,
-            objective: mission.objective
+            objective: mission.objective,
           });
         } catch (error) {
           Logger.error('Failed to create mission', error);
@@ -142,7 +161,9 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       },
 
       selectMission: (missionId: string | null) => {
-        const mission = missionId ? get().missions.find(m => m.id === missionId) || null : null;
+        const mission = missionId
+          ? get().missions.find(m => m.id === missionId) || null
+          : null;
         set({ selectedMission: mission, selectedEventId: null });
       },
 
@@ -151,11 +172,19 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         if (!mission) return;
 
         try {
-          const result = MissionService.processMissionTurn(mission, yearsElapsed);
+          const result = MissionService.processMissionTurn(
+            mission,
+            yearsElapsed
+          );
 
           set(state => ({
-            missions: state.missions.map(m => m.id === missionId ? result.mission : m),
-            selectedMission: state.selectedMission?.id === missionId ? result.mission : state.selectedMission
+            missions: state.missions.map(m =>
+              m.id === missionId ? result.mission : m
+            ),
+            selectedMission:
+              state.selectedMission?.id === missionId
+                ? result.mission
+                : state.selectedMission,
           }));
 
           // Show notification if requires attention
@@ -163,7 +192,6 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
             // Would integrate with main game notification system
             Logger.info(`Mission ${mission.name} requires player attention`);
           }
-
         } catch (error) {
           Logger.error('Failed to process mission turn', error);
         }
@@ -175,18 +203,30 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
 
         set(state => ({
           activeMissions: state.activeMissions.filter(id => id !== missionId),
-          selectedMission: state.selectedMission?.id === missionId ? null : state.selectedMission
+          selectedMission:
+            state.selectedMission?.id === missionId
+              ? null
+              : state.selectedMission,
         }));
 
         // Update legacy affinity based on success
-        const affinityChange = mission.successLevel === 'complete' ? 20 :
-                              mission.successLevel === 'partial' ? 10 :
-                              mission.successLevel === 'pyrrhic' ? 5 : -10;
+        const affinityChange =
+          mission.successLevel === 'complete'
+            ? 20
+            : mission.successLevel === 'partial'
+              ? 10
+              : mission.successLevel === 'pyrrhic'
+                ? 5
+                : -10;
 
-        get().updateLegacyRelations(mission.legacy, mission.legacy, affinityChange);
+        get().updateLegacyRelations(
+          mission.legacy,
+          mission.legacy,
+          affinityChange
+        );
 
         Logger.info(`Completed mission: ${mission.name}`, {
-          successLevel: mission.successLevel
+          successLevel: mission.successLevel,
         });
       },
 
@@ -202,21 +242,32 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         if (!mission || !event) return;
 
         try {
-          const resolution = EventService.resolveEventWithChoice(event, outcomeId, mission);
+          const resolution = EventService.resolveEventWithChoice(
+            event,
+            outcomeId,
+            mission
+          );
 
           if (resolution.success) {
             // Move event to history
             mission.eventHistory.push(event);
-            mission.activeEvents = mission.activeEvents.filter(e => e.id !== eventId);
+            mission.activeEvents = mission.activeEvents.filter(
+              e => e.id !== eventId
+            );
 
             set(state => ({
-              missions: state.missions.map(m => m.id === missionId ? mission : m),
-              selectedMission: state.selectedMission?.id === missionId ? mission : state.selectedMission,
-              selectedEventId: null
+              missions: state.missions.map(m =>
+                m.id === missionId ? mission : m
+              ),
+              selectedMission:
+                state.selectedMission?.id === missionId
+                  ? mission
+                  : state.selectedMission,
+              selectedEventId: null,
             }));
 
             Logger.info(`Resolved event: ${event.title}`, {
-              outcome: resolution.outcome?.title
+              outcome: resolution.outcome?.title,
             });
           }
         } catch (error) {
@@ -224,7 +275,10 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         }
       },
 
-      forceEventGeneration: (missionId: string, category?: EventCategoryType) => {
+      forceEventGeneration: (
+        missionId: string,
+        category?: EventCategoryType
+      ) => {
         const mission = get().missions.find(m => m.id === missionId);
         if (!mission) return;
 
@@ -233,34 +287,63 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           mission.activeEvents.push(event);
 
           set(state => ({
-            missions: state.missions.map(m => m.id === missionId ? mission : m),
-            selectedMission: state.selectedMission?.id === missionId ? mission : state.selectedMission
+            missions: state.missions.map(m =>
+              m.id === missionId ? mission : m
+            ),
+            selectedMission:
+              state.selectedMission?.id === missionId
+                ? mission
+                : state.selectedMission,
           }));
         }
       },
 
       // Automation Management Actions
-      updateAutomationConfig: (missionId: string, config: Partial<AutomationConfig>) => {
+      updateAutomationConfig: (
+        missionId: string,
+        config: Partial<AutomationConfig>
+      ) => {
         set(state => ({
           missions: state.missions.map(mission => {
             if (mission.id === missionId) {
               return {
                 ...mission,
-                automationConfig: { ...mission.automationConfig, ...config }
+                automationConfig: { ...mission.automationConfig, ...config },
               };
             }
             return mission;
-          })
+          }),
         }));
       },
 
-      overrideAIDecision: (targetMissionId: string, decisionId: string, overrideData: unknown) => {
+      overrideAIDecision: (
+        targetMissionId: string,
+        decisionId: string,
+        overrideData: unknown
+      ) => {
         // Implementation for overriding AI decisions
-        Logger.info(`Override AI decision: ${decisionId}`, { targetMissionId, override: overrideData });
+        Logger.info(`Override AI decision: ${decisionId}`, {
+          targetMissionId,
+          override: overrideData,
+        });
       },
 
       // Legacy Management Actions
-      processLegacyDilemma: (missionId: string, choice: 'tradition' | 'adaptation' | 'compromise' | 'genetic' | 'cybernetic' | 'biological' | 'reject' | 'raid' | 'trade' | 'scavenge' | 'conserve') => {
+      processLegacyDilemma: (
+        missionId: string,
+        choice:
+          | 'tradition'
+          | 'adaptation'
+          | 'compromise'
+          | 'genetic'
+          | 'cybernetic'
+          | 'biological'
+          | 'reject'
+          | 'raid'
+          | 'trade'
+          | 'scavenge'
+          | 'conserve'
+      ) => {
         const mission = get().missions.find(m => m.id === missionId);
         if (!mission) return;
 
@@ -268,20 +351,33 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           let result;
           switch (mission.legacy) {
             case 'preservers':
-              result = LegacyService.processPreserversDialemma(mission, choice as 'tradition' | 'adaptation' | 'compromise');
+              result = LegacyService.processPreserversDialemma(
+                mission,
+                choice as 'tradition' | 'adaptation' | 'compromise'
+              );
               break;
             case 'adaptors':
-              result = LegacyService.processAdaptorsEvolution(mission, choice as 'genetic' | 'cybernetic' | 'biological' | 'reject');
+              result = LegacyService.processAdaptorsEvolution(
+                mission,
+                choice as 'genetic' | 'cybernetic' | 'biological' | 'reject'
+              );
               break;
             case 'wanderers':
-              result = LegacyService.processWanderersSurvival(mission, choice as 'raid' | 'trade' | 'scavenge' | 'conserve');
+              result = LegacyService.processWanderersSurvival(
+                mission,
+                choice as 'raid' | 'trade' | 'scavenge' | 'conserve'
+              );
               break;
             default:
               return;
           }
 
           // Apply results to mission
-          (Object.keys(result.resourceChanges) as Array<keyof ExtendedResources>).forEach((resource) => {
+          (
+            Object.keys(result.resourceChanges) as Array<
+              keyof ExtendedResources
+            >
+          ).forEach(resource => {
             const change = result.resourceChanges[resource];
             if (typeof change === 'number') {
               mission.resources[resource] += change;
@@ -290,97 +386,132 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
 
           // Apply population effects
           result.populationEffects.forEach((effect: PopulationEffect) => {
-            const cohort = mission.population.cohorts.find(c => c.type === effect.cohortType);
+            const cohort = mission.population.cohorts.find(
+              c => c.type === effect.cohortType
+            );
             if (cohort) {
               switch (effect.effectType) {
                 case 'count':
                   cohort.count = Math.max(0, cohort.count + effect.magnitude);
                   break;
                 case 'effectiveness':
-                  cohort.effectiveness = Math.max(0, Math.min(1, cohort.effectiveness + effect.magnitude));
+                  cohort.effectiveness = Math.max(
+                    0,
+                    Math.min(1, cohort.effectiveness + effect.magnitude)
+                  );
                   break;
                 case 'morale':
-                  cohort.morale = Math.max(0, Math.min(100, cohort.morale + effect.magnitude));
+                  cohort.morale = Math.max(
+                    0,
+                    Math.min(100, cohort.morale + effect.magnitude)
+                  );
                   break;
               }
             }
           });
 
           set(state => ({
-            missions: state.missions.map(m => m.id === missionId ? mission : m),
-            selectedMission: state.selectedMission?.id === missionId ? mission : state.selectedMission
+            missions: state.missions.map(m =>
+              m.id === missionId ? mission : m
+            ),
+            selectedMission:
+              state.selectedMission?.id === missionId
+                ? mission
+                : state.selectedMission,
           }));
 
           Logger.info(`Processed legacy dilemma for ${mission.legacy}`, {
             choice,
-            consequences: result.longTermConsequences
+            consequences: result.longTermConsequences,
           });
-
         } catch (error) {
           Logger.error('Failed to process legacy dilemma', error);
         }
       },
 
-      updateLegacyRelations: (fromLegacy: LegacyTypeType, toLegacy: LegacyTypeType, change: number) => {
+      updateLegacyRelations: (
+        fromLegacy: LegacyTypeType,
+        toLegacy: LegacyTypeType,
+        change: number
+      ) => {
         set(state => ({
           legacyRelations: state.legacyRelations.map(relation => {
-            if (relation.fromLegacy === fromLegacy && relation.toLegacy === toLegacy) {
+            if (
+              relation.fromLegacy === fromLegacy &&
+              relation.toLegacy === toLegacy
+            ) {
               return {
                 ...relation,
-                relationship: Math.max(-100, Math.min(100, relation.relationship + change))
+                relationship: Math.max(
+                  -100,
+                  Math.min(100, relation.relationship + change)
+                ),
               };
             }
             return relation;
           }),
           playerLegacyAffinity: {
             ...state.playerLegacyAffinity,
-            [fromLegacy]: Math.max(-100, Math.min(100, state.playerLegacyAffinity[fromLegacy] + change))
-          }
+            [fromLegacy]: Math.max(
+              -100,
+              Math.min(100, state.playerLegacyAffinity[fromLegacy] + change)
+            ),
+          },
         }));
       },
 
       // Utility Actions
       getAllActiveMissions: () => {
-        return get().missions.filter(mission => get().activeMissions.includes(mission.id));
+        return get().missions.filter(mission =>
+          get().activeMissions.includes(mission.id)
+        );
       },
 
       getMissionsByObjective: (objective: MissionObjectiveType) => {
-        return get().missions.filter(mission => mission.objective === objective);
+        return get().missions.filter(
+          mission => mission.objective === objective
+        );
       },
 
       getMissionsByLegacy: (legacy: LegacyTypeType) => {
         return get().missions.filter(mission => mission.legacy === legacy);
-      }
+      },
     }),
     {
       name: 'generational-mission-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         missions: state.missions,
         activeMissions: state.activeMissions,
         legacyRelations: state.legacyRelations,
-        playerLegacyAffinity: state.playerLegacyAffinity
+        playerLegacyAffinity: state.playerLegacyAffinity,
         // Don't persist UI state like selectedMission, selectedEventId
-      })
+      }),
     }
   )
 );
 
 // Helper hook for current mission data
 export const useCurrentMission = () => {
-  const selectedMission = useGenerationalMissionStore(state => state.selectedMission);
+  const selectedMission = useGenerationalMissionStore(
+    state => state.selectedMission
+  );
   return selectedMission;
 };
 
 // Helper hook for active events
 export const useActiveEvents = () => {
-  const selectedMission = useGenerationalMissionStore(state => state.selectedMission);
+  const selectedMission = useGenerationalMissionStore(
+    state => state.selectedMission
+  );
   return selectedMission?.activeEvents || [];
 };
 
 // Helper hook for mission status
 export const useMissionStatus = (missionId?: string) => {
   const missions = useGenerationalMissionStore(state => state.missions);
-  const activeMissions = useGenerationalMissionStore(state => state.activeMissions);
+  const activeMissions = useGenerationalMissionStore(
+    state => state.activeMissions
+  );
 
   if (!missionId) return null;
 
@@ -390,6 +521,7 @@ export const useMissionStatus = (missionId?: string) => {
   return {
     mission,
     isActive,
-    requiresAttention: mission?.activeEvents.some(e => e.requiresPlayerDecision) || false
+    requiresAttention:
+      mission?.activeEvents.some(e => e.requiresPlayerDecision) || false,
   };
 };

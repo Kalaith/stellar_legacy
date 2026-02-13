@@ -38,7 +38,9 @@ export const ValidationUtils = {
    * Check if value is within range
    */
   isInRange: (value: unknown, min: number, max: number): value is number => {
-    return typeof value === 'number' && value >= min && value <= max && !isNaN(value);
+    return (
+      typeof value === 'number' && value >= min && value <= max && !isNaN(value)
+    );
   },
 
   /**
@@ -51,7 +53,10 @@ export const ValidationUtils = {
   /**
    * Check if value is an array with minimum length
    */
-  isArrayWithMinLength: <T>(value: unknown, minLength: number): value is T[] => {
+  isArrayWithMinLength: <T>(
+    value: unknown,
+    minLength: number
+  ): value is T[] => {
     return Array.isArray(value) && value.length >= minLength;
   },
 
@@ -79,13 +84,15 @@ export const DomainValidators = {
    * Validate ChronicleEntry
    */
   chronicleEntry: (value: unknown): value is ChronicleEntry => {
-    if (!ValidationUtils.hasRequiredProperties(value, [
-      'missionId',
-      'missionName',
-      'missionNumber',
-      'startedAt',
-      'completedAt',
-    ])) {
+    if (
+      !ValidationUtils.hasRequiredProperties(value, [
+        'missionId',
+        'missionName',
+        'missionNumber',
+        'startedAt',
+        'completedAt',
+      ])
+    ) {
       return false;
     }
 
@@ -104,14 +111,16 @@ export const DomainValidators = {
    * Validate ChronicleDecision
    */
   chronicleDecision: (value: unknown): value is ChronicleDecision => {
-    if (!ValidationUtils.hasRequiredProperties(value, [
-      'id',
-      'title',
-      'description',
-      'category',
-      'urgency',
-      'scope',
-    ])) {
+    if (
+      !ValidationUtils.hasRequiredProperties(value, [
+        'id',
+        'title',
+        'description',
+        'category',
+        'urgency',
+        'scope',
+      ])
+    ) {
       return false;
     }
 
@@ -128,12 +137,14 @@ export const DomainValidators = {
    * Validate HeritageModifier
    */
   heritageModifier: (value: unknown): value is HeritageModifier => {
-    if (!ValidationUtils.hasRequiredProperties(value, [
-      'id',
-      'name',
-      'source',
-      'tier',
-    ])) {
+    if (
+      !ValidationUtils.hasRequiredProperties(value, [
+        'id',
+        'name',
+        'source',
+        'tier',
+      ])
+    ) {
       return false;
     }
 
@@ -142,7 +153,12 @@ export const DomainValidators = {
     return (
       ValidationUtils.isNonEmptyString(modifier.id) &&
       ValidationUtils.isNonEmptyString(modifier.name) &&
-      ['mission_success', 'decision_consequence', 'cultural_evolution', 'artifact_discovery'].includes(String(modifier.source)) &&
+      [
+        'mission_success',
+        'decision_consequence',
+        'cultural_evolution',
+        'artifact_discovery',
+      ].includes(String(modifier.source)) &&
       ['minor', 'moderate', 'major', 'legendary'].includes(modifier.tier)
     );
   },
@@ -151,13 +167,15 @@ export const DomainValidators = {
    * Validate LegacyCard
    */
   legacyCard: (value: unknown): value is LegacyCard => {
-    if (!ValidationUtils.hasRequiredProperties(value, [
-      'id',
-      'name',
-      'type',
-      'legacy',
-      'tier',
-    ])) {
+    if (
+      !ValidationUtils.hasRequiredProperties(value, [
+        'id',
+        'name',
+        'type',
+        'legacy',
+        'tier',
+      ])
+    ) {
       return false;
     }
 
@@ -166,7 +184,14 @@ export const DomainValidators = {
     return (
       ValidationUtils.isNonEmptyString(card.id) &&
       ValidationUtils.isNonEmptyString(card.name) &&
-      ['event', 'bonus', 'crisis', 'opportunity', 'memory', 'tradition'].includes(card.type) &&
+      [
+        'event',
+        'bonus',
+        'crisis',
+        'opportunity',
+        'memory',
+        'tradition',
+      ].includes(card.type) &&
       ['preservers', 'adaptors', 'wanderers'].includes(card.legacy) &&
       ['common', 'uncommon', 'rare', 'epic', 'legendary'].includes(card.tier)
     );
@@ -202,7 +227,9 @@ export const DomainValidators = {
     const pacingState = state as unknown as PacingState;
 
     return (
-      ['early_game', 'mid_game', 'late_game', 'end_game'].includes(pacingState.currentPhase) &&
+      ['early_game', 'mid_game', 'late_game', 'end_game'].includes(
+        pacingState.currentPhase
+      ) &&
       ValidationUtils.isPositiveNumber(pacingState.timeAcceleration) &&
       typeof pausedValue === 'boolean'
     );
@@ -400,9 +427,7 @@ export const sanitize = {
    * Sanitize filename
    */
   filename: (name: string, maxLength: number = 255): string => {
-    return name
-      .replace(/[^a-zA-Z0-9_-]/g, '')
-      .slice(0, maxLength);
+    return name.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, maxLength);
   },
 
   /**
@@ -428,4 +453,10 @@ export const sanitize = {
 /**
  * Export commonly used validators for convenience
  */
-export const { chronicleEntry, chronicleDecision, heritageModifier, legacyCard, pacingState } = validate;
+export const {
+  chronicleEntry,
+  chronicleDecision,
+  heritageModifier,
+  legacyCard,
+  pacingState,
+} = validate;

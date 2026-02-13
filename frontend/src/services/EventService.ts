@@ -4,13 +4,13 @@ import type {
   EventOutcome,
   PopulationEffect,
   GenerationalMission,
-  PopulationCohort
+  PopulationCohort,
 } from '../types/generationalMissions';
 import type {
   EventCategoryType,
   LegacyTypeType,
   MissionPhaseType,
-  CohortTypeType
+  CohortTypeType,
 } from '../types/enums';
 import { AutomationService } from './AutomationService';
 import Logger from '../utils/logger';
@@ -22,35 +22,47 @@ export class EventService {
     forceCategory?: EventCategoryType
   ): MissionEvent | null {
     const eventCategory = forceCategory || this.selectEventCategory(mission);
-    const eventTemplate = this.selectEventTemplate(eventCategory, mission.legacy, mission.currentPhase);
+    const eventTemplate = this.selectEventTemplate(
+      eventCategory,
+      mission.legacy,
+      mission.currentPhase
+    );
 
     if (!eventTemplate) return null;
 
     const event = this.createEventFromTemplate(eventTemplate, mission);
 
     // Determine if this event requires player intervention
-    event.requiresPlayerDecision = this.shouldRequirePlayerDecision(event, mission);
+    event.requiresPlayerDecision = this.shouldRequirePlayerDecision(
+      event,
+      mission
+    );
 
     Logger.info(`Generated event: ${event.title}`, {
       category: event.category,
       requiresPlayer: event.requiresPlayerDecision,
-      missionId: mission.id
+      missionId: mission.id,
     });
 
     return event;
   }
 
   // Select Event Category Based on Mission State
-  private static selectEventCategory(mission: GenerationalMission): EventCategoryType {
+  private static selectEventCategory(
+    mission: GenerationalMission
+  ): EventCategoryType {
     const weights = {
-      'immediate_crisis': this.calculateCrisisWeight(mission),
-      'generational_challenge': 0.3,
-      'mission_milestone': this.calculateMilestoneWeight(mission),
-      'legacy_moment': this.calculateLegacyWeight(mission)
+      immediate_crisis: this.calculateCrisisWeight(mission),
+      generational_challenge: 0.3,
+      mission_milestone: this.calculateMilestoneWeight(mission),
+      legacy_moment: this.calculateLegacyWeight(mission),
     };
 
     // Weighted random selection
-    const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
+    const totalWeight = Object.values(weights).reduce(
+      (sum, weight) => sum + weight,
+      0
+    );
     let random = Math.random() * totalWeight;
 
     for (const [category, weight] of Object.entries(weights)) {
@@ -87,7 +99,9 @@ export class EventService {
   }
 
   // Calculate Milestone Weight
-  private static calculateMilestoneWeight(mission: GenerationalMission): number {
+  private static calculateMilestoneWeight(
+    mission: GenerationalMission
+  ): number {
     const progress = mission.phaseProgress / 100;
 
     // Higher chance near phase transitions
@@ -103,7 +117,7 @@ export class EventService {
     const generationCount = Math.floor(mission.currentYear / 25);
 
     // Legacy moments more likely in later generations
-    return Math.min(0.1 + (generationCount * 0.05), 0.3);
+    return Math.min(0.1 + generationCount * 0.05, 0.3);
   }
 
   // Select Event Template
@@ -127,10 +141,12 @@ export class EventService {
   ): EventTemplate[] {
     const allTemplates = this.getAllEventTemplates();
 
-    return allTemplates.filter(template =>
-      template.category === category &&
-      (template.legacySpecific === null || template.legacySpecific === legacy) &&
-      template.validPhases.includes(phase)
+    return allTemplates.filter(
+      template =>
+        template.category === category &&
+        (template.legacySpecific === null ||
+          template.legacySpecific === legacy) &&
+        template.validPhases.includes(phase)
     );
   }
 
@@ -148,28 +164,34 @@ export class EventService {
       autoResolutionDelay: template.autoResolutionDelay,
       possibleOutcomes: template.outcomes.map(outcome => ({
         ...outcome,
-        description: this.processTemplateVariables(outcome.description, mission)
+        description: this.processTemplateVariables(
+          outcome.description,
+          mission
+        ),
       })),
       affectedCohorts: template.affectedCohorts,
       affectedDynasties: template.affectedDynasties,
       legacySpecific: template.legacySpecific,
       triggeredAt: Date.now(),
       resolvedAt: null,
-      generation: Math.floor(mission.currentYear / 25) + 1
+      generation: Math.floor(mission.currentYear / 25) + 1,
     };
 
     return event;
   }
 
   // Process Template Variables
-  private static processTemplateVariables(text: string, mission: GenerationalMission): string {
+  private static processTemplateVariables(
+    text: string,
+    mission: GenerationalMission
+  ): string {
     const variables: Record<string, string> = {
       '{SHIP_NAME}': mission.ship.name,
       '{YEAR}': mission.currentYear.toString(),
       '{GENERATION}': (Math.floor(mission.currentYear / 25) + 1).toString(),
       '{POPULATION}': mission.population.total.toString(),
       '{SECT}': mission.legacy,
-      '{PHASE}': mission.currentPhase
+      '{PHASE}': mission.currentPhase,
     };
 
     let result = text;
@@ -189,15 +211,18 @@ export class EventService {
     if (event.category === 'legacy_moment') return true;
 
     // Check automation config
-    if (AutomationService.shouldEscalateEvent(event, mission.automationConfig)) {
+    if (
+      AutomationService.shouldEscalateEvent(event, mission.automationConfig)
+    ) {
       return true;
     }
 
     // High impact events require player attention
-    const hasHighImpact = event.possibleOutcomes.some(outcome =>
-      Math.abs(outcome.resourceChanges.population || 0) > 1000 ||
-      Math.abs(outcome.resourceChanges.hullIntegrity || 0) > 0.2 ||
-      outcome.longTermConsequences.length > 0
+    const hasHighImpact = event.possibleOutcomes.some(
+      outcome =>
+        Math.abs(outcome.resourceChanges.population || 0) > 1000 ||
+        Math.abs(outcome.resourceChanges.hullIntegrity || 0) > 0.2 ||
+        outcome.longTermConsequences.length > 0
     );
 
     if (hasHighImpact) return true;
@@ -215,19 +240,22 @@ export class EventService {
       return {
         outcome: null,
         success: false,
-        message: 'No resolution options available'
+        message: 'No resolution options available',
       };
     }
 
     // AI chooses best outcome based on mission state
-    const chosenOutcome = this.selectBestOutcome(event.possibleOutcomes, mission);
+    const chosenOutcome = this.selectBestOutcome(
+      event.possibleOutcomes,
+      mission
+    );
     const resolution = this.applyEventOutcome(chosenOutcome, mission);
 
     event.resolvedAt = Date.now();
 
     Logger.info(`Auto-resolved event: ${event.title}`, {
       outcome: chosenOutcome.title,
-      missionId: mission.id
+      missionId: mission.id,
     });
 
     return resolution;
@@ -245,7 +273,7 @@ export class EventService {
       return {
         outcome: null,
         success: false,
-        message: 'Invalid outcome choice'
+        message: 'Invalid outcome choice',
       };
     }
 
@@ -254,7 +282,7 @@ export class EventService {
 
     Logger.info(`Player resolved event: ${event.title}`, {
       outcome: chosenOutcome.title,
-      missionId: mission.id
+      missionId: mission.id,
     });
 
     return resolution;
@@ -329,7 +357,10 @@ export class EventService {
     const resources = mission.resources as unknown as Record<string, unknown>;
     Object.entries(outcome.resourceChanges).forEach(([resource, change]) => {
       if (typeof change === 'number' && change !== 0) {
-        const oldValue = typeof resources[resource] === 'number' ? (resources[resource] as number) : 0;
+        const oldValue =
+          typeof resources[resource] === 'number'
+            ? (resources[resource] as number)
+            : 0;
         const newValue = Math.max(0, oldValue + change);
         resources[resource] = newValue;
 
@@ -339,24 +370,30 @@ export class EventService {
 
     // Apply population effects
     outcome.populationEffects.forEach(effect => {
-      const cohort = mission.population.cohorts.find(c => c.type === effect.cohortType);
+      const cohort = mission.population.cohorts.find(
+        c => c.type === effect.cohortType
+      );
       if (cohort) {
         this.applyPopulationEffect(cohort, effect);
-        effects.push(`${effect.cohortType} ${effect.effectType}: ${effect.description}`);
+        effects.push(
+          `${effect.cohortType} ${effect.effectType}: ${effect.description}`
+        );
       }
     });
 
     // Record long-term consequences
     if (outcome.longTermConsequences.length > 0) {
       // In a full implementation, these would be stored and affect future events
-      effects.push(`Long-term effects: ${outcome.longTermConsequences.join(', ')}`);
+      effects.push(
+        `Long-term effects: ${outcome.longTermConsequences.join(', ')}`
+      );
     }
 
     return {
       outcome,
       success: true,
       message: `Event resolved: ${outcome.title}`,
-      effects
+      effects,
     };
   }
 
@@ -370,10 +407,16 @@ export class EventService {
         cohort.count = Math.max(0, cohort.count + effect.magnitude);
         break;
       case 'effectiveness':
-        cohort.effectiveness = Math.max(0, Math.min(1, cohort.effectiveness + effect.magnitude));
+        cohort.effectiveness = Math.max(
+          0,
+          Math.min(1, cohort.effectiveness + effect.magnitude)
+        );
         break;
       case 'morale':
-        cohort.morale = Math.max(0, Math.min(100, cohort.morale + effect.magnitude));
+        cohort.morale = Math.max(
+          0,
+          Math.min(100, cohort.morale + effect.magnitude)
+        );
         break;
       case 'traits':
         // Add trait effect (would be more sophisticated in production)
@@ -389,7 +432,8 @@ export class EventService {
       {
         id: 'system_failure',
         title: 'Critical System Failure',
-        description: 'Multiple ship systems are failing simultaneously. Immediate action required.',
+        description:
+          'Multiple ship systems are failing simultaneously. Immediate action required.',
         category: 'immediate_crisis',
         legacySpecific: null,
         validPhases: ['travel', 'operation'],
@@ -404,12 +448,12 @@ export class EventService {
             resourceChanges: {
               hullIntegrity: 0.2,
               energy: -500,
-              spareParts: -200
+              spareParts: -200,
             },
             populationEffects: [],
             longTermConsequences: [],
             requirements: [],
-            legacyModifiers: { preservers: 0.1, adaptors: 0.2, wanderers: 0.0 }
+            legacyModifiers: { preservers: 0.1, adaptors: 0.2, wanderers: 0.0 },
           },
           {
             id: 'jury_rig_solution',
@@ -418,21 +462,26 @@ export class EventService {
             resourceChanges: {
               hullIntegrity: 0.1,
               energy: -200,
-              spareParts: -50
+              spareParts: -50,
             },
             populationEffects: [],
             longTermConsequences: ['Increased system instability'],
             requirements: [],
-            legacyModifiers: { preservers: -0.1, adaptors: 0.0, wanderers: 0.3 }
-          }
-        ]
+            legacyModifiers: {
+              preservers: -0.1,
+              adaptors: 0.0,
+              wanderers: 0.3,
+            },
+          },
+        ],
       },
 
       // Generational Challenge Events
       {
         id: 'population_growth',
         title: 'Population Boom',
-        description: 'Birth rates have increased significantly. Resources are being strained.',
+        description:
+          'Birth rates have increased significantly. Resources are being strained.',
         category: 'generational_challenge',
         legacySpecific: null,
         validPhases: ['travel', 'operation'],
@@ -448,17 +497,23 @@ export class EventService {
               population: 1000,
               energy: -800,
               minerals: -400,
-              food: -200
+              food: -200,
             },
-            populationEffects: [{
-              cohortType: 'general',
-              effectType: 'morale',
-              magnitude: 10,
-              description: 'Better living conditions'
-            }],
+            populationEffects: [
+              {
+                cohortType: 'general',
+                effectType: 'morale',
+                magnitude: 10,
+                description: 'Better living conditions',
+              },
+            ],
             longTermConsequences: [],
             requirements: [],
-            legacyModifiers: { preservers: 0.2, adaptors: 0.1, wanderers: -0.1 }
+            legacyModifiers: {
+              preservers: 0.2,
+              adaptors: 0.1,
+              wanderers: -0.1,
+            },
           },
           {
             id: 'population_control',
@@ -466,26 +521,33 @@ export class EventService {
             description: 'Establish policies to manage population growth',
             resourceChanges: {
               population: 200,
-              unity: -0.1
+              unity: -0.1,
             },
-            populationEffects: [{
-              cohortType: 'general',
-              effectType: 'morale',
-              magnitude: -15,
-              description: 'Restrictive policies'
-            }],
+            populationEffects: [
+              {
+                cohortType: 'general',
+                effectType: 'morale',
+                magnitude: -15,
+                description: 'Restrictive policies',
+              },
+            ],
             longTermConsequences: ['Social tension over reproductive rights'],
             requirements: [],
-            legacyModifiers: { preservers: -0.2, adaptors: 0.1, wanderers: 0.0 }
-          }
-        ]
+            legacyModifiers: {
+              preservers: -0.2,
+              adaptors: 0.1,
+              wanderers: 0.0,
+            },
+          },
+        ],
       },
 
       // Mission Milestone Events
       {
         id: 'arrival_at_target',
         title: 'Arrival at Target System',
-        description: 'After {YEAR} years of travel, we have reached our destination.',
+        description:
+          'After {YEAR} years of travel, we have reached our destination.',
         category: 'mission_milestone',
         legacySpecific: null,
         validPhases: ['travel'],
@@ -500,26 +562,29 @@ export class EventService {
             resourceChanges: {
               missionProgress: 15,
               energy: -300,
-              researchData: 500
+              researchData: 500,
             },
-            populationEffects: [{
-              cohortType: 'scholars',
-              effectType: 'morale',
-              magnitude: 20,
-              description: 'Excitement over discoveries'
-            }],
+            populationEffects: [
+              {
+                cohortType: 'scholars',
+                effectType: 'morale',
+                magnitude: 20,
+                description: 'Excitement over discoveries',
+              },
+            ],
             longTermConsequences: [],
             requirements: [],
-            legacyModifiers: { preservers: 0.0, adaptors: 0.1, wanderers: 0.2 }
-          }
-        ]
+            legacyModifiers: { preservers: 0.0, adaptors: 0.1, wanderers: 0.2 },
+          },
+        ],
       },
 
       // Legacy Moment Events
       {
         id: 'cultural_schism',
         title: 'Cultural Schism',
-        description: 'A fundamental disagreement about mission direction has divided the population.',
+        description:
+          'A fundamental disagreement about mission direction has divided the population.',
         category: 'legacy_moment',
         legacySpecific: 'preservers',
         validPhases: ['travel', 'operation'],
@@ -532,37 +597,45 @@ export class EventService {
             title: 'Preserve Traditional Ways',
             description: 'Maintain cultural purity despite challenges',
             resourceChanges: {
-              unity: -0.2
+              unity: -0.2,
             },
-            populationEffects: [{
-              cohortType: 'leaders',
-              effectType: 'morale',
-              magnitude: -10,
-              description: 'Resistance to change'
-            }],
+            populationEffects: [
+              {
+                cohortType: 'leaders',
+                effectType: 'morale',
+                magnitude: -10,
+                description: 'Resistance to change',
+              },
+            ],
             longTermConsequences: ['Increased resistance to adaptation'],
             requirements: [],
-            legacyModifiers: { preservers: 0.3, adaptors: 0.0, wanderers: 0.0 }
+            legacyModifiers: { preservers: 0.3, adaptors: 0.0, wanderers: 0.0 },
           },
           {
             id: 'cultural_adaptation',
             title: 'Allow Cultural Evolution',
             description: 'Permit society to adapt to new circumstances',
             resourceChanges: {
-              unity: 0.1
+              unity: 0.1,
             },
-            populationEffects: [{
-              cohortType: 'general',
-              effectType: 'morale',
-              magnitude: 5,
-              description: 'Embrace of change'
-            }],
+            populationEffects: [
+              {
+                cohortType: 'general',
+                effectType: 'morale',
+                magnitude: 5,
+                description: 'Embrace of change',
+              },
+            ],
             longTermConsequences: ['Permanent cultural shift'],
             requirements: [],
-            legacyModifiers: { preservers: -0.2, adaptors: 0.2, wanderers: 0.1 }
-          }
-        ]
-      }
+            legacyModifiers: {
+              preservers: -0.2,
+              adaptors: 0.2,
+              wanderers: 0.1,
+            },
+          },
+        ],
+      },
     ];
   }
 }

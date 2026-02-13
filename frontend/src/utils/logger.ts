@@ -3,10 +3,10 @@ const LogLevel = {
   DEBUG: 0,
   INFO: 1,
   WARN: 2,
-  ERROR: 3
+  ERROR: 3,
 } as const;
 
-type LogLevelType = typeof LogLevel[keyof typeof LogLevel];
+type LogLevelType = (typeof LogLevel)[keyof typeof LogLevel];
 
 class Logger {
   private static level: LogLevelType = LogLevel.INFO;
@@ -44,7 +44,9 @@ class Logger {
   }
 
   static resourceChange(resource: string, amount: number, reason: string) {
-    this.debug(`Resource Change: ${resource} ${amount > 0 ? '+' : ''}${amount} (${reason})`);
+    this.debug(
+      `Resource Change: ${resource} ${amount > 0 ? '+' : ''}${amount} (${reason})`
+    );
   }
 
   static crewAction(action: string, crewName: string, data?: unknown) {

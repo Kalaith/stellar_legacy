@@ -30,7 +30,10 @@ export class ServiceError extends Error {
 
     // Maintain proper stack trace in Node.js environments
     const errorCtor = Error as ErrorConstructor & {
-      captureStackTrace?: (target: object, constructorOpt?: (...args: unknown[]) => unknown) => void;
+      captureStackTrace?: (
+        target: object,
+        constructorOpt?: (...args: unknown[]) => unknown
+      ) => void;
     };
     if (typeof errorCtor.captureStackTrace === 'function') {
       errorCtor.captureStackTrace(this, ServiceError);
@@ -122,19 +125,23 @@ export const ResultHelpers = {
   /**
    * Convert a potentially throwing function to return a Result
    */
-  fromThrowable: <T>(fn: () => T, context?: Record<string, unknown>): Result<T> => {
+  fromThrowable: <T>(
+    fn: () => T,
+    context?: Record<string, unknown>
+  ): Result<T> => {
     try {
       const data = fn();
       return ResultHelpers.success(data);
     } catch (error) {
-      const serviceError = error instanceof ServiceError
-        ? error
-        : new ServiceError(
-            'Operation failed',
-            errorCodes.OPERATION_FAILED,
-            context,
-            error instanceof Error ? error : new Error(String(error))
-          );
+      const serviceError =
+        error instanceof ServiceError
+          ? error
+          : new ServiceError(
+              'Operation failed',
+              errorCodes.OPERATION_FAILED,
+              context,
+              error instanceof Error ? error : new Error(String(error))
+            );
 
       return ResultHelpers.errorWithCause(serviceError);
     }
@@ -151,14 +158,15 @@ export const ResultHelpers = {
       const data = await promise;
       return ResultHelpers.success(data);
     } catch (error) {
-      const serviceError = error instanceof ServiceError
-        ? error
-        : new ServiceError(
-            'Async operation failed',
-            errorCodes.OPERATION_FAILED,
-            context,
-            error instanceof Error ? error : new Error(String(error))
-          );
+      const serviceError =
+        error instanceof ServiceError
+          ? error
+          : new ServiceError(
+              'Async operation failed',
+              errorCodes.OPERATION_FAILED,
+              context,
+              error instanceof Error ? error : new Error(String(error))
+            );
 
       return ResultHelpers.errorWithCause(serviceError);
     }
@@ -168,11 +176,15 @@ export const ResultHelpers = {
 /**
  * Type guards for Result types
  */
-export const isSuccess = <T, E>(result: Result<T, E>): result is { success: true; data: T } => {
+export const isSuccess = <T, E>(
+  result: Result<T, E>
+): result is { success: true; data: T } => {
   return result.success;
 };
 
-export const isError = <T, E>(result: Result<T, E>): result is { success: false; error: E } => {
+export const isError = <T, E>(
+  result: Result<T, E>
+): result is { success: false; error: E } => {
   return !result.success;
 };
 
@@ -209,9 +221,9 @@ export const ResultUtils = {
   /**
    * Combine multiple Results - fails if any fail
    */
-  combine: <T extends readonly unknown[]>(
-    results: { [K in keyof T]: Result<T[K], ServiceError> }
-  ): Result<T, ServiceError> => {
+  combine: <T extends readonly unknown[]>(results: {
+    [K in keyof T]: Result<T[K], ServiceError>;
+  }): Result<T, ServiceError> => {
     const data: unknown[] = [];
 
     for (const result of results) {

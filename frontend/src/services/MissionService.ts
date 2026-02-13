@@ -8,14 +8,14 @@ import type {
   Population,
   SuccessMetric,
   FailureRisk,
-  Milestone
+  Milestone,
 } from '../types/generationalMissions';
 import type {
   LegacyTypeType,
   MissionObjectiveType,
   ShipClassType,
   ShipSizeType,
-  CohortTypeType
+  CohortTypeType,
 } from '../types/enums';
 import { DynastyService } from './DynastyService';
 import { AutomationService } from './AutomationService';
@@ -29,7 +29,9 @@ export class MissionService {
     const ship = this.createGenerationalShip(config);
     const population = this.createMissionPopulation(config);
     const resources = this.createInitialResources(config);
-    const automationConfig = AutomationService.createDefaultAutomationConfig(config.legacy);
+    const automationConfig = AutomationService.createDefaultAutomationConfig(
+      config.legacy
+    );
 
     // Assign council positions
     automationConfig.councilMembers = AutomationService.assignCouncilPositions(
@@ -76,20 +78,22 @@ export class MissionService {
       // Victory Conditions
       isCompleted: false,
       successLevel: null,
-      finalRewards: {}
+      finalRewards: {},
     };
 
     Logger.info(`Created generational mission: ${mission.name}`, {
       legacy: mission.legacy,
       objective: mission.objective,
-      population: mission.population.total
+      population: mission.population.total,
     });
 
     return mission;
   }
 
   // Create Generational Ship
-  private static createGenerationalShip(config: MissionCreationConfig): GenerationalShip {
+  private static createGenerationalShip(
+    config: MissionCreationConfig
+  ): GenerationalShip {
     return {
       id: `ship_${Date.now()}`,
       name: config.shipName || this.generateShipName(config.legacy),
@@ -101,7 +105,7 @@ export class MissionService {
       systemsEfficiency: 0.9,
       legacyModifications: this.getLegacyModifications(config.legacy),
       aiSystems: this.getAISystems(config.legacy),
-      automationLevel: 0.8
+      automationLevel: 0.8,
     };
   }
 
@@ -109,17 +113,41 @@ export class MissionService {
   private static generateShipName(legacy: LegacyTypeType): string {
     const names = {
       preservers: [
-        'Heritage', 'Legacy', 'Tradition', 'Foundation', 'Covenant',
-        'Monument', 'Memorial', 'Archive', 'Chronicle', 'Testament'
+        'Heritage',
+        'Legacy',
+        'Tradition',
+        'Foundation',
+        'Covenant',
+        'Monument',
+        'Memorial',
+        'Archive',
+        'Chronicle',
+        'Testament',
       ],
       adaptors: [
-        'Evolution', 'Synthesis', 'Metamorphosis', 'Genesis', 'Prototype',
-        'Mutation', 'Adaptation', 'Catalyst', 'Transformation', 'Emergence'
+        'Evolution',
+        'Synthesis',
+        'Metamorphosis',
+        'Genesis',
+        'Prototype',
+        'Mutation',
+        'Adaptation',
+        'Catalyst',
+        'Transformation',
+        'Emergence',
       ],
       wanderers: [
-        'Nomad', 'Drifter', 'Pathfinder', 'Voyager', 'Wanderer',
-        'Pioneer', 'Explorer', 'Vagrant', 'Roamer', 'Odyssey'
-      ]
+        'Nomad',
+        'Drifter',
+        'Pathfinder',
+        'Voyager',
+        'Wanderer',
+        'Pioneer',
+        'Explorer',
+        'Vagrant',
+        'Roamer',
+        'Odyssey',
+      ],
     };
 
     const legacyNames = names[legacy];
@@ -135,19 +163,33 @@ export class MissionService {
       medium: 15000,
       large: 30000,
       massive: 50000,
-      gigantic: 80000
+      gigantic: 80000,
     };
 
     return capacities[size];
   }
 
   // Get Legacy Modifications
-  private static getLegacyModifications(legacy: LegacyTypeType): LegacyModification[] {
+  private static getLegacyModifications(
+    legacy: LegacyTypeType
+  ): LegacyModification[] {
     // Would return actual SectModification objects in full implementation
     const modifications = {
-      preservers: ['Cultural Preservation Protocols', 'Traditional Life Support', 'Heritage Archives'],
-      adaptors: ['Biological Integration Systems', 'Genetic Modification Labs', 'Adaptive Life Support'],
-      wanderers: ['Modular Fleet Configuration', 'Extended Range Systems', 'Resource Conservation Protocols']
+      preservers: [
+        'Cultural Preservation Protocols',
+        'Traditional Life Support',
+        'Heritage Archives',
+      ],
+      adaptors: [
+        'Biological Integration Systems',
+        'Genetic Modification Labs',
+        'Adaptive Life Support',
+      ],
+      wanderers: [
+        'Modular Fleet Configuration',
+        'Extended Range Systems',
+        'Resource Conservation Protocols',
+      ],
     };
 
     return modifications[legacy].map((name, index) => ({
@@ -156,28 +198,51 @@ export class MissionService {
       legacy,
       description: `${legacy}-specific modification: ${name}`,
       effects: {},
-      unlockRequirements: []
+      unlockRequirements: [],
     }));
   }
 
   // Get AI Systems
   private static getAISystems(legacy: LegacyTypeType): string[] {
     const systems = {
-      preservers: ['Cultural Archive AI', 'Tradition Compliance Monitor', 'Heritage Preservation System'],
-      adaptors: ['Evolution Guidance AI', 'Adaptation Controller', 'Enhancement Risk Assessor'],
-      wanderers: ['Navigation Coordinator', 'Resource Optimizer', 'Fleet Cohesion Monitor']
+      preservers: [
+        'Cultural Archive AI',
+        'Tradition Compliance Monitor',
+        'Heritage Preservation System',
+      ],
+      adaptors: [
+        'Evolution Guidance AI',
+        'Adaptation Controller',
+        'Enhancement Risk Assessor',
+      ],
+      wanderers: [
+        'Navigation Coordinator',
+        'Resource Optimizer',
+        'Fleet Cohesion Monitor',
+      ],
     };
 
     return systems[legacy];
   }
 
   // Create Mission Population
-  private static createMissionPopulation(config: MissionCreationConfig): Population {
-    const dynasties = DynastyService.generateInitialDynasties(config.legacy, config.populationSize);
-    const cohorts = this.createPopulationCohorts(config.populationSize, config.legacy);
+  private static createMissionPopulation(
+    config: MissionCreationConfig
+  ): Population {
+    const dynasties = DynastyService.generateInitialDynasties(
+      config.legacy,
+      config.populationSize
+    );
+    const cohorts = this.createPopulationCohorts(
+      config.populationSize,
+      config.legacy
+    );
 
     // Apply dynasty effects to cohorts
-    const enhancedCohorts = DynastyService.assignDynasTiesToCohorts(dynasties, cohorts);
+    const enhancedCohorts = DynastyService.assignDynasTiesToCohorts(
+      dynasties,
+      cohorts
+    );
 
     return {
       total: config.populationSize,
@@ -197,28 +262,31 @@ export class MissionService {
       // Demographics
       birthRate: 0.02,
       deathRate: 0.015,
-      avgAge: 35
+      avgAge: 35,
     };
   }
 
   // Create Population Cohorts
-  private static createPopulationCohorts(populationSize: number, legacy: LegacyTypeType): PopulationCohort[] {
+  private static createPopulationCohorts(
+    populationSize: number,
+    legacy: LegacyTypeType
+  ): PopulationCohort[] {
     const distributions = {
       preservers: {
         engineers: 0.15,
         farmers: 0.25,
-        scholars: 0.20,
-        security: 0.10,
+        scholars: 0.2,
+        security: 0.1,
         leaders: 0.05,
-        general: 0.25
+        general: 0.25,
       },
       adaptors: {
-        engineers: 0.20,
+        engineers: 0.2,
         farmers: 0.15,
         scholars: 0.25,
         security: 0.08,
         leaders: 0.07,
-        general: 0.25
+        general: 0.25,
       },
       wanderers: {
         engineers: 0.18,
@@ -226,8 +294,8 @@ export class MissionService {
         scholars: 0.15,
         security: 0.15,
         leaders: 0.08,
-        general: 0.32
-      }
+        general: 0.32,
+      },
     };
 
     const distribution = distributions[legacy];
@@ -240,7 +308,7 @@ export class MissionService {
         effectiveness: 0.7 + Math.random() * 0.2, // 0.7-0.9
         generation: 1,
         specialTraits: [],
-        morale: 70 + Math.random() * 20 // 70-90
+        morale: 70 + Math.random() * 20, // 70-90
       });
     });
 
@@ -248,13 +316,15 @@ export class MissionService {
   }
 
   // Create Initial Resources
-  private static createInitialResources(config: MissionCreationConfig): ExtendedResources {
+  private static createInitialResources(
+    config: MissionCreationConfig
+  ): ExtendedResources {
     const baseResources = {
       credits: 50000,
       energy: 10000,
       minerals: 5000,
       food: 8000,
-      influence: 1000
+      influence: 1000,
     };
 
     // Scale by population size
@@ -289,7 +359,7 @@ export class MissionService {
 
       // Legacy-Specific
       culturalDrift: 0.1,
-      adaptationLevel: config.legacy === 'adaptors' ? 0.2 : 0.05
+      adaptationLevel: config.legacy === 'adaptors' ? 0.2 : 0.05,
     };
   }
 
@@ -297,21 +367,26 @@ export class MissionService {
   private static calculateInitialProduction(
     population: Population
   ): Partial<ExtendedResources> {
-    const farmerCount = population.cohorts.find(c => c.type === 'farmers')?.count || 0;
-    const engineerCount = population.cohorts.find(c => c.type === 'engineers')?.count || 0;
-    const scholarCount = population.cohorts.find(c => c.type === 'scholars')?.count || 0;
+    const farmerCount =
+      population.cohorts.find(c => c.type === 'farmers')?.count || 0;
+    const engineerCount =
+      population.cohorts.find(c => c.type === 'engineers')?.count || 0;
+    const scholarCount =
+      population.cohorts.find(c => c.type === 'scholars')?.count || 0;
 
     return {
       food: Math.floor(farmerCount * 0.5),
       energy: Math.floor(engineerCount * 0.3),
       knowledge: Math.floor(scholarCount * 0.2),
       spareParts: Math.floor(engineerCount * 0.1),
-      credits: Math.floor(population.total * 0.01) // Base economic activity
+      credits: Math.floor(population.total * 0.01), // Base economic activity
     };
   }
 
   // Create Mission Milestones
-  private static createMissionMilestones(config: MissionCreationConfig): Milestone[] {
+  private static createMissionMilestones(
+    config: MissionCreationConfig
+  ): Milestone[] {
     const milestones: Milestone[] = [
       {
         id: 'launch',
@@ -320,7 +395,7 @@ export class MissionService {
         phase: 'preparation',
         isCompleted: false,
         completedAt: null,
-        rewards: { morale: 0.1, unity: 0.05 }
+        rewards: { morale: 0.1, unity: 0.05 },
       },
       {
         id: 'deep_space',
@@ -329,8 +404,8 @@ export class MissionService {
         phase: 'travel',
         isCompleted: false,
         completedAt: null,
-        rewards: { knowledge: 200, technology: 100 }
-      }
+        rewards: { knowledge: 200, technology: 100 },
+      },
     ];
 
     // Add objective-specific milestones
@@ -344,7 +419,7 @@ export class MissionService {
             phase: 'operation',
             isCompleted: false,
             completedAt: null,
-            rewards: { researchData: 1000, knowledge: 500 }
+            rewards: { researchData: 1000, knowledge: 500 },
           },
           {
             id: 'colony_established',
@@ -353,7 +428,7 @@ export class MissionService {
             phase: 'operation',
             isCompleted: false,
             completedAt: null,
-            rewards: { influence: 2000, credits: 50000 }
+            rewards: { influence: 2000, credits: 50000 },
           }
         );
         break;
@@ -367,7 +442,7 @@ export class MissionService {
             phase: 'operation',
             isCompleted: false,
             completedAt: null,
-            rewards: { extractedResources: 5000, minerals: 2000 }
+            rewards: { extractedResources: 5000, minerals: 2000 },
           },
           {
             id: 'resource_quota',
@@ -376,7 +451,7 @@ export class MissionService {
             phase: 'operation',
             isCompleted: false,
             completedAt: null,
-            rewards: { extractedResources: 20000, credits: 100000 }
+            rewards: { extractedResources: 20000, credits: 100000 },
           }
         );
         break;
@@ -390,7 +465,7 @@ export class MissionService {
             phase: 'operation',
             isCompleted: false,
             completedAt: null,
-            rewards: { researchData: 2000, knowledge: 1000 }
+            rewards: { researchData: 2000, knowledge: 1000 },
           },
           {
             id: 'discovery_made',
@@ -399,7 +474,7 @@ export class MissionService {
             phase: 'operation',
             isCompleted: false,
             completedAt: null,
-            rewards: { technology: 1000, influence: 1500 }
+            rewards: { technology: 1000, influence: 1500 },
           }
         );
         break;
@@ -409,36 +484,38 @@ export class MissionService {
   }
 
   // Create Success Metrics
-  private static createSuccessMetrics(config: MissionCreationConfig): SuccessMetric[] {
+  private static createSuccessMetrics(
+    config: MissionCreationConfig
+  ): SuccessMetric[] {
     const baseMetrics: SuccessMetric[] = [
       {
         id: 'population_survival',
         name: 'Population Survival',
         currentValue: 100,
         targetValue: 90, // 90% survival rate
-        weight: 0.4
+        weight: 0.4,
       },
       {
         id: 'mission_completion',
         name: 'Mission Objective Completion',
         currentValue: 0,
         targetValue: 100,
-        weight: 0.3
+        weight: 0.3,
       },
       {
         id: 'resource_efficiency',
         name: 'Resource Management',
         currentValue: 100,
         targetValue: 80, // Maintain 80% of starting resources
-        weight: 0.2
+        weight: 0.2,
       },
       {
         id: 'social_cohesion',
         name: 'Social Unity',
         currentValue: 80,
         targetValue: 60, // Maintain social unity above 60%
-        weight: 0.1
-      }
+        weight: 0.1,
+      },
     ];
 
     // Add objective-specific metrics
@@ -449,7 +526,7 @@ export class MissionService {
           name: 'Colony Self-Sufficiency',
           currentValue: 0,
           targetValue: 100,
-          weight: 0.25
+          weight: 0.25,
         });
         break;
 
@@ -459,7 +536,7 @@ export class MissionService {
           name: 'Resource Extraction Target',
           currentValue: 0,
           targetValue: 100,
-          weight: 0.25
+          weight: 0.25,
         });
         break;
 
@@ -469,7 +546,7 @@ export class MissionService {
           name: 'Scientific Discovery Value',
           currentValue: 0,
           targetValue: 100,
-          weight: 0.25
+          weight: 0.25,
         });
         break;
     }
@@ -478,32 +555,46 @@ export class MissionService {
   }
 
   // Create Failure Risks
-  private static createFailureRisks(config: MissionCreationConfig): FailureRisk[] {
+  private static createFailureRisks(
+    config: MissionCreationConfig
+  ): FailureRisk[] {
     const risks: FailureRisk[] = [
       {
         id: 'system_cascade_failure',
         name: 'System Cascade Failure',
         probability: 0.05,
         severity: 0.9,
-        mitigation: ['Regular maintenance', 'Redundant systems', 'Emergency protocols'],
-        isActive: true
+        mitigation: [
+          'Regular maintenance',
+          'Redundant systems',
+          'Emergency protocols',
+        ],
+        isActive: true,
       },
       {
         id: 'population_unrest',
         name: 'Social Uprising',
         probability: 0.15,
         severity: 0.6,
-        mitigation: ['Maintain morale', 'Fair resource distribution', 'Cultural programs'],
-        isActive: true
+        mitigation: [
+          'Maintain morale',
+          'Fair resource distribution',
+          'Cultural programs',
+        ],
+        isActive: true,
       },
       {
         id: 'resource_depletion',
         name: 'Critical Resource Shortage',
         probability: 0.2,
         severity: 0.7,
-        mitigation: ['Resource monitoring', 'Recycling systems', 'Emergency reserves'],
-        isActive: true
-      }
+        mitigation: [
+          'Resource monitoring',
+          'Recycling systems',
+          'Emergency reserves',
+        ],
+        isActive: true,
+      },
     ];
 
     // Add legacy-specific risks
@@ -514,8 +605,12 @@ export class MissionService {
           name: 'Cultural Identity Loss',
           probability: 0.1,
           severity: 0.8,
-          mitigation: ['Cultural education', 'Tradition maintenance', 'Elder councils'],
-          isActive: true
+          mitigation: [
+            'Cultural education',
+            'Tradition maintenance',
+            'Elder councils',
+          ],
+          isActive: true,
         });
         break;
 
@@ -525,8 +620,12 @@ export class MissionService {
           name: 'Enhancement Failure Cascade',
           probability: 0.25,
           severity: 0.7,
-          mitigation: ['Careful testing', 'Medical monitoring', 'Reversal protocols'],
-          isActive: true
+          mitigation: [
+            'Careful testing',
+            'Medical monitoring',
+            'Reversal protocols',
+          ],
+          isActive: true,
         });
         break;
 
@@ -536,8 +635,12 @@ export class MissionService {
           name: 'Fleet Separation',
           probability: 0.3,
           severity: 0.9,
-          mitigation: ['Communication systems', 'Unity programs', 'Resource sharing'],
-          isActive: true
+          mitigation: [
+            'Communication systems',
+            'Unity programs',
+            'Resource sharing',
+          ],
+          isActive: true,
         });
         break;
     }
@@ -546,7 +649,10 @@ export class MissionService {
   }
 
   // Process Mission Turn (Time Advancement)
-  static processMissionTurn(mission: GenerationalMission, yearsElapsed: number = 1): MissionUpdateResult {
+  static processMissionTurn(
+    mission: GenerationalMission,
+    yearsElapsed: number = 1
+  ): MissionUpdateResult {
     const updates: string[] = [];
 
     // Advance mission time
@@ -559,11 +665,14 @@ export class MissionService {
     this.processPopulationChanges(mission, yearsElapsed, updates);
 
     // Process automation decisions
-    const aiDecisions = AutomationService.processAutomatedDecisions(mission, yearsElapsed);
+    const aiDecisions = AutomationService.processAutomatedDecisions(
+      mission,
+      yearsElapsed
+    );
     updates.push(...aiDecisions.map(d => `AI Decision: ${d.decision}`));
 
     // Generate events
-    const eventChance = 0.3 + (yearsElapsed * 0.1); // Higher chance for longer time periods
+    const eventChance = 0.3 + yearsElapsed * 0.1; // Higher chance for longer time periods
     if (Math.random() < eventChance) {
       const event = EventService.generateEvent(mission);
       if (event) {
@@ -572,11 +681,16 @@ export class MissionService {
 
         // Auto-resolve if not requiring player decision
         if (!event.requiresPlayerDecision && event.autoResolutionDelay <= 0) {
-          const resolution = EventService.resolveEventAutomatically(event, mission);
+          const resolution = EventService.resolveEventAutomatically(
+            event,
+            mission
+          );
           if (resolution.success) {
             updates.push(`Auto-resolved: ${event.title}`);
             mission.eventHistory.push(event);
-            mission.activeEvents = mission.activeEvents.filter(e => e.id !== event.id);
+            mission.activeEvents = mission.activeEvents.filter(
+              e => e.id !== event.id
+            );
           }
         }
       }
@@ -597,13 +711,15 @@ export class MissionService {
     Logger.info(`Processed mission turn for ${mission.name}`, {
       yearsElapsed,
       currentYear: mission.currentYear,
-      updates: updates.length
+      updates: updates.length,
     });
 
     return {
       mission,
       updates,
-      requiresPlayerAttention: mission.activeEvents.some(e => e.requiresPlayerDecision) || failureCheck.isAtRisk
+      requiresPlayerAttention:
+        mission.activeEvents.some(e => e.requiresPlayerDecision) ||
+        failureCheck.isAtRisk,
     };
   }
 
@@ -613,7 +729,9 @@ export class MissionService {
     yearsElapsed: number,
     updates: string[]
   ): void {
-    (Object.keys(mission.productionRates) as Array<keyof ExtendedResources>).forEach((resource) => {
+    (
+      Object.keys(mission.productionRates) as Array<keyof ExtendedResources>
+    ).forEach(resource => {
       const rate = mission.productionRates[resource];
       if (typeof rate !== 'number') return;
 
@@ -642,7 +760,9 @@ export class MissionService {
     if (totalChange !== 0) {
       population.total = Math.max(0, population.total + totalChange);
       mission.resources.population = population.total;
-      updates.push(`Population ${totalChange > 0 ? 'grew' : 'declined'} by ${Math.abs(totalChange)}`);
+      updates.push(
+        `Population ${totalChange > 0 ? 'grew' : 'declined'} by ${Math.abs(totalChange)}`
+      );
     }
 
     // Age dynasties
@@ -664,7 +784,8 @@ export class MissionService {
         case 'population_survival': {
           // Calculate survival rate based on starting population
           const initialPopulation = mission.ship.populationCapacity; // Approximation
-          metric.currentValue = (mission.population.total / initialPopulation) * 100;
+          metric.currentValue =
+            (mission.population.total / initialPopulation) * 100;
           break;
         }
 
@@ -691,7 +812,10 @@ export class MissionService {
   }
 
   // Check Mission Completion
-  private static checkMissionCompletion(mission: GenerationalMission, updates: string[]): void {
+  private static checkMissionCompletion(
+    mission: GenerationalMission,
+    updates: string[]
+  ): void {
     if (mission.isCompleted) return;
 
     // Check if mission duration exceeded
@@ -714,10 +838,12 @@ export class MissionService {
   }
 
   // Calculate Overall Success Score
-  private static calculateOverallSuccessScore(mission: GenerationalMission): number {
+  private static calculateOverallSuccessScore(
+    mission: GenerationalMission
+  ): number {
     return mission.successMetrics.reduce((totalScore, metric) => {
       const achievement = Math.min(1, metric.currentValue / metric.targetValue);
-      return totalScore + (achievement * metric.weight);
+      return totalScore + achievement * metric.weight;
     }, 0);
   }
 }

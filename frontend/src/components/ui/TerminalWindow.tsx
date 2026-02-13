@@ -20,7 +20,7 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
   isActive = true,
   isCollapsible = false,
   onClose,
-  fullScreen = false
+  fullScreen = false,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -39,14 +39,17 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
   const borderLength = Math.max(50, titleLength + 10);
 
   return (
-    <div className={`terminal-window ${isActive ? 'active' : 'inactive'} ${fullScreen ? 'fullscreen' : ''} ${className}`}>
+    <div
+      className={`terminal-window ${isActive ? 'active' : 'inactive'} ${fullScreen ? 'fullscreen' : ''} ${className}`}
+    >
       {/* Terminal Header */}
       <div className="terminal-header">
         <div
           ref={titleRef}
           className={`terminal-title-bar ${isTyping ? 'terminal-typing' : ''}`}
         >
-          ┌─[{title.toUpperCase()}]{generateBorder(borderLength - titleLength - 4)}┐
+          ┌─[{title.toUpperCase()}]
+          {generateBorder(borderLength - titleLength - 4)}┐
         </div>
 
         {statusLine && (
@@ -68,7 +71,6 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
               [{isCollapsed ? '+' : '-'}]
             </button>
           )}
-
           {onClose && (
             <button
               onClick={onClose}
@@ -78,7 +80,6 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
               [X]
             </button>
           )}
-
           {' '.repeat(Math.max(0, borderLength - 15))} │
         </div>
 
@@ -88,17 +89,11 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
       </div>
 
       {/* Terminal Content */}
-      {!isCollapsed && (
-        <div className="terminal-content">
-          {children}
-        </div>
-      )}
+      {!isCollapsed && <div className="terminal-content">{children}</div>}
 
       {/* Terminal Footer */}
       {!isCollapsed && (
-        <div className="terminal-footer">
-          └{generateBorder(borderLength)}┘
-        </div>
+        <div className="terminal-footer">└{generateBorder(borderLength)}┘</div>
       )}
     </div>
   );
@@ -106,7 +101,14 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
 
 interface TerminalTextProps {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'dim' | 'bright';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'warning'
+    | 'error'
+    | 'dim'
+    | 'bright';
   className?: string;
   glow?: boolean;
   typing?: boolean;
@@ -117,15 +119,17 @@ export const TerminalText: React.FC<TerminalTextProps> = ({
   variant = 'primary',
   className = '',
   glow = false,
-  typing = false
+  typing = false,
 }) => {
   const classes = [
     'terminal-text',
     variant,
     glow && 'terminal-glow-pulse',
     typing && 'terminal-typing',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return <span className={classes}>{children}</span>;
 };
@@ -145,21 +149,14 @@ export const TerminalButton: React.FC<TerminalButtonProps> = ({
   variant = 'primary',
   disabled = false,
   className = '',
-  fullWidth = false
+  fullWidth = false,
 }) => {
-  const classes = [
-    'terminal-button',
-    variant,
-    fullWidth && 'w-full',
-    className
-  ].filter(Boolean).join(' ');
+  const classes = ['terminal-button', variant, fullWidth && 'w-full', className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <button
-      className={classes}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <button className={classes} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );
@@ -182,7 +179,7 @@ export const TerminalInput: React.FC<TerminalInputProps> = ({
   type = 'text',
   className = '',
   disabled = false,
-  promptPrefix = '>'
+  promptPrefix = '>',
 }) => {
   return (
     <div className={`terminal-input-wrapper ${className}`}>
@@ -190,7 +187,7 @@ export const TerminalInput: React.FC<TerminalInputProps> = ({
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
         className="terminal-input"
@@ -212,12 +209,12 @@ export const TerminalSelect: React.FC<TerminalSelectProps> = ({
   onChange,
   options,
   className = '',
-  disabled = false
+  disabled = false,
 }) => {
   return (
     <select
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
       disabled={disabled}
       className={`terminal-select ${className}`}
     >
@@ -247,7 +244,7 @@ export const TerminalProgress: React.FC<TerminalProgressProps> = ({
   variant = 'primary',
   showText = true,
   ascii = false,
-  className = ''
+  className = '',
 }) => {
   const percentage = Math.min(100, (value / max) * 100);
 
@@ -269,18 +266,14 @@ export const TerminalProgress: React.FC<TerminalProgressProps> = ({
 
   return (
     <div className={`terminal-progress ${variant} ${className}`}>
-      {label && (
-        <div className="terminal-text mb-1">{label}</div>
-      )}
+      {label && <div className="terminal-text mb-1">{label}</div>}
       <div className="terminal-progress-container">
         <div
           className={`terminal-progress-bar ${variant}`}
           style={{ width: `${percentage}%` }}
         />
         {showText && (
-          <div className="terminal-progress-text">
-            {percentage.toFixed(1)}%
-          </div>
+          <div className="terminal-progress-text">{percentage.toFixed(1)}%</div>
         )}
       </div>
     </div>
@@ -298,7 +291,7 @@ export const TerminalTable: React.FC<TerminalTableProps> = ({
   headers,
   rows,
   className = '',
-  zebra = false
+  zebra = false,
 }) => {
   return (
     <table className={`terminal-table ${zebra ? 'zebra' : ''} ${className}`}>
@@ -335,7 +328,7 @@ export const TerminalList: React.FC<TerminalListProps> = ({
   className = '',
   selectable = false,
   selectedIndex,
-  onItemClick
+  onItemClick,
 }) => {
   return (
     <ul className={`terminal-list ${className}`}>
@@ -377,8 +370,8 @@ export const TerminalBoot: React.FC<TerminalBootProps> = ({
     'INITIALIZING SHIP SYSTEMS...',
     'LOADING NAVIGATION PROTOCOLS...',
     'ESTABLISHING COMMUNICATION LINKS...',
-    'SYSTEM READY'
-  ]
+    'SYSTEM READY',
+  ],
 }) => {
   const [currentMessage, setCurrentMessage] = useState(0);
   const [isComplete, setIsComplete] = useState(false);

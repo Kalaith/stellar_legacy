@@ -23,7 +23,7 @@ export const generateTerminalBorder = (
 
   return {
     top: `┌─[${title}]${'─'.repeat(remainingDashes)}┐`,
-    bottom: `└${'─'.repeat(actualTotalWidth - 2)}┘` // -2 for "└" and "┘"
+    bottom: `└${'─'.repeat(actualTotalWidth - 2)}┘`, // -2 for "└" and "┘"
   };
 };
 
@@ -50,6 +50,6 @@ export const generateBoxBorder = (title?: string, width: number = 60) => {
   return {
     top: `┌${'─'.repeat(width - 2)}┐`,
     middle: `│${' '.repeat(width - 2)}│`,
-    bottom: `└${'─'.repeat(width - 2)}┘`
+    bottom: `└${'─'.repeat(width - 2)}┘`,
   };
 };

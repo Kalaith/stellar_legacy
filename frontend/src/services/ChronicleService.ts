@@ -15,7 +15,7 @@ import type {
   ChronicleExportData,
   ChronicleSearchCriteria,
   ChronicleStatistics,
-  PopulationOutcome
+  PopulationOutcome,
 } from '../types/chronicle';
 import type { HeritageModifier } from '../types/heritage';
 import type { GenerationalMission } from '../types/generationalMissions';
@@ -34,7 +34,9 @@ export class ChronicleService {
    * Create a new chronicle entry from a completed mission
    */
   static createChronicleEntry(mission: GenerationalMission): ChronicleEntry {
-    const startedAt = new Date(Date.now() - (mission.currentYear * 24 * 60 * 60 * 1000)); // Approximate
+    const startedAt = new Date(
+      Date.now() - mission.currentYear * 24 * 60 * 60 * 1000
+    ); // Approximate
     const completedAt = new Date();
 
     const entry: ChronicleEntry = {
@@ -43,7 +45,8 @@ export class ChronicleService {
       missionNumber: this.getNextMissionNumber(),
       startedAt,
       completedAt,
-      realDuration: (completedAt.getTime() - startedAt.getTime()) / (1000 * 60 * 60), // hours
+      realDuration:
+        (completedAt.getTime() - startedAt.getTime()) / (1000 * 60 * 60), // hours
 
       // Mission Parameters
       startingLegacy: mission.legacy,
@@ -74,13 +77,13 @@ export class ChronicleService {
 
       // Performance Metrics
       playerEngagement: this.calculateEngagementMetrics(mission),
-      aiPerformance: this.calculateAIPerformance(mission)
+      aiPerformance: this.calculateAIPerformance(mission),
     };
 
     Logger.info('Created chronicle entry', {
       missionId: mission.id,
       successLevel: entry.successLevel,
-      actualDuration: entry.actualDuration
+      actualDuration: entry.actualDuration,
     });
 
     return entry;
@@ -89,7 +92,9 @@ export class ChronicleService {
   /**
    * Save a chronicle entry to storage
    */
-  static async saveChronicleEntry(entry: ChronicleEntry): Promise<Result<void>> {
+  static async saveChronicleEntry(
+    entry: ChronicleEntry
+  ): Promise<Result<void>> {
     try {
       // Validate input
       validate.chronicleEntry(entry);
@@ -105,11 +110,17 @@ export class ChronicleService {
       }
 
       // Validate chronicle doesn't exceed maximum entries
-      if (chronicle.entries.length >= gameBalance.CHRONICLE.MAX_ENTRIES_PER_MISSION) {
+      if (
+        chronicle.entries.length >=
+        gameBalance.CHRONICLE.MAX_ENTRIES_PER_MISSION
+      ) {
         return ResultHelpers.error(
           'Chronicle has reached maximum entries',
           errorCodes.CHRONICLE_GENERATION_FAILED,
-          { maxEntries: gameBalance.CHRONICLE.MAX_ENTRIES_PER_MISSION, currentCount: chronicle.entries.length }
+          {
+            maxEntries: gameBalance.CHRONICLE.MAX_ENTRIES_PER_MISSION,
+            currentCount: chronicle.entries.length,
+          }
         );
       }
 
@@ -125,7 +136,7 @@ export class ChronicleService {
 
       Logger.info('Saved chronicle entry', {
         chronicleId: chronicle.id,
-        entryCount: chronicle.entries.length
+        entryCount: chronicle.entries.length,
       });
 
       return ResultHelpers.success(undefined);
@@ -143,7 +154,9 @@ export class ChronicleService {
   /**
    * Generate heritage modifiers from a chronicle entry
    */
-  static generateHeritageModifiers(entry: ChronicleEntry): Result<HeritageModifier[]> {
+  static generateHeritageModifiers(
+    entry: ChronicleEntry
+  ): Result<HeritageModifier[]> {
     try {
       // Validate input
       validate.chronicleEntry(entry);
@@ -152,7 +165,9 @@ export class ChronicleService {
 
       // Generate modifiers based on key decisions
       for (const decision of entry.keyDecisions) {
-        if (decision.chronicleWeight > gameBalance.CHRONICLE.HIGH_IMPACT_THRESHOLD) {
+        if (
+          decision.chronicleWeight > gameBalance.CHRONICLE.HIGH_IMPACT_THRESHOLD
+        ) {
           const modifier = this.createModifierFromDecision(decision, entry);
           if (modifier) {
             modifiers.push(modifier);
@@ -160,25 +175,25 @@ export class ChronicleService {
         }
       }
 
-    // Generate modifiers based on artifacts
-    for (const artifact of entry.artifacts) {
-      const modifier = this.createModifierFromArtifact(artifact, entry);
-      if (modifier) {
-        modifiers.push(modifier);
+      // Generate modifiers based on artifacts
+      for (const artifact of entry.artifacts) {
+        const modifier = this.createModifierFromArtifact(artifact, entry);
+        if (modifier) {
+          modifiers.push(modifier);
+        }
       }
-    }
 
-    // Generate modifiers based on population outcome
-    if (entry.populationOutcome !== 'survived') {
-      const modifier = this.createModifierFromPopulationOutcome(entry);
-      if (modifier) {
-        modifiers.push(modifier);
+      // Generate modifiers based on population outcome
+      if (entry.populationOutcome !== 'survived') {
+        const modifier = this.createModifierFromPopulationOutcome(entry);
+        if (modifier) {
+          modifiers.push(modifier);
+        }
       }
-    }
 
       Logger.info('Generated heritage modifiers', {
         missionId: entry.missionId,
-        modifierCount: modifiers.length
+        modifierCount: modifiers.length,
       });
 
       return ResultHelpers.success(modifiers);
@@ -197,21 +212,26 @@ export class ChronicleService {
    * Load the player's main chronicle
    */
   static async loadPlayerChronicle(): Promise<Result<Chronicle | null>> {
-    return ResultHelpers.fromThrowable(() => {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (!stored) return null;
+    return ResultHelpers.fromThrowable(
+      () => {
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (!stored) return null;
 
-      const data = JSON.parse(stored);
+        const data = JSON.parse(stored);
 
-      // Validate and migrate if necessary
-      const validation = this.validateChronicleData(data);
-      if (!validation.isValid) {
-        Logger.warn('Invalid chronicle data found', validation.errors);
-        throw new Error(`Invalid chronicle data: ${validation.errors.join(', ')}`);
-      }
+        // Validate and migrate if necessary
+        const validation = this.validateChronicleData(data);
+        if (!validation.isValid) {
+          Logger.warn('Invalid chronicle data found', validation.errors);
+          throw new Error(
+            `Invalid chronicle data: ${validation.errors.join(', ')}`
+          );
+        }
 
-      return this.migrateChronicleVersion(data, this.VERSION);
-    }, { operation: 'loadPlayerChronicle' });
+        return this.migrateChronicleVersion(data, this.VERSION);
+      },
+      { operation: 'loadPlayerChronicle' }
+    );
   }
 
   /**
@@ -223,8 +243,8 @@ export class ChronicleService {
       metadata: {
         exportedAt: new Date(),
         version: this.VERSION,
-        checksum: this.calculateChecksum(chronicle)
-      }
+        checksum: this.calculateChecksum(chronicle),
+      },
     };
 
     return JSON.stringify(exportData, null, 2);
@@ -251,7 +271,9 @@ export class ChronicleService {
       // Validate chronicle structure
       const validation = this.validateChronicleData(parsed.chronicle);
       if (!validation.isValid) {
-        throw new Error(`Invalid chronicle data: ${validation.errors.join(', ')}`);
+        throw new Error(
+          `Invalid chronicle data: ${validation.errors.join(', ')}`
+        );
       }
 
       // Migrate to current version if needed
@@ -273,9 +295,10 @@ export class ChronicleService {
 
     // Apply filters
     if (criteria.legacyFilter?.length) {
-      entries = entries.filter(entry =>
-        criteria.legacyFilter!.includes(entry.startingLegacy) ||
-        criteria.legacyFilter!.includes(entry.dominantLegacy)
+      entries = entries.filter(
+        entry =>
+          criteria.legacyFilter!.includes(entry.startingLegacy) ||
+          criteria.legacyFilter!.includes(entry.dominantLegacy)
       );
     }
 
@@ -286,30 +309,37 @@ export class ChronicleService {
     }
 
     if (criteria.timeRangeFilter) {
-      entries = entries.filter(entry =>
-        entry.completedAt >= criteria.timeRangeFilter!.startDate &&
-        entry.completedAt <= criteria.timeRangeFilter!.endDate
+      entries = entries.filter(
+        entry =>
+          entry.completedAt >= criteria.timeRangeFilter!.startDate &&
+          entry.completedAt <= criteria.timeRangeFilter!.endDate
       );
     }
 
     if (criteria.textSearch) {
       const searchTerm = criteria.textSearch.toLowerCase();
-      entries = entries.filter(entry =>
-        entry.missionName.toLowerCase().includes(searchTerm) ||
-        entry.targetSystem.toLowerCase().includes(searchTerm) ||
-        entry.keyDecisions.some(decision =>
-          decision.title.toLowerCase().includes(searchTerm) ||
-          decision.description.toLowerCase().includes(searchTerm)
-        )
+      entries = entries.filter(
+        entry =>
+          entry.missionName.toLowerCase().includes(searchTerm) ||
+          entry.targetSystem.toLowerCase().includes(searchTerm) ||
+          entry.keyDecisions.some(
+            decision =>
+              decision.title.toLowerCase().includes(searchTerm) ||
+              decision.description.toLowerCase().includes(searchTerm)
+          )
       );
     }
 
     if (criteria.minimumDuration !== undefined) {
-      entries = entries.filter(entry => entry.actualDuration >= criteria.minimumDuration!);
+      entries = entries.filter(
+        entry => entry.actualDuration >= criteria.minimumDuration!
+      );
     }
 
     if (criteria.maximumDuration !== undefined) {
-      entries = entries.filter(entry => entry.actualDuration <= criteria.maximumDuration!);
+      entries = entries.filter(
+        entry => entry.actualDuration <= criteria.maximumDuration!
+      );
     }
 
     return entries;
@@ -318,22 +348,28 @@ export class ChronicleService {
   /**
    * Calculate comprehensive chronicle statistics
    */
-  static calculateChronicleStatistics(chronicle: Chronicle): ChronicleStatistics {
+  static calculateChronicleStatistics(
+    chronicle: Chronicle
+  ): ChronicleStatistics {
     const entries = chronicle.entries;
 
     if (entries.length === 0) {
       return this.getEmptyStatistics();
     }
 
-    const totalPlayTime = entries.reduce((sum, entry) => sum + entry.realDuration, 0);
-    const successfulMissions = entries.filter(entry =>
-      entry.successLevel === 'complete' || entry.successLevel === 'partial'
+    const totalPlayTime = entries.reduce(
+      (sum, entry) => sum + entry.realDuration,
+      0
+    );
+    const successfulMissions = entries.filter(
+      entry =>
+        entry.successLevel === 'complete' || entry.successLevel === 'partial'
     ).length;
 
     const legacyDistribution: Record<LegacyTypeType, number> = {
       preservers: 0,
       adaptors: 0,
-      wanderers: 0
+      wanderers: 0,
     };
 
     // Calculate legacy distribution
@@ -357,8 +393,10 @@ export class ChronicleService {
       favoriteSpaces: this.extractFavoriteSpaces(entries),
       mostUsedChoices: this.extractMostUsedChoices(entries),
       legacyDistribution,
-      averageMissionDuration: entries.reduce((sum, entry) => sum + entry.actualDuration, 0) / entries.length,
-      decisionPatterns
+      averageMissionDuration:
+        entries.reduce((sum, entry) => sum + entry.actualDuration, 0) /
+        entries.length,
+      decisionPatterns,
     };
   }
 
@@ -376,14 +414,14 @@ export class ChronicleService {
         establishedColonies: [],
         knownThreats: [],
         diplomaticRelations: {},
-        sharedKnowledge: []
+        sharedKnowledge: [],
       },
       playerLegacy: {
         preferredLegacy: 'preservers',
         legacyExperience: {
           preservers: 0,
           adaptors: 0,
-          wanderers: 0
+          wanderers: 0,
         },
         characteristicChoices: [],
         narrativePreferences: {
@@ -395,10 +433,10 @@ export class ChronicleService {
             diplomacy: 0.5,
             technology: 0.5,
             culture: 0.5,
-            survival: 0.5
-          }
-        }
-      }
+            survival: 0.5,
+          },
+        },
+      },
     };
   }
 
@@ -409,7 +447,7 @@ export class ChronicleService {
 
       Logger.info('Chronicle saved successfully', {
         chronicleId: chronicle.id,
-        entryCount: chronicle.entries.length
+        entryCount: chronicle.entries.length,
       });
     } catch (error) {
       Logger.error('Failed to save chronicle to storage', error);
@@ -417,7 +455,9 @@ export class ChronicleService {
     }
   }
 
-  private static validateChronicleData(data: unknown): ChronicleValidationResult {
+  private static validateChronicleData(
+    data: unknown
+  ): ChronicleValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -444,20 +484,26 @@ export class ChronicleService {
           return;
         }
         const entryRecord = entry as Record<string, unknown>;
-        if (!entryRecord.missionId) errors.push(`Entry ${index} missing missionId`);
-        if (!entryRecord.missionName) errors.push(`Entry ${index} missing missionName`);
-        if (!entryRecord.successLevel) errors.push(`Entry ${index} missing successLevel`);
+        if (!entryRecord.missionId)
+          errors.push(`Entry ${index} missing missionId`);
+        if (!entryRecord.missionName)
+          errors.push(`Entry ${index} missing missionName`);
+        if (!entryRecord.successLevel)
+          errors.push(`Entry ${index} missing successLevel`);
       });
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
-  private static migrateChronicleVersion(data: unknown, _targetVersion: string): Chronicle {
+  private static migrateChronicleVersion(
+    data: unknown,
+    _targetVersion: string
+  ): Chronicle {
     // For now, just return the data as-is since we're on version 1.0.0
     // Future versions would implement migration logic here
     return data as Chronicle;
@@ -469,7 +515,7 @@ export class ChronicleService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash.toString(16);
@@ -481,13 +527,17 @@ export class ChronicleService {
     return 1;
   }
 
-  private static calculateDominantLegacy(mission: GenerationalMission): LegacyTypeType {
+  private static calculateDominantLegacy(
+    mission: GenerationalMission
+  ): LegacyTypeType {
     // Analyze mission decisions and outcomes to determine dominant legacy
     // For now, just return the starting legacy
     return mission.legacy;
   }
 
-  private static calculatePopulationOutcome(mission: GenerationalMission): PopulationOutcome {
+  private static calculatePopulationOutcome(
+    mission: GenerationalMission
+  ): PopulationOutcome {
     const populationRatio = mission.population.total / 10000; // Assuming 10k starting population
 
     if (populationRatio > 1.5) return 'thrived';
@@ -497,13 +547,17 @@ export class ChronicleService {
     return 'extinct';
   }
 
-  private static extractKeyDecisions(_mission: GenerationalMission): ChronicleDecision[] {
+  private static extractKeyDecisions(
+    _mission: GenerationalMission
+  ): ChronicleDecision[] {
     // Extract significant decisions from mission history
     // This would analyze the mission's event history and decision points
     return [];
   }
 
-  private static calculateDecisionMetrics(_mission: GenerationalMission): DecisionMetrics {
+  private static calculateDecisionMetrics(
+    _mission: GenerationalMission
+  ): DecisionMetrics {
     return {
       totalDecisions: 0,
       averageDecisionTime: 30,
@@ -512,54 +566,66 @@ export class ChronicleService {
       legacyConsistency: {
         preservers: 0.7,
         adaptors: 0.3,
-        wanderers: 0.2
-      }
+        wanderers: 0.2,
+      },
     };
   }
 
-  private static createPopulationSnapshot(mission: GenerationalMission): PopulationSnapshot {
+  private static createPopulationSnapshot(
+    mission: GenerationalMission
+  ): PopulationSnapshot {
     return {
       total: mission.population.total,
       byLegacy: {
         preservers: mission.population.total * 0.4,
         adaptors: mission.population.total * 0.3,
-        wanderers: mission.population.total * 0.3
+        wanderers: mission.population.total * 0.3,
       },
       byCohort: {},
       averageAge: 35,
       morale: mission.population.morale,
       unity: mission.population.unity,
-      culturalDrift: mission.population.culturalDrift
+      culturalDrift: mission.population.culturalDrift,
     };
   }
 
-  private static createCulturalSnapshot(_mission: GenerationalMission): CulturalSnapshot {
+  private static createCulturalSnapshot(
+    _mission: GenerationalMission
+  ): CulturalSnapshot {
     return {
       dominantValues: ['exploration', 'preservation'],
       emergentTraditions: [],
       languageEvolution: [],
       artStyles: [],
       religiousBeliefs: [],
-      technicalPhilosophies: []
+      technicalPhilosophies: [],
     };
   }
 
-  private static generateArtifacts(_mission: GenerationalMission): ChronicleArtifact[] {
+  private static generateArtifacts(
+    _mission: GenerationalMission
+  ): ChronicleArtifact[] {
     // Generate artifacts based on mission achievements and discoveries
     return [];
   }
 
-  private static extractDiscoveries(_mission: GenerationalMission): Discovery[] {
+  private static extractDiscoveries(
+    _mission: GenerationalMission
+  ): Discovery[] {
     // Extract discoveries from mission history
     return [];
   }
 
-  private static calculateLegacyEvolution(_mission: GenerationalMission): LegacyEvolution[] {
+  private static calculateLegacyEvolution(
+    _mission: GenerationalMission
+  ): LegacyEvolution[] {
     // Calculate how legacies evolved during the mission
     return [];
   }
 
-  private static calculateEngagementMetrics(_mission: GenerationalMission): EngagementMetrics {
+  private static calculateEngagementMetrics(
+    _mission: GenerationalMission
+  ): EngagementMetrics {
     return {
       totalPlayTime: 10,
       activeDecisionTime: 3,
@@ -567,39 +633,52 @@ export class ChronicleService {
       eventsTriggered: 50,
       eventsResolved: 45,
       playerInitiatedActions: 100,
-      averageSessionLength: 45
+      averageSessionLength: 45,
     };
   }
 
-  private static calculateAIPerformance(_mission: GenerationalMission): AIPerformanceSnapshot {
+  private static calculateAIPerformance(
+    _mission: GenerationalMission
+  ): AIPerformanceSnapshot {
     return {
       decisionsAutomated: 30,
       playerOverrides: 5,
       successfulPredictions: 25,
       averageConfidence: 0.75,
-      learningProgress: 0.6
+      learningProgress: 0.6,
     };
   }
 
-  private static updateGalaxyState(chronicle: Chronicle, entry: ChronicleEntry): void {
+  private static updateGalaxyState(
+    chronicle: Chronicle,
+    entry: ChronicleEntry
+  ): void {
     // Update galaxy state based on the new entry
     if (!chronicle.galaxyState.exploredSystems.includes(entry.targetSystem)) {
       chronicle.galaxyState.exploredSystems.push(entry.targetSystem);
     }
   }
 
-  private static createModifierFromDecision(_decision: ChronicleDecision, _entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromDecision(
+    _decision: ChronicleDecision,
+    _entry: ChronicleEntry
+  ): HeritageModifier | null {
     // Create heritage modifier based on significant decision
     // This would be a complex algorithm analyzing the decision's impact
     return null;
   }
 
-  private static createModifierFromArtifact(_artifact: ChronicleArtifact, _entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromArtifact(
+    _artifact: ChronicleArtifact,
+    _entry: ChronicleEntry
+  ): HeritageModifier | null {
     // Create heritage modifier based on discovered artifact
     return null;
   }
 
-  private static createModifierFromPopulationOutcome(_entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromPopulationOutcome(
+    _entry: ChronicleEntry
+  ): HeritageModifier | null {
     // Create heritage modifier based on population outcome
     return null;
   }
@@ -613,14 +692,15 @@ export class ChronicleService {
       mostUsedChoices: [],
       legacyDistribution: { preservers: 0, adaptors: 0, wanderers: 0 },
       averageMissionDuration: 0,
-      decisionPatterns: {}
+      decisionPatterns: {},
     };
   }
 
   private static extractFavoriteSpaces(entries: ChronicleEntry[]): string[] {
     const spaceCounts: Record<string, number> = {};
     entries.forEach(entry => {
-      spaceCounts[entry.targetSystem] = (spaceCounts[entry.targetSystem] || 0) + 1;
+      spaceCounts[entry.targetSystem] =
+        (spaceCounts[entry.targetSystem] || 0) + 1;
     });
 
     return Object.entries(spaceCounts)
@@ -633,7 +713,8 @@ export class ChronicleService {
     const choiceCounts: Record<string, number> = {};
     entries.forEach(entry => {
       entry.keyDecisions.forEach(decision => {
-        choiceCounts[decision.choice] = (choiceCounts[decision.choice] || 0) + 1;
+        choiceCounts[decision.choice] =
+          (choiceCounts[decision.choice] || 0) + 1;
       });
     });
 

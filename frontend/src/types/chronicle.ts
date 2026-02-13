@@ -53,8 +53,18 @@ export class ChronicleEntry {
   aiPerformance!: AIPerformanceSnapshot;
 }
 
-export type SuccessLevel = 'complete' | 'partial' | 'pyrrhic' | 'failure' | 'abandoned';
-export type PopulationOutcome = 'thrived' | 'survived' | 'diminished' | 'transformed' | 'extinct';
+export type SuccessLevel =
+  | 'complete'
+  | 'partial'
+  | 'pyrrhic'
+  | 'failure'
+  | 'abandoned';
+export type PopulationOutcome =
+  | 'thrived'
+  | 'survived'
+  | 'diminished'
+  | 'transformed'
+  | 'extinct';
 
 export class ChronicleDecision {
   id!: string;
@@ -83,9 +93,21 @@ export class ChronicleDecision {
   legacyAlignment!: Record<LegacyTypeType, number>; // How much each legacy approved (-1 to 1)
 }
 
-export type DecisionCategory = 'resource' | 'population' | 'cultural' | 'diplomatic' | 'crisis' | 'exploration' | 'legacy';
+export type DecisionCategory =
+  | 'resource'
+  | 'population'
+  | 'cultural'
+  | 'diplomatic'
+  | 'crisis'
+  | 'exploration'
+  | 'legacy';
 export type DecisionUrgency = 'immediate' | 'urgent' | 'moderate' | 'routine';
-export type DecisionScope = 'individual' | 'cohort' | 'dynasty' | 'legacy' | 'civilization';
+export type DecisionScope =
+  | 'individual'
+  | 'cohort'
+  | 'dynasty'
+  | 'legacy'
+  | 'civilization';
 
 export class ImmediateConsequence {
   type!: 'resource' | 'population' | 'relationship' | 'event';
@@ -128,7 +150,13 @@ export class ChronicleArtifact {
   legacySignificance!: Record<LegacyTypeType, number>;
 }
 
-export type ArtifactType = 'technology' | 'cultural' | 'genetic' | 'historical' | 'philosophical' | 'artistic';
+export type ArtifactType =
+  | 'technology'
+  | 'cultural'
+  | 'genetic'
+  | 'historical'
+  | 'philosophical'
+  | 'artistic';
 
 export class ArtifactOrigin {
   sourceDecision!: string | null;

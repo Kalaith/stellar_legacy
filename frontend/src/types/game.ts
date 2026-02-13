@@ -1,5 +1,13 @@
 // types/game.ts
-import type { TabIdType, SystemStatusType, NotificationTypeType, PlanetTypeType, CrewRoleType, ComponentCategoryType, LegacyTypeType } from './enums';
+import type {
+  TabIdType,
+  SystemStatusType,
+  NotificationTypeType,
+  PlanetTypeType,
+  CrewRoleType,
+  ComponentCategoryType,
+  LegacyTypeType,
+} from './enums';
 import type { CrewMemberId, NotificationId, TradeRouteId } from './branded';
 
 export type { NotificationTypeType };

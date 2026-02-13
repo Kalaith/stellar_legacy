@@ -33,30 +33,38 @@ interface NotificationItemProps {
   onClose: () => void;
 }
 
-const NotificationItem: React.FC<NotificationItemProps> = React.memo(({ notification, onClose }) => {
-  const bgColor = useMemo(() => {
-    switch (notification.type) {
-      case 'success': return uiConstants.COLORS.BG_SUCCESS;
-      case 'error': return uiConstants.COLORS.BG_ERROR;
-      case 'warning': return uiConstants.COLORS.BG_WARNING;
-      default: return uiConstants.COLORS.BG_TERTIARY;
-    }
-  }, [notification.type]);
+const NotificationItem: React.FC<NotificationItemProps> = React.memo(
+  ({ notification, onClose }) => {
+    const bgColor = useMemo(() => {
+      switch (notification.type) {
+        case 'success':
+          return uiConstants.COLORS.BG_SUCCESS;
+        case 'error':
+          return uiConstants.COLORS.BG_ERROR;
+        case 'warning':
+          return uiConstants.COLORS.BG_WARNING;
+        default:
+          return uiConstants.COLORS.BG_TERTIARY;
+      }
+    }, [notification.type]);
 
-  return (
-    <div className={`${bgColor} ${uiConstants.COLORS.TEXT_PRIMARY} px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right`}>
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium">{notification.message}</p>
-        <button
-          onClick={onClose}
-          className={`ml-4 ${uiConstants.COLORS.TEXT_PRIMARY} ${uiConstants.COLORS.HOVER_TEXT_MUTED} transition-colors`}
-        >
-          ×
-        </button>
+    return (
+      <div
+        className={`${bgColor} ${uiConstants.COLORS.TEXT_PRIMARY} px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right`}
+      >
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium">{notification.message}</p>
+          <button
+            onClick={onClose}
+            className={`ml-4 ${uiConstants.COLORS.TEXT_PRIMARY} ${uiConstants.COLORS.HOVER_TEXT_MUTED} transition-colors`}
+          >
+            ×
+          </button>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 NotificationItem.displayName = 'NotificationItem';
 

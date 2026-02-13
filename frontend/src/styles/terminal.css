@@ -11,14 +11,14 @@
   /* Colors */
   --terminal-bg: #000000;
   --terminal-bg-secondary: #0a0a0a;
-  --terminal-primary: #FFB000;     /* Amber phosphor */
-  --terminal-secondary: #AA7700;   /* Dim amber */
-  --terminal-success: #00FF66;     /* Bright green */
-  --terminal-warning: #FFAA00;     /* Orange */
-  --terminal-error: #FF3300;       /* Red */
-  --terminal-border: #444444;      /* Gray border */
-  --terminal-border-active: #FFB000; /* Active border */
-  --terminal-text-dim: #666666;    /* Dim text */
+  --terminal-primary: #ffb000; /* Amber phosphor */
+  --terminal-secondary: #aa7700; /* Dim amber */
+  --terminal-success: #00ff66; /* Bright green */
+  --terminal-warning: #ffaa00; /* Orange */
+  --terminal-error: #ff3300; /* Red */
+  --terminal-border: #444444; /* Gray border */
+  --terminal-border-active: #ffb000; /* Active border */
+  --terminal-text-dim: #666666; /* Dim text */
 
   /* Effects */
   --terminal-glow: 0 0 10px currentColor;
@@ -135,8 +135,12 @@ body {
 }
 
 @keyframes scanlines {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(4px); }
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
 }
 
 /* CRT Flicker Effect */
@@ -155,9 +159,16 @@ body {
 }
 
 @keyframes flicker {
-  0%, 98% { opacity: 0; }
-  99% { opacity: 0.02; }
-  100% { opacity: 0; }
+  0%,
+  98% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 0.02;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ===== TYPOGRAPHY ===== */
@@ -585,10 +596,18 @@ body {
   width: 100%;
 }
 
-.terminal-grid.cols-1 { grid-template-columns: 1fr; }
-.terminal-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-.terminal-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-.terminal-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.terminal-grid.cols-1 {
+  grid-template-columns: 1fr;
+}
+.terminal-grid.cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+.terminal-grid.cols-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.terminal-grid.cols-4 {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
 
 /* Terminal Flex */
 .terminal-flex {
@@ -633,17 +652,29 @@ body {
   overflow: hidden;
   border-right: 2px solid var(--terminal-primary);
   white-space: nowrap;
-  animation: typing 1s steps(40, end), blink-cursor var(--blink-speed) infinite;
+  animation:
+    typing 1s steps(40, end),
+    blink-cursor var(--blink-speed) infinite;
 }
 
 @keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 @keyframes blink-cursor {
-  0%, 50% { border-right-color: var(--terminal-primary); }
-  51%, 100% { border-right-color: transparent; }
+  0%,
+  50% {
+    border-right-color: var(--terminal-primary);
+  }
+  51%,
+  100% {
+    border-right-color: transparent;
+  }
 }
 
 /* Glow Pulse */
@@ -652,8 +683,13 @@ body {
 }
 
 @keyframes glow-pulse {
-  0%, 100% { text-shadow: var(--terminal-glow); }
-  50% { text-shadow: var(--terminal-glow-strong); }
+  0%,
+  100% {
+    text-shadow: var(--terminal-glow);
+  }
+  50% {
+    text-shadow: var(--terminal-glow-strong);
+  }
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -820,9 +856,9 @@ body {
 /* High contrast mode */
 @media (prefers-contrast: high) {
   :root {
-    --terminal-border: #FFFFFF;
-    --terminal-primary: #FFFFFF;
-    --terminal-secondary: #CCCCCC;
+    --terminal-border: #ffffff;
+    --terminal-primary: #ffffff;
+    --terminal-secondary: #cccccc;
   }
 }
 

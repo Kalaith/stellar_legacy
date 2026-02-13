@@ -6,7 +6,7 @@ import type {
   MissionPhaseType,
   EventCategoryType,
   ShipClassType,
-  ShipSizeType
+  ShipSizeType,
 } from './enums';
 
 // Core Cohort System - Abstract Population Management
@@ -211,8 +211,12 @@ export class SectModification extends LegacyModification {
     super();
     // Map legacy to sect for compatibility
     Object.defineProperty(this, 'sect', {
-      get() { return this.legacy; },
-      set(value) { this.legacy = value; }
+      get() {
+        return this.legacy;
+      },
+      set(value) {
+        this.legacy = value;
+      },
     });
   }
 }
@@ -303,12 +307,20 @@ export class SectRelation extends LegacyRelation {
   constructor() {
     super();
     Object.defineProperty(this, 'fromSect', {
-      get() { return this.fromLegacy; },
-      set(value) { this.fromLegacy = value; }
+      get() {
+        return this.fromLegacy;
+      },
+      set(value) {
+        this.fromLegacy = value;
+      },
     });
     Object.defineProperty(this, 'toSect', {
-      get() { return this.toLegacy; },
-      set(value) { this.toLegacy = value; }
+      get() {
+        return this.toLegacy;
+      },
+      set(value) {
+        this.toLegacy = value;
+      },
     });
   }
 }

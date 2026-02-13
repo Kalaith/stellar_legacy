@@ -62,9 +62,19 @@ export class LegacyCard {
   effectiveness!: number; // How impactful this card has been
 }
 
-export type CardType = 'event' | 'bonus' | 'crisis' | 'opportunity' | 'memory' | 'tradition';
+export type CardType =
+  | 'event'
+  | 'bonus'
+  | 'crisis'
+  | 'opportunity'
+  | 'memory'
+  | 'tradition';
 export type CardTier = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-export type CardDuration = 'instant' | 'temporary' | 'permanent' | 'generational';
+export type CardDuration =
+  | 'instant'
+  | 'temporary'
+  | 'permanent'
+  | 'generational';
 
 export class CardTrigger {
   id!: string;
@@ -76,7 +86,13 @@ export class CardTrigger {
 }
 
 export class TriggerCondition {
-  type!: 'resource' | 'population' | 'event' | 'year' | 'decision' | 'relationship';
+  type!:
+    | 'resource'
+    | 'population'
+    | 'event'
+    | 'year'
+    | 'decision'
+    | 'relationship';
   target!: string;
   operator!: 'equals' | 'greater' | 'less' | 'contains' | 'not';
   value!: unknown;
@@ -136,7 +152,12 @@ export class LegacyReaction {
   comment!: string;
 }
 
-export type CardImpact = 'negligible' | 'minor' | 'moderate' | 'major' | 'game-changing';
+export type CardImpact =
+  | 'negligible'
+  | 'minor'
+  | 'moderate'
+  | 'major'
+  | 'game-changing';
 
 export class CardBalanceMetrics {
   powerLevel!: number; // 0-1, how powerful this card is
@@ -169,7 +190,11 @@ export class FilterCriteria {
 export class LegacyCardTemplate {
   id!: string;
   name!: string;
-  templateType!: 'decision_echo' | 'outcome_memory' | 'cultural_tradition' | 'crisis_preparation';
+  templateType!:
+    | 'decision_echo'
+    | 'outcome_memory'
+    | 'cultural_tradition'
+    | 'crisis_preparation';
   generationRules!: CardGenerationRules;
   effectTemplates!: EffectTemplate[];
   narrativeTemplates!: NarrativeTemplate[];
@@ -244,7 +269,12 @@ export class DeckAnalytics {
 }
 
 export class BalanceIssue {
-  type!: 'overpowered' | 'underpowered' | 'too_frequent' | 'too_rare' | 'poor_narrative';
+  type!:
+    | 'overpowered'
+    | 'underpowered'
+    | 'too_frequent'
+    | 'too_rare'
+    | 'poor_narrative';
   cardId!: string;
   severity!: 'minor' | 'moderate' | 'major' | 'critical';
   description!: string;
@@ -262,10 +292,19 @@ export interface DeckBalanceReport {
 }
 
 // Player Curation
-export type CurationAction = 'rate' | 'disable' | 'modify' | 'favorite' | 'report';
+export type CurationAction =
+  | 'rate'
+  | 'disable'
+  | 'modify'
+  | 'favorite'
+  | 'report';
 
 export interface CardModification {
-  type: 'effect_magnitude' | 'trigger_condition' | 'narrative_text' | 'rarity_adjustment';
+  type:
+    | 'effect_magnitude'
+    | 'trigger_condition'
+    | 'narrative_text'
+    | 'rarity_adjustment';
   target: string; // What part of the card to modify
   newValue: unknown; // New value
   reason: string; // Why the player made this change

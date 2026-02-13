@@ -45,7 +45,7 @@ const App: React.FC = () => {
     updatePacingState,
     updatePacingPreferences,
     pauseTime,
-    resumeTime
+    resumeTime,
   } = useGameStore();
 
   useEffect(() => {
@@ -80,7 +80,9 @@ const App: React.FC = () => {
       case 'mission-command':
         return <MissionCommandCenter />;
       case 'dynasty-hall':
-        return <DynastyHall dynasties={dynasties} onDynastyAction={dynastyAction} />;
+        return (
+          <DynastyHall dynasties={dynasties} onDynastyAction={dynastyAction} />
+        );
       case 'legacy-relations':
         return (
           <LegacyRelations
@@ -101,9 +103,7 @@ const App: React.FC = () => {
       case 'chronicle':
         return (
           <div className="space-y-6">
-            <ChronicleViewer
-              onHeritageGenerate={generateHeritageModifiers}
-            />
+            <ChronicleViewer onHeritageGenerate={generateHeritageModifiers} />
             {availableHeritageModifiers.length > 0 && (
               <HeritageSelector
                 availableModifiers={availableHeritageModifiers}
@@ -114,7 +114,7 @@ const App: React.FC = () => {
             {pacingState && (
               <TimeController
                 pacingState={pacingState}
-                onPacingChange={(changes) => updatePacingState(changes)}
+                onPacingChange={changes => updatePacingState(changes)}
                 onPreferencesChange={updatePacingPreferences}
                 onEmergencyPause={pauseTime}
                 onForceResume={resumeTime}
@@ -129,12 +129,16 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen" style={{ background: 'var(--terminal-bg)', color: 'var(--terminal-primary)' }}>
+      <div
+        className="min-h-screen"
+        style={{
+          background: 'var(--terminal-bg)',
+          color: 'var(--terminal-primary)',
+        }}
+      >
         <TerminalHeader />
         <TerminalTabNavigation />
-        <main className="container mx-auto px-4">
-          {renderCurrentTab()}
-        </main>
+        <main className="container mx-auto px-4">{renderCurrentTab()}</main>
         <NotificationSystem />
       </div>
     </ErrorBoundary>

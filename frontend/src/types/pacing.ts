@@ -176,7 +176,11 @@ export class PhaseTransitionCondition {
 }
 
 export class PhaseTransitionEffect {
-  type!: 'time_acceleration' | 'event_density' | 'automation_level' | 'milestone_schedule';
+  type!:
+    | 'time_acceleration'
+    | 'event_density'
+    | 'automation_level'
+    | 'milestone_schedule';
   magnitude!: number;
   duration!: 'permanent' | 'phase' | 'temporary';
   description!: string;
@@ -224,7 +228,12 @@ export class EngagementAnalysis {
   recommendations!: EngagementRecommendation[];
 }
 
-export type EngagementLevel = 'very_low' | 'low' | 'moderate' | 'high' | 'very_high';
+export type EngagementLevel =
+  | 'very_low'
+  | 'low'
+  | 'moderate'
+  | 'high'
+  | 'very_high';
 
 export class EngagementFactor {
   type!: 'positive' | 'negative' | 'neutral';
@@ -260,7 +269,11 @@ export class AutomationPolicy {
 }
 
 export class EscalationCondition {
-  type!: 'resource_threshold' | 'population_crisis' | 'external_threat' | 'uncertainty';
+  type!:
+    | 'resource_threshold'
+    | 'population_crisis'
+    | 'external_threat'
+    | 'uncertainty';
   threshold!: unknown;
   response!: 'pause' | 'notify' | 'reduce_automation' | 'emergency_protocol';
   description!: string;

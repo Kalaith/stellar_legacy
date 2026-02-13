@@ -56,7 +56,7 @@
 }
 
 .progress-fill.skill {
-  background: #FFB000; /* Terminal amber phosphor color */
+  background: #ffb000; /* Terminal amber phosphor color */
   box-shadow: 0 0 6px rgba(255, 176, 0, 0.8); /* Terminal glow effect */
 }
 

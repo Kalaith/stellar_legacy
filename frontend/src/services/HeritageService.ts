@@ -15,14 +15,19 @@ import type {
   TechnologyModifier,
   NarrativeElement,
   HeritageSource,
-  HeritageTier
+  HeritageTier,
 } from '../types/heritage';
-import type { ChronicleEntry, ChronicleDecision, ChronicleArtifact } from '../types/chronicle';
+import type {
+  ChronicleEntry,
+  ChronicleDecision,
+  ChronicleArtifact,
+} from '../types/chronicle';
 import type { GenerationalMission } from '../types/generationalMissions';
 import Logger from '../utils/logger';
 
 export class HeritageService {
-  private static readonly HERITAGE_STORAGE_KEY = 'stellar-legacy-heritage-library';
+  private static readonly HERITAGE_STORAGE_KEY =
+    'stellar-legacy-heritage-library';
   private static modifierTemplates: HeritageTemplate[] = [];
   private static heritageLibrary: HeritageLibrary | null = null;
 
@@ -56,20 +61,26 @@ export class HeritageService {
       // Generate from legacy evolution
       entry.legacyEvolution.forEach(evolution => {
         if (evolution.deviationMagnitude > 0.5) {
-          const modifier = this.createModifierFromLegacyEvolution(evolution, entry);
+          const modifier = this.createModifierFromLegacyEvolution(
+            evolution,
+            entry
+          );
           if (modifier) modifiers.push(modifier);
         }
       });
 
       // Generate from settlement results
       if (entry.settlementResult && entry.settlementResult.influence > 0.3) {
-        const modifier = this.createModifierFromSettlement(entry.settlementResult, entry);
+        const modifier = this.createModifierFromSettlement(
+          entry.settlementResult,
+          entry
+        );
         if (modifier) modifiers.push(modifier);
       }
 
       Logger.info('Generated heritage modifiers', {
         chronicleEntry: entry.missionId,
-        modifierCount: modifiers.length
+        modifierCount: modifiers.length,
       });
 
       return modifiers;
@@ -91,7 +102,7 @@ export class HeritageService {
       resourceChanges: {},
       populationEffects: [],
       narrativeContext: [],
-      warnings: []
+      warnings: [],
     };
 
     try {
@@ -127,7 +138,7 @@ export class HeritageService {
       Logger.info('Applied heritage modifiers', {
         missionId: mission.id,
         appliedCount: result.appliedModifiers.length,
-        conflictCount: conflicts.length
+        conflictCount: conflicts.length,
       });
 
       return result;
@@ -148,13 +159,22 @@ export class HeritageService {
   ): HeritageAnalysis {
     try {
       // Filter modifiers based on criteria
-      const filteredModifiers = this.filterModifiers(availableModifiers, criteria);
+      const filteredModifiers = this.filterModifiers(
+        availableModifiers,
+        criteria
+      );
 
       // Generate recommendations
-      const recommendations = this.generateRecommendations(filteredModifiers, targetMission);
+      const recommendations = this.generateRecommendations(
+        filteredModifiers,
+        targetMission
+      );
 
       // Find best combinations
-      const combinations = this.findBestCombinations(filteredModifiers, criteria);
+      const combinations = this.findBestCombinations(
+        filteredModifiers,
+        criteria
+      );
 
       // Detect warnings
       const warnings = this.analyzeWarnings(filteredModifiers, targetMission);
@@ -167,7 +187,7 @@ export class HeritageService {
         recommendations: recommendations.slice(0, 5), // Top 5 recommendations
         bestCombinations: combinations.slice(0, 3), // Top 3 combinations
         warnings,
-        narrativeSummary
+        narrativeSummary,
       };
     } catch (error) {
       Logger.error('Failed to analyze heritage options', error);
@@ -176,7 +196,7 @@ export class HeritageService {
         recommendations: [],
         bestCombinations: [],
         warnings: ['Error analyzing heritage options'],
-        narrativeSummary: 'Unable to analyze heritage options'
+        narrativeSummary: 'Unable to analyze heritage options',
       };
     }
   }
@@ -199,7 +219,7 @@ export class HeritageService {
             modifier2: mod2.id,
             conflictType: 'mutually_exclusive',
             severity: 'critical',
-            resolution: `Cannot use ${mod1.name} with ${mod2.name}`
+            resolution: `Cannot use ${mod1.name} with ${mod2.name}`,
           });
         }
 
@@ -231,7 +251,7 @@ export class HeritageService {
 
       Logger.info('Heritage library saved', {
         modifierCount: library.modifiers.length,
-        templateCount: library.templates.length
+        templateCount: library.templates.length,
       });
     } catch (error) {
       Logger.error('Failed to save heritage library', error);
@@ -275,7 +295,7 @@ export class HeritageService {
       missionNumber: entry.missionNumber,
       sourceType: 'decision',
       specificSource: decision.id,
-      generationContext: `Generation ${decision.generation}, Year ${decision.year}`
+      generationContext: `Generation ${decision.generation}, Year ${decision.year}`,
     };
 
     const modifier: HeritageModifier = {
@@ -285,7 +305,8 @@ export class HeritageService {
       source,
       tier,
       resourceModifiers: this.generateResourceModifiersFromDecision(decision),
-      populationModifiers: this.generatePopulationModifiersFromDecision(decision),
+      populationModifiers:
+        this.generatePopulationModifiersFromDecision(decision),
       eventModifiers: this.generateEventModifiersFromDecision(decision),
       technologyModifiers: [],
       startingNarrative: this.generateNarrativeFromDecision(decision),
@@ -297,7 +318,7 @@ export class HeritageService {
       prerequisites: [],
       playerRating: 0,
       usageCount: 0,
-      effectivenessRating: 0
+      effectivenessRating: 0,
     };
 
     return modifier;
@@ -313,7 +334,7 @@ export class HeritageService {
       missionNumber: entry.missionNumber,
       sourceType: 'artifact',
       specificSource: artifact.id,
-      generationContext: artifact.origin.circumstances
+      generationContext: artifact.origin.circumstances,
     };
 
     const modifier: HeritageModifier = {
@@ -325,8 +346,16 @@ export class HeritageService {
       resourceModifiers: this.generateResourceModifiersFromArtifact(artifact),
       populationModifiers: [],
       eventModifiers: [],
-      technologyModifiers: this.generateTechnologyModifiersFromArtifact(artifact),
-      startingNarrative: [{ text: artifact.flavorText, references: [], context: 'mission_start', variability: [] }],
+      technologyModifiers:
+        this.generateTechnologyModifiersFromArtifact(artifact),
+      startingNarrative: [
+        {
+          text: artifact.flavorText,
+          references: [],
+          context: 'mission_start',
+          variability: [],
+        },
+      ],
       availableChoices: [],
       restrictedActions: [],
       narrativeReferences: [],
@@ -335,19 +364,21 @@ export class HeritageService {
       prerequisites: [],
       playerRating: 0,
       usageCount: 0,
-      effectivenessRating: 0
+      effectivenessRating: 0,
     };
 
     return modifier;
   }
 
-  private static createModifierFromPopulationOutcome(entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromPopulationOutcome(
+    entry: ChronicleEntry
+  ): HeritageModifier | null {
     const source: HeritageSource = {
       chronicleId: entry.missionId,
       missionNumber: entry.missionNumber,
       sourceType: 'outcome',
       specificSource: entry.populationOutcome,
-      generationContext: `Population ${entry.populationOutcome} after ${entry.actualDuration} years`
+      generationContext: `Population ${entry.populationOutcome} after ${entry.actualDuration} years`,
     };
 
     const modifier: HeritageModifier = {
@@ -357,7 +388,9 @@ export class HeritageService {
       source,
       tier: this.calculateTierFromPopulationOutcome(entry.populationOutcome),
       resourceModifiers: [],
-      populationModifiers: this.generatePopulationModifiersFromOutcome(entry.populationOutcome),
+      populationModifiers: this.generatePopulationModifiersFromOutcome(
+        entry.populationOutcome
+      ),
       eventModifiers: [],
       technologyModifiers: [],
       startingNarrative: [],
@@ -369,18 +402,24 @@ export class HeritageService {
       prerequisites: [],
       playerRating: 0,
       usageCount: 0,
-      effectivenessRating: 0
+      effectivenessRating: 0,
     };
 
     return modifier;
   }
 
-  private static createModifierFromLegacyEvolution(_evolution: unknown, _entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromLegacyEvolution(
+    _evolution: unknown,
+    _entry: ChronicleEntry
+  ): HeritageModifier | null {
     // Implementation for legacy evolution modifiers
     return null;
   }
 
-  private static createModifierFromSettlement(_settlement: unknown, _entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromSettlement(
+    _settlement: unknown,
+    _entry: ChronicleEntry
+  ): HeritageModifier | null {
     // Implementation for settlement modifiers
     return null;
   }
@@ -405,7 +444,8 @@ export class HeritageService {
         break;
     }
 
-    result.resourceChanges[modifier.resource] = (result.resourceChanges[modifier.resource] || 0) + change;
+    result.resourceChanges[modifier.resource] =
+      (result.resourceChanges[modifier.resource] || 0) + change;
   }
 
   private static applyPopulationModifier(
@@ -463,18 +503,33 @@ export class HeritageService {
     modifiers: HeritageModifier[],
     targetMission: Partial<GenerationalMission>
   ): HeritageRecommendation[] {
-    return modifiers.map(modifier => ({
-      modifier,
-      relevanceScore: this.calculateRelevanceScore(modifier, targetMission),
-      balanceScore: this.calculateBalanceScore(modifier),
-      narrativeScore: this.calculateNarrativeScore(modifier),
-      playerPreferenceScore: this.calculatePlayerPreferenceScore(modifier),
-      reasoning: this.generateRecommendationReasoning(modifier, targetMission)
-    })).sort((a, b) => {
-      const scoreA = (a.relevanceScore + a.balanceScore + a.narrativeScore + a.playerPreferenceScore) / 4;
-      const scoreB = (b.relevanceScore + b.balanceScore + b.narrativeScore + b.playerPreferenceScore) / 4;
-      return scoreB - scoreA;
-    });
+    return modifiers
+      .map(modifier => ({
+        modifier,
+        relevanceScore: this.calculateRelevanceScore(modifier, targetMission),
+        balanceScore: this.calculateBalanceScore(modifier),
+        narrativeScore: this.calculateNarrativeScore(modifier),
+        playerPreferenceScore: this.calculatePlayerPreferenceScore(modifier),
+        reasoning: this.generateRecommendationReasoning(
+          modifier,
+          targetMission
+        ),
+      }))
+      .sort((a, b) => {
+        const scoreA =
+          (a.relevanceScore +
+            a.balanceScore +
+            a.narrativeScore +
+            a.playerPreferenceScore) /
+          4;
+        const scoreB =
+          (b.relevanceScore +
+            b.balanceScore +
+            b.narrativeScore +
+            b.playerPreferenceScore) /
+          4;
+        return scoreB - scoreA;
+      });
   }
 
   private static findBestCombinations(
@@ -493,30 +548,44 @@ export class HeritageService {
     const warnings: string[] = [];
 
     // Check for balance issues
-    const totalPowerLevel = modifiers.reduce((sum, mod) => sum + mod.effectivenessRating, 0);
+    const totalPowerLevel = modifiers.reduce(
+      (sum, mod) => sum + mod.effectivenessRating,
+      0
+    );
     if (totalPowerLevel > 5) {
       warnings.push('High total modifier power may make the mission too easy');
     }
 
     // Check for narrative consistency
-    const legacyTypes = new Set(modifiers.map(mod =>
-      mod.source.specificSource.includes('preservers') ? 'preservers' :
-      mod.source.specificSource.includes('adaptors') ? 'adaptors' : 'wanderers'
-    ));
+    const legacyTypes = new Set(
+      modifiers.map(mod =>
+        mod.source.specificSource.includes('preservers')
+          ? 'preservers'
+          : mod.source.specificSource.includes('adaptors')
+            ? 'adaptors'
+            : 'wanderers'
+      )
+    );
 
     if (legacyTypes.size > 2) {
-      warnings.push('Mixed legacy modifiers may create narrative inconsistencies');
+      warnings.push(
+        'Mixed legacy modifiers may create narrative inconsistencies'
+      );
     }
 
     return warnings;
   }
 
-  private static generateNarrativeSummary(modifiers: HeritageModifier[]): string {
+  private static generateNarrativeSummary(
+    modifiers: HeritageModifier[]
+  ): string {
     if (modifiers.length === 0) {
       return 'No heritage modifiers selected. This mission will begin with a clean slate.';
     }
 
-    const narrativeElements = modifiers.flatMap(mod => mod.startingNarrative.map(n => n.text));
+    const narrativeElements = modifiers.flatMap(mod =>
+      mod.startingNarrative.map(n => n.text)
+    );
     return `Your mission begins with the legacy of ${modifiers.length} previous journeys: ${narrativeElements.join(' ')}`;
   }
 
@@ -528,24 +597,37 @@ export class HeritageService {
     return 'minor';
   }
 
-  private static calculateTierFromArtifact(artifact: ChronicleArtifact): HeritageTier {
+  private static calculateTierFromArtifact(
+    artifact: ChronicleArtifact
+  ): HeritageTier {
     if (artifact.type === 'historical') return 'legendary';
     if (artifact.type === 'technology') return 'major';
     return 'moderate';
   }
 
-  private static calculateTierFromPopulationOutcome(outcome: string): HeritageTier {
+  private static calculateTierFromPopulationOutcome(
+    outcome: string
+  ): HeritageTier {
     switch (outcome) {
-      case 'thrived': return 'major';
-      case 'transformed': return 'major';
-      case 'survived': return 'minor';
-      case 'diminished': return 'moderate';
-      case 'extinct': return 'legendary';
-      default: return 'minor';
+      case 'thrived':
+        return 'major';
+      case 'transformed':
+        return 'major';
+      case 'survived':
+        return 'minor';
+      case 'diminished':
+        return 'moderate';
+      case 'extinct':
+        return 'legendary';
+      default:
+        return 'minor';
     }
   }
 
-  private static calculateRelevanceScore(_modifier: HeritageModifier, _mission: Partial<GenerationalMission>): number {
+  private static calculateRelevanceScore(
+    _modifier: HeritageModifier,
+    _mission: Partial<GenerationalMission>
+  ): number {
     // Calculate how relevant this modifier is to the target mission
     return 0.5; // Placeholder
   }
@@ -560,7 +642,9 @@ export class HeritageService {
     return 0.6; // Placeholder
   }
 
-  private static calculatePlayerPreferenceScore(modifier: HeritageModifier): number {
+  private static calculatePlayerPreferenceScore(
+    modifier: HeritageModifier
+  ): number {
     // Calculate how much the player might like this modifier
     return modifier.playerRating / 5; // Convert 1-5 rating to 0-1 score
   }
@@ -572,16 +656,22 @@ export class HeritageService {
     return [
       `Based on previous decision: ${modifier.source.specificSource}`,
       `Tier: ${modifier.tier}`,
-      `Source: ${modifier.source.sourceType}`
+      `Source: ${modifier.source.sourceType}`,
     ];
   }
 
-  private static checkResourceConflicts(_mod1: HeritageModifier, _mod2: HeritageModifier): HeritageConflict | null {
+  private static checkResourceConflicts(
+    _mod1: HeritageModifier,
+    _mod2: HeritageModifier
+  ): HeritageConflict | null {
     // Check for resource conflicts between modifiers
     return null; // Placeholder
   }
 
-  private static checkNarrativeConflicts(_mod1: HeritageModifier, _mod2: HeritageModifier): HeritageConflict | null {
+  private static checkNarrativeConflicts(
+    _mod1: HeritageModifier,
+    _mod2: HeritageModifier
+  ): HeritageConflict | null {
     // Check for narrative conflicts between modifiers
     return null; // Placeholder
   }
@@ -591,44 +681,60 @@ export class HeritageService {
       modifiers: [],
       templates: [],
       playerCustomizations: {},
-      generationHistory: []
+      generationHistory: [],
     };
   }
 
   // Generation helper methods
-  private static generateResourceModifiersFromDecision(_decision: ChronicleDecision): ResourceModifier[] {
+  private static generateResourceModifiersFromDecision(
+    _decision: ChronicleDecision
+  ): ResourceModifier[] {
     // Generate resource modifiers based on decision impact
     return [];
   }
 
-  private static generatePopulationModifiersFromDecision(_decision: ChronicleDecision): PopulationModifier[] {
+  private static generatePopulationModifiersFromDecision(
+    _decision: ChronicleDecision
+  ): PopulationModifier[] {
     // Generate population modifiers based on decision impact
     return [];
   }
 
-  private static generateEventModifiersFromDecision(_decision: ChronicleDecision): EventModifier[] {
+  private static generateEventModifiersFromDecision(
+    _decision: ChronicleDecision
+  ): EventModifier[] {
     // Generate event modifiers based on decision impact
     return [];
   }
 
-  private static generateNarrativeFromDecision(decision: ChronicleDecision): NarrativeElement[] {
-    return [{
-      text: `The memory of ${decision.title} lingers in the collective consciousness.`,
-      references: [decision.id],
-      context: 'mission_start',
-      variability: []
-    }];
+  private static generateNarrativeFromDecision(
+    decision: ChronicleDecision
+  ): NarrativeElement[] {
+    return [
+      {
+        text: `The memory of ${decision.title} lingers in the collective consciousness.`,
+        references: [decision.id],
+        context: 'mission_start',
+        variability: [],
+      },
+    ];
   }
 
-  private static generateResourceModifiersFromArtifact(_artifact: ChronicleArtifact): ResourceModifier[] {
+  private static generateResourceModifiersFromArtifact(
+    _artifact: ChronicleArtifact
+  ): ResourceModifier[] {
     return [];
   }
 
-  private static generateTechnologyModifiersFromArtifact(_artifact: ChronicleArtifact): TechnologyModifier[] {
+  private static generateTechnologyModifiersFromArtifact(
+    _artifact: ChronicleArtifact
+  ): TechnologyModifier[] {
     return [];
   }
 
-  private static generatePopulationModifiersFromOutcome(_outcome: string): PopulationModifier[] {
+  private static generatePopulationModifiersFromOutcome(
+    _outcome: string
+  ): PopulationModifier[] {
     return [];
   }
 

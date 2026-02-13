@@ -31,28 +31,28 @@ export const gameConfig: GameConfig = {
   intervals: {
     resourceGeneration: 3000,
     autoSave: 30000,
-    notificationTimeout: 3000
+    notificationTimeout: 3000,
   },
   limits: {
     maxNotifications: 5,
     maxCrewMembers: 20,
-    maxStarSystems: 50
+    maxStarSystems: 50,
   },
   features: {
     enableAutoSave: true,
     enableAnalytics: false,
-    debugMode: import.meta.env.DEV
+    debugMode: import.meta.env.DEV,
   },
   ui: {
     theme: 'dark',
     animations: true,
-    soundEffects: false
+    soundEffects: false,
   },
   performance: {
     maxRenderDistance: 1000,
     enableCulling: true,
-    targetFPS: 60
-  }
+    targetFPS: 60,
+  },
 };
 
 // Environment-specific overrides

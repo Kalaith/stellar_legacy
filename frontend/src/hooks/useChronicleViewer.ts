@@ -18,7 +18,12 @@ export interface ChronicleFilter {
  * Sort criteria for chronicle entries
  */
 export interface ChronicleSortCriteria {
-  field: 'missionNumber' | 'startedAt' | 'completedAt' | 'successLevel' | 'dominantLegacy';
+  field:
+    | 'missionNumber'
+    | 'startedAt'
+    | 'completedAt'
+    | 'successLevel'
+    | 'dominantLegacy';
   direction: 'asc' | 'desc';
 }
 
@@ -31,7 +36,9 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
     field: 'missionNumber',
     direction: 'desc',
   });
-  const [selectedEntry, setSelectedEntry] = useState<ChronicleEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<ChronicleEntry | null>(
+    null
+  );
   const [showHeritageGenerator, setShowHeritageGenerator] = useState(false);
 
   /**
@@ -72,7 +79,9 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
           entry.missionName,
           entry.targetSystem,
           entry.keyDecisions.map(d => d.title).join(' '),
-        ].join(' ').toLowerCase();
+        ]
+          .join(' ')
+          .toLowerCase();
 
         if (!searchFields.includes(searchLower)) {
           return false;
@@ -101,8 +110,15 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
           comparison = a.completedAt.getTime() - b.completedAt.getTime();
           break;
         case 'successLevel': {
-          const successOrder = ['failure', 'partial', 'success', 'major_success'];
-          comparison = successOrder.indexOf(a.successLevel) - successOrder.indexOf(b.successLevel);
+          const successOrder = [
+            'failure',
+            'partial',
+            'success',
+            'major_success',
+          ];
+          comparison =
+            successOrder.indexOf(a.successLevel) -
+            successOrder.indexOf(b.successLevel);
           break;
         }
         case 'dominantLegacy':
@@ -136,15 +152,22 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
       return level === 'success' || level === 'major_success';
     }).length;
 
-    const totalDuration = filteredEntries.reduce((sum, e) => sum + e.actualDuration, 0);
+    const totalDuration = filteredEntries.reduce(
+      (sum, e) => sum + e.actualDuration,
+      0
+    );
 
-    const legacyDistribution = filteredEntries.reduce((acc, entry) => {
-      acc[entry.dominantLegacy] = (acc[entry.dominantLegacy] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const legacyDistribution = filteredEntries.reduce(
+      (acc, entry) => {
+        acc[entry.dominantLegacy] = (acc[entry.dominantLegacy] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
-    const artifactCount = filteredEntries.reduce((sum, e) =>
-      sum + (e.artifacts?.length || 0), 0
+    const artifactCount = filteredEntries.reduce(
+      (sum, e) => sum + (e.artifacts?.length || 0),
+      0
     );
 
     return {
@@ -215,10 +238,13 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
   const filterOptions = useMemo(() => {
     const successLevels = [...new Set(entries.map(e => e.successLevel))];
     const legacies = [...new Set(entries.map(e => e.startingLegacy))];
-    const yearRange: [number, number] = entries.length > 0 ? [
-      Math.min(...entries.map(e => e.actualDuration)),
-      Math.max(...entries.map(e => e.actualDuration)),
-    ] : [0, 100];
+    const yearRange: [number, number] =
+      entries.length > 0
+        ? [
+            Math.min(...entries.map(e => e.actualDuration)),
+            Math.max(...entries.map(e => e.actualDuration)),
+          ]
+        : [0, 100];
 
     return {
       successLevels,
@@ -264,7 +290,9 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
  */
 export const useHeritageGeneration = () => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedModifiers, setGeneratedModifiers] = useState<HeritageModifier[]>([]);
+  const [generatedModifiers, setGeneratedModifiers] = useState<
+    HeritageModifier[]
+  >([]);
   const [error, setError] = useState<string | null>(null);
 
   const generateModifiers = useCallback(async (_entry: ChronicleEntry) => {
@@ -351,13 +379,21 @@ export const ChronicleUtils = {
     let score = 0;
 
     // Success level weight
-    const successWeights = { failure: 0.5, partial: 0.7, success: 1.0, major_success: 1.5 };
-    score += successWeights[entry.successLevel as keyof typeof successWeights] || 0.5;
+    const successWeights = {
+      failure: 0.5,
+      partial: 0.7,
+      success: 1.0,
+      major_success: 1.5,
+    };
+    score +=
+      successWeights[entry.successLevel as keyof typeof successWeights] || 0.5;
 
     // Decision impact weight
-    const avgDecisionWeight = entry.keyDecisions.length > 0
-      ? entry.keyDecisions.reduce((sum, d) => sum + d.chronicleWeight, 0) / entry.keyDecisions.length
-      : 0;
+    const avgDecisionWeight =
+      entry.keyDecisions.length > 0
+        ? entry.keyDecisions.reduce((sum, d) => sum + d.chronicleWeight, 0) /
+          entry.keyDecisions.length
+        : 0;
     score += avgDecisionWeight;
 
     // Artifact bonus
@@ -372,13 +408,21 @@ export const ChronicleUtils = {
   /**
    * Group entries by time period
    */
-  groupByPeriod: (entries: ChronicleEntry[], periodYears: number = 50): Record<string, ChronicleEntry[]> => {
-    return entries.reduce((groups, entry) => {
-      const period = Math.floor(entry.missionNumber / (periodYears / 10)) * (periodYears / 10);
-      const key = `Years ${period}-${period + periodYears - 1}`;
-      groups[key] = groups[key] || [];
-      groups[key].push(entry);
-      return groups;
-    }, {} as Record<string, ChronicleEntry[]>);
+  groupByPeriod: (
+    entries: ChronicleEntry[],
+    periodYears: number = 50
+  ): Record<string, ChronicleEntry[]> => {
+    return entries.reduce(
+      (groups, entry) => {
+        const period =
+          Math.floor(entry.missionNumber / (periodYears / 10)) *
+          (periodYears / 10);
+        const key = `Years ${period}-${period + periodYears - 1}`;
+        groups[key] = groups[key] || [];
+        groups[key].push(entry);
+        return groups;
+      },
+      {} as Record<string, ChronicleEntry[]>
+    );
   },
 };
