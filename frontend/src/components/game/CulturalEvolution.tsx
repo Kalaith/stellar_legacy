@@ -6,7 +6,7 @@ import { TerminalWindow, TerminalText, TerminalButton, TerminalProgress } from '
 interface CulturalEvolutionProps {
   culturalEvolution: CulturalEvolution[];
   currentGeneration: number;
-  onCulturalAction?: (action: string, parameters?: any) => void;
+  onCulturalAction?: (action: string, parameters?: unknown) => void;
 }
 
 export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({

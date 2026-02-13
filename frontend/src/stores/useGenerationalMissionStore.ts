@@ -3,9 +3,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
   GenerationalMission,
-  LegacyRelation
+  LegacyRelation,
+  AutomationConfig,
+  ExtendedResources,
+  PopulationEffect
 } from '../types/generationalMissions';
-import type { LegacyTypeType, MissionObjectiveType } from '../types/enums';
+import type { EventCategoryType, LegacyTypeType, MissionObjectiveType, ShipClassType, ShipSizeType } from '../types/enums';
 import { MissionService } from '../services/MissionService';
 import { EventService } from '../services/EventService';
 import { LegacyService } from '../services/LegacyService';
@@ -35,11 +38,25 @@ interface GenerationalMissionStore {
   forceEventGeneration: (missionId: string, category?: string) => void;
 
   // Actions - Automation Management
-  updateAutomationConfig: (missionId: string, config: Partial<any>) => void;
-  overrideAIDecision: (missionId: string, decisionId: string, override: any) => void;
+  updateAutomationConfig: (missionId: string, config: Partial<AutomationConfig>) => void;
+  overrideAIDecision: (missionId: string, decisionId: string, override: unknown) => void;
 
   // Actions - Legacy Management
-  processLegacyDilemma: (missionId: string, choice: any) => void;
+  processLegacyDilemma: (
+    missionId: string,
+    choice:
+      | 'tradition'
+      | 'adaptation'
+      | 'compromise'
+      | 'genetic'
+      | 'cybernetic'
+      | 'biological'
+      | 'reject'
+      | 'raid'
+      | 'trade'
+      | 'scavenge'
+      | 'conserve'
+  ) => void;
   updateLegacyRelations: (fromLegacy: LegacyTypeType, toLegacy: LegacyTypeType, change: number) => void;
 
   // Utility Actions
@@ -54,8 +71,8 @@ interface MissionCreationConfig {
   objective: MissionObjectiveType;
   targetSystemId: string;
   estimatedDuration: number;
-  shipClass: string;
-  shipSize: string;
+  shipClass: ShipClassType;
+  shipSize: ShipSizeType;
   populationSize: number;
 }
 
@@ -103,9 +120,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       createMission: (config: MissionCreationConfig) => {
         try {
           const mission = MissionService.createMission({
-            ...config,
-            shipClass: config.shipClass as any,
-            shipSize: config.shipSize as any
+            ...config
           });
 
           set(state => ({
@@ -209,11 +224,11 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         }
       },
 
-      forceEventGeneration: (missionId: string, category?: string) => {
+      forceEventGeneration: (missionId: string, category?: EventCategoryType) => {
         const mission = get().missions.find(m => m.id === missionId);
         if (!mission) return;
 
-        const event = EventService.generateEvent(mission, category as any);
+        const event = EventService.generateEvent(mission, category);
         if (event) {
           mission.activeEvents.push(event);
 
@@ -225,7 +240,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       },
 
       // Automation Management Actions
-      updateAutomationConfig: (missionId: string, config: Partial<any>) => {
+      updateAutomationConfig: (missionId: string, config: Partial<AutomationConfig>) => {
         set(state => ({
           missions: state.missions.map(mission => {
             if (mission.id === missionId) {
@@ -266,14 +281,15 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           }
 
           // Apply results to mission
-          Object.entries(result.resourceChanges).forEach(([resource, change]) => {
-            if (change !== undefined) {
-              (mission.resources as any)[resource] += change;
+          (Object.keys(result.resourceChanges) as Array<keyof ExtendedResources>).forEach((resource) => {
+            const change = result.resourceChanges[resource];
+            if (typeof change === 'number') {
+              mission.resources[resource] += change;
             }
           });
 
           // Apply population effects
-          result.populationEffects.forEach((effect: any) => {
+          result.populationEffects.forEach((effect: PopulationEffect) => {
             const cohort = mission.population.cohorts.find(c => c.type === effect.cohortType);
             if (cohort) {
               switch (effect.effectType) {

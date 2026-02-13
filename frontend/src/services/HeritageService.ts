@@ -375,12 +375,12 @@ export class HeritageService {
     return modifier;
   }
 
-  private static createModifierFromLegacyEvolution(_evolution: any, _entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromLegacyEvolution(_evolution: unknown, _entry: ChronicleEntry): HeritageModifier | null {
     // Implementation for legacy evolution modifiers
     return null;
   }
 
-  private static createModifierFromSettlement(_settlement: any, _entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromSettlement(_settlement: unknown, _entry: ChronicleEntry): HeritageModifier | null {
     // Implementation for settlement modifiers
     return null;
   }
@@ -390,7 +390,7 @@ export class HeritageService {
     mission: GenerationalMission,
     result: HeritageApplicationResult
   ): void {
-    const currentValue = (mission.resources as any)[modifier.resource] || 0;
+    const currentValue = mission.resources[modifier.resource] || 0;
     let change = 0;
 
     switch (modifier.type) {

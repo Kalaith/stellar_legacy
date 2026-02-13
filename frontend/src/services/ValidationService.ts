@@ -1,5 +1,5 @@
 // services/ValidationService.ts
-import { GAME_CONSTANTS } from '../constants/gameConstants';
+import { gameConstants } from '../constants/gameConstants';
 import type { Resources, CrewMember, Ship } from '../types/game';
 import type { ValidationResult } from '../types/errors';
 
@@ -9,7 +9,7 @@ export interface ResourceConstraints {
   dependencies?: Partial<Resources>;
 }
 
-export const RESOURCE_CONSTRAINTS: Record<keyof Resources, ResourceConstraints> = {
+export const resourceConstraints: Record<keyof Resources, ResourceConstraints> = {
   credits: { min: 0, max: 1_000_000 },
   energy: { min: 0, max: 10_000 },
   minerals: { min: 0, max: 50_000 },
@@ -18,10 +18,10 @@ export const RESOURCE_CONSTRAINTS: Record<keyof Resources, ResourceConstraints> 
 } as const;
 
 export const ValidationService = {
-  RESOURCE_CONSTRAINTS,
+  resourceConstraints,
   validateResourceConstraints: (resources: Resources): ValidationResult => {
     for (const [resource, amount] of Object.entries(resources)) {
-      const constraints = RESOURCE_CONSTRAINTS[resource as keyof Resources];
+      const constraints = resourceConstraints[resource as keyof Resources];
       if (amount < constraints.min || amount > constraints.max) {
         return {
           isValid: false,
@@ -59,7 +59,7 @@ export const ValidationService = {
     amount: number,
     isSelling: boolean
   ): ValidationResult => {
-    const constraints = RESOURCE_CONSTRAINTS[resource];
+    const constraints = resourceConstraints[resource];
     const currentAmount = resources[resource];
 
     if (isSelling) {
@@ -81,30 +81,30 @@ export const ValidationService = {
     return { isValid: true };
   },
   validateCrewTraining: (credits: number): { isValid: boolean; message?: string } => {
-    if (credits < GAME_CONSTANTS.COSTS.CREW_TRAINING) {
+    if (credits < gameConstants.COSTS.CREW_TRAINING) {
       return {
         isValid: false,
-        message: `Need ${GAME_CONSTANTS.COSTS.CREW_TRAINING} credits for training`
+        message: `Need ${gameConstants.COSTS.CREW_TRAINING} credits for training`
       };
     }
     return { isValid: true };
   },
 
   validateMoraleBoost: (credits: number): { isValid: boolean; message?: string } => {
-    if (credits < GAME_CONSTANTS.COSTS.MORALE_BOOST) {
+    if (credits < gameConstants.COSTS.MORALE_BOOST) {
       return {
         isValid: false,
-        message: `Need ${GAME_CONSTANTS.COSTS.MORALE_BOOST} credits to boost morale`
+        message: `Need ${gameConstants.COSTS.MORALE_BOOST} credits to boost morale`
       };
     }
     return { isValid: true };
   },
 
   validateCrewRecruitment: (credits: number, currentCrew: CrewMember[], ship: Ship): { isValid: boolean; message?: string } => {
-    if (credits < GAME_CONSTANTS.COSTS.CREW_RECRUITMENT) {
+    if (credits < gameConstants.COSTS.CREW_RECRUITMENT) {
       return {
         isValid: false,
-        message: `Need ${GAME_CONSTANTS.COSTS.CREW_RECRUITMENT} credits to recruit crew`
+        message: `Need ${gameConstants.COSTS.CREW_RECRUITMENT} credits to recruit crew`
       };
     }
     if (currentCrew.length >= ship.stats.crewCapacity) {
@@ -117,33 +117,33 @@ export const ValidationService = {
   },
 
   validateSystemExploration: (energy: number): { isValid: boolean; message?: string } => {
-    if (energy < GAME_CONSTANTS.COSTS.EXPLORATION.energy) {
+    if (energy < gameConstants.COSTS.EXPLORATION.energy) {
       return {
         isValid: false,
-        message: `Need ${GAME_CONSTANTS.COSTS.EXPLORATION.energy} energy to explore`
+        message: `Need ${gameConstants.COSTS.EXPLORATION.energy} energy to explore`
       };
     }
     return { isValid: true };
   },
 
   validateColonyEstablishment: (resources: Resources): { isValid: boolean; message?: string } => {
-    if (resources.credits < GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.credits) {
+    if (resources.credits < gameConstants.COSTS.COLONY_ESTABLISHMENT.credits) {
       return {
         isValid: false,
-        message: `Need ${GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.credits} credits to establish colony`
+        message: `Need ${gameConstants.COSTS.COLONY_ESTABLISHMENT.credits} credits to establish colony`
       };
     }
-    if (resources.minerals < GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.minerals) {
+    if (resources.minerals < gameConstants.COSTS.COLONY_ESTABLISHMENT.minerals) {
       return {
         isValid: false,
-        message: `Need ${GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.minerals} minerals to establish colony`
+        message: `Need ${gameConstants.COSTS.COLONY_ESTABLISHMENT.minerals} minerals to establish colony`
       };
     }
     return { isValid: true };
   },
 
   validateTrade: (resources: Resources, resource: keyof Resources, action: 'buy' | 'sell', marketPrice: number): { isValid: boolean; message?: string } => {
-    const amount = GAME_CONSTANTS.TRADE.DEFAULT_AMOUNT;
+    const amount = gameConstants.TRADE.DEFAULT_AMOUNT;
 
     if (action === 'buy') {
       const cost = marketPrice * amount;
@@ -191,20 +191,20 @@ export const ValidationService = {
   },
 
   validateSkillLevel: (skillLevel: number): { isValid: boolean; message?: string } => {
-    if (skillLevel < 0 || skillLevel > GAME_CONSTANTS.LIMITS.MAX_SKILL_LEVEL) {
+    if (skillLevel < 0 || skillLevel > gameConstants.LIMITS.MAX_SKILL_LEVEL) {
       return {
         isValid: false,
-        message: `Skill level must be between 0 and ${GAME_CONSTANTS.LIMITS.MAX_SKILL_LEVEL}`
+        message: `Skill level must be between 0 and ${gameConstants.LIMITS.MAX_SKILL_LEVEL}`
       };
     }
     return { isValid: true };
   },
 
   validateMorale: (morale: number): { isValid: boolean; message?: string } => {
-    if (morale < 0 || morale > GAME_CONSTANTS.LIMITS.MAX_MORALE) {
+    if (morale < 0 || morale > gameConstants.LIMITS.MAX_MORALE) {
       return {
         isValid: false,
-        message: `Morale must be between 0 and ${GAME_CONSTANTS.LIMITS.MAX_MORALE}`
+        message: `Morale must be between 0 and ${gameConstants.LIMITS.MAX_MORALE}`
       };
     }
     return { isValid: true };

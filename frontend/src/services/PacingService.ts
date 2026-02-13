@@ -9,13 +9,29 @@ import type {
   PacingPreferences,
   EngagementAnalysis,
   EngagementLevel,
+  EngagementFactor,
+  EngagementPrediction,
+  EngagementRecommendation,
   AutomationPolicy,
   PacingMetrics,
-  AdaptiveSettings
+  AdaptiveSettings,
+  EscalationCondition
 } from '../types/pacing';
 import type { GenerationalMission } from '../types/generationalMissions';
 import type { Chronicle } from '../types/chronicle';
 import Logger from '../utils/logger';
+
+interface PacingEventLike {
+  urgency?: string;
+  requiresPlayerDecision?: boolean;
+  category?: string;
+}
+
+interface InteractionPatternAnalysis {
+  averageEngagement: number;
+  crisisOverload: boolean;
+  boredom: boolean;
+}
 
 export class PacingService {
   private static readonly PACING_STORAGE_KEY = 'stellar-legacy-pacing-state';
@@ -293,7 +309,7 @@ export class PacingService {
    * Determine if game should pause for player interaction
    */
   static shouldPauseForInteraction(
-    event: any,
+    event: PacingEventLike,
     pacingState: PacingState,
     automationPolicies: AutomationPolicy[]
   ): boolean {
@@ -585,8 +601,8 @@ export class PacingService {
 
   private static calculateResourceStress(mission: GenerationalMission): number {
     const resources = mission.resources;
-    const critical = ['food', 'energy', 'fuel'].map(resource =>
-      Math.max(0, 1 - ((resources as any)[resource] / 1000)) // Assuming 1000 is a comfortable level
+    const critical = (['food', 'energy', 'fuel'] as const).map((resource) =>
+      Math.max(0, 1 - (resources[resource] / 1000)) // Assuming 1000 is a comfortable level
     );
 
     return critical.reduce((sum, stress) => sum + stress, 0) / critical.length;
@@ -643,7 +659,7 @@ export class PacingService {
     return [];
   }
 
-  private static analyzeInteractionPatterns(interactions: InteractionEvent[]): any {
+  private static analyzeInteractionPatterns(interactions: InteractionEvent[]): InteractionPatternAnalysis {
     const recentInteractions = interactions.slice(-10); // Last 10 interactions
 
     return {
@@ -653,7 +669,7 @@ export class PacingService {
     };
   }
 
-  private static adaptAutomationLevel(currentLevel: number, analysis: any): number {
+  private static adaptAutomationLevel(currentLevel: number, analysis: InteractionPatternAnalysis): number {
     if (analysis.crisisOverload) {
       return Math.min(1.0, currentLevel + 0.2);
     }
@@ -663,7 +679,7 @@ export class PacingService {
     return currentLevel;
   }
 
-  private static updateAdaptiveSettings(settings: AdaptiveSettings, _analysis: any): AdaptiveSettings {
+  private static updateAdaptiveSettings(settings: AdaptiveSettings, _analysis: InteractionPatternAnalysis): AdaptiveSettings {
     return {
       ...settings,
       // Update based on analysis
@@ -724,7 +740,7 @@ export class PacingService {
     return 2.0 - engagementScore;
   }
 
-  private static evaluateEscalationCondition(_condition: any, _event: any, _pacingState: PacingState): boolean {
+  private static evaluateEscalationCondition(_condition: EscalationCondition, _event: PacingEventLike, _pacingState: PacingState): boolean {
     // Evaluate specific escalation condition
     return false;
   }
@@ -751,17 +767,17 @@ export class PacingService {
     return 'stable';
   }
 
-  private static identifyEngagementFactors(_interactions: InteractionEvent[], _pacingState: PacingState): any[] {
+  private static identifyEngagementFactors(_interactions: InteractionEvent[], _pacingState: PacingState): EngagementFactor[] {
     // Identify factors affecting engagement
     return [];
   }
 
-  private static generateEngagementPredictions(_interactions: InteractionEvent[], _pacingState: PacingState): any[] {
+  private static generateEngagementPredictions(_interactions: InteractionEvent[], _pacingState: PacingState): EngagementPrediction[] {
     // Generate predictions about future engagement
     return [];
   }
 
-  private static generateEngagementRecommendations(_level: EngagementLevel, _trend: string, _factors: any[]): any[] {
+  private static generateEngagementRecommendations(_level: EngagementLevel, _trend: string, _factors: EngagementFactor[]): EngagementRecommendation[] {
     // Generate recommendations to improve engagement
     return [];
   }

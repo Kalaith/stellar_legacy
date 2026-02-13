@@ -88,7 +88,7 @@ export class ResourceService {
       Object.entries(rates).forEach(([resource, rate]) => {
         const resourceKey = resource as keyof Resources;
         if (rate && newResources[resourceKey] !== undefined) {
-          const constraints = ValidationService.RESOURCE_CONSTRAINTS[resourceKey];
+          const constraints = ValidationService.resourceConstraints[resourceKey];
           newResources[resourceKey] = Math.min(constraints.max, newResources[resourceKey] + rate);
         }
       });

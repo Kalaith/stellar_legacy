@@ -3,7 +3,7 @@ import type { CrewMember, Resources, Ship, StarSystem, Planet } from '../types/g
 import type { GameOperationResult } from '../types/errors';
 import { GameOperationError } from '../types/errors';
 import { CrewIdGenerator } from '../types/branded';
-import { GAME_CONSTANTS } from '../constants/gameConstants';
+import { gameConstants } from '../constants/gameConstants';
 import { ResourceService } from './ResourceService';
 import { ValidationService } from './ValidationService';
 
@@ -11,7 +11,7 @@ export class GameEngine {
   static calculateMoraleBoost(crew: CrewMember[]): CrewMember[] {
     return crew.map(member => ({
       ...member,
-      morale: Math.min(GAME_CONSTANTS.LIMITS.MAX_MORALE, member.morale + GAME_CONSTANTS.LIMITS.CREW_MORALE_BOOST)
+      morale: Math.min(gameConstants.LIMITS.MAX_MORALE, member.morale + gameConstants.LIMITS.CREW_MORALE_BOOST)
     }));
   }
 
@@ -22,7 +22,7 @@ export class GameEngine {
 
     const updatedCrew = crew.map(member =>
       member.id === randomCrew.id
-        ? { ...member, skills: { ...member.skills, [randomSkill]: Math.min(GAME_CONSTANTS.LIMITS.MAX_SKILL_LEVEL, member.skills[randomSkill] + 1) } }
+        ? { ...member, skills: { ...member.skills, [randomSkill]: Math.min(gameConstants.LIMITS.MAX_SKILL_LEVEL, member.skills[randomSkill] + 1) } }
         : member
     );
 
@@ -39,8 +39,8 @@ export class GameEngine {
 
   private static generateRandomSkill(): number {
     return this.generateRandomInRange(
-      GAME_CONSTANTS.LIMITS.MIN_RANDOM_SKILL,
-      GAME_CONSTANTS.LIMITS.MAX_RANDOM_SKILL
+      gameConstants.LIMITS.MIN_RANDOM_SKILL,
+      gameConstants.LIMITS.MAX_RANDOM_SKILL
     );
   }
 
@@ -57,17 +57,17 @@ export class GameEngine {
   static generateRandomCrew(): CrewMember {
     return {
       id: CrewIdGenerator.generate(),
-      name: this.getRandomFromArray(GAME_CONSTANTS.RANDOM_NAMES.CREW_FIRST_NAMES),
-      role: this.getRandomFromArray(GAME_CONSTANTS.CREW_ROLES),
+      name: this.getRandomFromArray(gameConstants.RANDOM_NAMES.CREW_FIRST_NAMES),
+      role: this.getRandomFromArray(gameConstants.CREW_ROLES),
       skills: this.generateSkillSet(),
       morale: this.generateRandomInRange(
-        GAME_CONSTANTS.LIMITS.MIN_CREW_MORALE,
-        GAME_CONSTANTS.LIMITS.MAX_CREW_MORALE
+        gameConstants.LIMITS.MIN_CREW_MORALE,
+        gameConstants.LIMITS.MAX_CREW_MORALE
       ),
-      background: this.getRandomFromArray(GAME_CONSTANTS.CREW_BACKGROUNDS),
+      background: this.getRandomFromArray(gameConstants.CREW_BACKGROUNDS),
       age: this.generateRandomInRange(
-        GAME_CONSTANTS.LIMITS.MIN_CREW_AGE,
-        GAME_CONSTANTS.LIMITS.MAX_CREW_AGE
+        gameConstants.LIMITS.MIN_CREW_AGE,
+        gameConstants.LIMITS.MAX_CREW_AGE
       ),
       isHeir: false
     };
@@ -75,8 +75,8 @@ export class GameEngine {
 
   private static generatePlanetResources(): string[] {
     const resourceCount = this.generateRandomInRange(
-      GAME_CONSTANTS.WORLD_GENERATION.MIN_RESOURCES_PER_PLANET,
-      GAME_CONSTANTS.WORLD_GENERATION.MAX_RESOURCES_PER_PLANET
+      gameConstants.WORLD_GENERATION.MIN_RESOURCES_PER_PLANET,
+      gameConstants.WORLD_GENERATION.MAX_RESOURCES_PER_PLANET
     );
 
     const resources = new Set<string>();
@@ -84,7 +84,7 @@ export class GameEngine {
     let attempts = 0;
 
     while (resources.size < resourceCount && attempts < maxAttempts) {
-      const resource = this.getRandomFromArray(GAME_CONSTANTS.RESOURCE_TYPES);
+      const resource = this.getRandomFromArray(gameConstants.RESOURCE_TYPES);
       resources.add(resource);
       attempts++;
     }
@@ -104,8 +104,8 @@ export class GameEngine {
 
   static generatePlanets(systemName: string = 'Unknown'): Planet[] {
     const planetCount = this.generateRandomInRange(
-      GAME_CONSTANTS.WORLD_GENERATION.MIN_PLANETS_PER_SYSTEM,
-      GAME_CONSTANTS.WORLD_GENERATION.MAX_PLANETS_PER_SYSTEM
+      gameConstants.WORLD_GENERATION.MIN_PLANETS_PER_SYSTEM,
+      gameConstants.WORLD_GENERATION.MAX_PLANETS_PER_SYSTEM
     );
 
     const planets: Planet[] = [];
@@ -113,7 +113,7 @@ export class GameEngine {
     for (let i = 0; i < planetCount; i++) {
       planets.push({
         name: this.generatePlanetName(systemName, i),
-        type: this.getRandomFromArray(GAME_CONSTANTS.PLANET_TYPES),
+        type: this.getRandomFromArray(gameConstants.PLANET_TYPES),
         resources: this.generatePlanetResources(),
         developed: false
       });
@@ -145,12 +145,12 @@ export class GameEngine {
         error: new GameOperationError(
           'Morale Boost',
           validation.message || 'Insufficient resources',
-          { credits: GAME_CONSTANTS.COSTS.MORALE_BOOST }
+          { credits: gameConstants.COSTS.MORALE_BOOST }
         )
       };
     }
 
-    const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.MORALE_BOOST });
+    const newResources = ResourceService.deductCost(resources, { credits: gameConstants.COSTS.MORALE_BOOST });
     const updatedCrew = this.calculateMoraleBoost(crew);
 
     return { success: true, data: { newResources, updatedCrew } };
@@ -164,12 +164,12 @@ export class GameEngine {
         error: new GameOperationError(
           'Crew Training',
           validation.message || 'Insufficient resources',
-          { credits: GAME_CONSTANTS.COSTS.CREW_TRAINING }
+          { credits: gameConstants.COSTS.CREW_TRAINING }
         )
       };
     }
 
-    const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.CREW_TRAINING });
+    const newResources = ResourceService.deductCost(resources, { credits: gameConstants.COSTS.CREW_TRAINING });
     const result = this.trainRandomCrew(crew);
 
     return { success: true, data: { newResources, result } };
@@ -183,12 +183,12 @@ export class GameEngine {
         error: new GameOperationError(
           'Crew Recruitment',
           validation.message || 'Cannot recruit crew',
-          { credits: GAME_CONSTANTS.COSTS.CREW_RECRUITMENT }
+          { credits: gameConstants.COSTS.CREW_RECRUITMENT }
         )
       };
     }
 
-    const newResources = ResourceService.deductCost(resources, { credits: GAME_CONSTANTS.COSTS.CREW_RECRUITMENT });
+    const newResources = ResourceService.deductCost(resources, { credits: gameConstants.COSTS.CREW_RECRUITMENT });
     const newCrew = this.generateRandomCrew();
 
     return { success: true, data: { newResources, newCrew } };
@@ -209,12 +209,12 @@ export class GameEngine {
         error: new GameOperationError(
           'System Exploration',
           validation.message || 'Insufficient energy',
-          { energy: GAME_CONSTANTS.COSTS.EXPLORATION.energy }
+          { energy: gameConstants.COSTS.EXPLORATION.energy }
         )
       };
     }
 
-    const newResources = ResourceService.deductCost(resources, { energy: GAME_CONSTANTS.COSTS.EXPLORATION.energy });
+    const newResources = ResourceService.deductCost(resources, { energy: gameConstants.COSTS.EXPLORATION.energy });
     const planets = this.generatePlanets(selectedSystem.name);
 
     return { success: true, data: { newResources, planets } };
@@ -236,8 +236,8 @@ export class GameEngine {
           'Colony Establishment',
           validation.message || 'Insufficient resources',
           {
-            credits: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.credits,
-            minerals: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.minerals
+            credits: gameConstants.COSTS.COLONY_ESTABLISHMENT.credits,
+            minerals: gameConstants.COSTS.COLONY_ESTABLISHMENT.minerals
           }
         )
       };
@@ -252,14 +252,14 @@ export class GameEngine {
     }
 
     const newResources = ResourceService.deductCost(resources, {
-      credits: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.credits,
-      minerals: GAME_CONSTANTS.COSTS.COLONY_ESTABLISHMENT.minerals
+      credits: gameConstants.COSTS.COLONY_ESTABLISHMENT.credits,
+      minerals: gameConstants.COSTS.COLONY_ESTABLISHMENT.minerals
     });
 
     const newGenerationRate: Partial<Resources> = {};
     undevelopedPlanet.resources.forEach(resource => {
       if (newGenerationRate[resource as keyof Resources] !== undefined) {
-        newGenerationRate[resource as keyof Resources] = (newGenerationRate[resource as keyof Resources] || 0) + GAME_CONSTANTS.RESOURCE_GENERATION.COLONY_BOOST;
+        newGenerationRate[resource as keyof Resources] = (newGenerationRate[resource as keyof Resources] || 0) + gameConstants.RESOURCE_GENERATION.COLONY_BOOST;
       }
     });
 

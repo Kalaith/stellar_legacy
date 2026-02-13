@@ -4,6 +4,7 @@ import type {
   PopulationCohort,
   ExtendedResources,
   GenerationalShip,
+  LegacyModification,
   Population,
   SuccessMetric,
   FailureRisk,
@@ -141,7 +142,7 @@ export class MissionService {
   }
 
   // Get Legacy Modifications
-  private static getLegacyModifications(legacy: LegacyTypeType): any[] {
+  private static getLegacyModifications(legacy: LegacyTypeType): LegacyModification[] {
     // Would return actual SectModification objects in full implementation
     const modifications = {
       preservers: ['Cultural Preservation Protocols', 'Traditional Life Support', 'Heritage Archives'],
@@ -612,13 +613,14 @@ export class MissionService {
     yearsElapsed: number,
     updates: string[]
   ): void {
-    Object.entries(mission.productionRates).forEach(([resource, rate]) => {
-      if (rate !== undefined) {
-        const generated = Math.floor(rate * yearsElapsed);
-        if (generated > 0) {
-          (mission.resources as any)[resource] += generated;
-          updates.push(`Generated ${generated} ${resource}`);
-        }
+    (Object.keys(mission.productionRates) as Array<keyof ExtendedResources>).forEach((resource) => {
+      const rate = mission.productionRates[resource];
+      if (typeof rate !== 'number') return;
+
+      const generated = Math.floor(rate * yearsElapsed);
+      if (generated > 0) {
+        mission.resources[resource] += generated;
+        updates.push(`Generated ${generated} ${String(resource)}`);
       }
     });
   }

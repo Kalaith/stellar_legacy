@@ -3,10 +3,21 @@ import React, { useState } from 'react';
 import { useGenerationalMissionStore, useActiveEvents } from '../../../stores/useGenerationalMissionStore';
 import { TerminalWindow, TerminalText, TerminalButton, TerminalSelect, TerminalInput, TerminalProgress, TerminalTable } from '../../ui/TerminalWindow';
 import type { GenerationalMission, MissionEvent } from '../../../types/generationalMissions';
-import type { LegacyTypeType, MissionObjectiveType } from '../../../types/enums';
+import type { LegacyTypeType, MissionObjectiveType, ShipClassType, ShipSizeType } from '../../../types/enums';
 
 interface MissionCommandCenterProps {
   className?: string;
+}
+
+interface NewMissionConfig {
+  name: string;
+  legacy: LegacyTypeType;
+  objective: MissionObjectiveType;
+  targetSystemId: string;
+  estimatedDuration: number;
+  shipClass: ShipClassType;
+  shipSize: ShipSizeType;
+  populationSize: number;
 }
 
 export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({ className = '' }) => {
@@ -25,10 +36,10 @@ export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({ clas
   const activeEvents = useActiveEvents();
 
   const [showCreateMission, setShowCreateMission] = useState(false);
-  const [newMissionConfig, setNewMissionConfig] = useState({
+  const [newMissionConfig, setNewMissionConfig] = useState<NewMissionConfig>({
     name: '',
-    legacy: 'preservers' as LegacyTypeType,
-    objective: 'colonization' as MissionObjectiveType,
+    legacy: 'preservers',
+    objective: 'colonization',
     targetSystemId: 'system_1',
     estimatedDuration: 200,
     shipClass: 'colony',
@@ -372,8 +383,8 @@ const TerminalEventsPanel: React.FC<{
 
 // Terminal Create Mission Component
 const TerminalCreateMission: React.FC<{
-  config: any;
-  onChange: (config: any) => void;
+  config: NewMissionConfig;
+  onChange: (config: NewMissionConfig) => void;
   onConfirm: () => void;
   onCancel: () => void;
 }> = ({ config, onChange, onConfirm, onCancel }) => {

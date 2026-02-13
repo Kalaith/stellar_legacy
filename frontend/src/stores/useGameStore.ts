@@ -6,13 +6,14 @@ import type { CulturalEvolution } from '../types/generationalMissions';
 import type { Chronicle, ChronicleEntry } from '../types/chronicle';
 import type { HeritageModifier } from '../types/heritage';
 import type { PacingState, PacingPreferences } from '../types/pacing';
-import type { LegacyCard, LegacyDeck, CardTriggerResult } from '../types/legacyDecks';
+import type { CardModification, LegacyCard, LegacyDeck, CardTriggerResult } from '../types/legacyDecks';
+import type { GenerationalMission } from '../types/generationalMissions';
 import { ChronicleService } from '../services/ChronicleService';
 import { HeritageService } from '../services/HeritageService';
 import { PacingService } from '../services/PacingService';
 import { LegacyDeckService } from '../services/LegacyDeckService';
 import { DecisionTrackingService, type DecisionInput } from '../services/DecisionTrackingService';
-import { GAME_CONSTANTS } from '../constants/gameConstants';
+import { gameConstants } from '../constants/gameConstants';
 import type { TabIdType, TradeActionType, LegacyTypeType } from '../types/enums';
 import { TabId } from '../types/enums';
 import { DynastyService } from '../services/DynastyService';
@@ -199,7 +200,7 @@ interface GameStore extends GameState {
   // Dynasty System Actions
   dynastyAction: (dynastyId: string, action: string) => void;
   legacyAction: (targetLegacy: LegacyTypeType, action: string) => void;
-  culturalAction: (action: string, parameters?: any) => void;
+  culturalAction: (action: string, parameters?: unknown) => void;
   initializeDynasties: (legacy: LegacyTypeType) => void;
 
   // Chronicle System Actions
@@ -212,7 +213,7 @@ interface GameStore extends GameState {
   recordDecision: (decision: DecisionInput) => void;
 
   // Pacing System Actions
-  initializePacing: (mission?: any) => Promise<void>;
+  initializePacing: (mission?: GenerationalMission) => Promise<void>;
   updatePacingState: (updates: Partial<PacingState>) => void;
   updatePacingPreferences: (preferences: PacingPreferences) => void;
   pauseTime: () => void;
@@ -225,7 +226,7 @@ interface GameStore extends GameState {
   triggerCard: (cardId: string) => void;
   resolveCardChoice: (cardId: string, choiceId: string) => void;
   rateCard: (cardId: string, rating: number) => void;
-  customizeCard: (cardId: string, modifications: any[]) => void;
+  customizeCard: (cardId: string, modifications: CardModification[]) => void;
 
   // Helper methods
   canAffordComponent: (cost: ComponentCost) => boolean;
@@ -246,11 +247,11 @@ export const useGameStore = create<GameStore>()(
       selectedSystem: null,
       currentComponentCategory: 'hulls',
       resourceGenerationRate: {
-        credits: GAME_CONSTANTS.RESOURCE_GENERATION.BASE_RATES.CREDITS,
-        energy: GAME_CONSTANTS.RESOURCE_GENERATION.BASE_RATES.ENERGY,
-        minerals: GAME_CONSTANTS.RESOURCE_GENERATION.BASE_RATES.MINERALS,
-        food: GAME_CONSTANTS.RESOURCE_GENERATION.BASE_RATES.FOOD,
-        influence: GAME_CONSTANTS.RESOURCE_GENERATION.BASE_RATES.INFLUENCE
+        credits: gameConstants.RESOURCE_GENERATION.BASE_RATES.CREDITS,
+        energy: gameConstants.RESOURCE_GENERATION.BASE_RATES.ENERGY,
+        minerals: gameConstants.RESOURCE_GENERATION.BASE_RATES.MINERALS,
+        food: gameConstants.RESOURCE_GENERATION.BASE_RATES.FOOD,
+        influence: gameConstants.RESOURCE_GENERATION.BASE_RATES.INFLUENCE
       },
       currentTab: 'dashboard',
       notifications: [],
@@ -622,7 +623,7 @@ export const useGameStore = create<GameStore>()(
             return;
           }
 
-          const amount = GAME_CONSTANTS.TRADE.DEFAULT_AMOUNT;
+          const amount = gameConstants.TRADE.DEFAULT_AMOUNT;
           const cost = ResourceService.calculateTradeCost(price, amount);
           const isBuying = action === 'buy';
           const newResources = ResourceService.processTrade(resources, cost, resource, amount, isBuying);
@@ -713,7 +714,7 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      culturalAction: (action: string, parameters?: any) => {
+      culturalAction: (action: string, parameters?: unknown) => {
         try {
           let message = '';
 
@@ -840,9 +841,10 @@ export const useGameStore = create<GameStore>()(
           // Apply resource changes to current resources
           const currentResources = get().resources;
           const updatedResources = { ...currentResources };
-          Object.entries(result.resourceChanges).forEach(([resource, change]) => {
-            if (updatedResources[resource as keyof typeof updatedResources] !== undefined) {
-              (updatedResources as any)[resource] += change;
+          (Object.keys(result.resourceChanges) as Array<keyof typeof updatedResources>).forEach((resource) => {
+            const change = result.resourceChanges[resource];
+            if (typeof change === 'number') {
+              updatedResources[resource] += change;
             }
           });
 
@@ -894,7 +896,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       // Pacing System Actions
-      initializePacing: async (mission?: any) => {
+      initializePacing: async (mission?: GenerationalMission) => {
         try {
           const { pacingPreferences, chronicle } = get();
           const targetMission = mission || get().selectedMission;
@@ -1037,7 +1039,7 @@ export const useGameStore = create<GameStore>()(
         get().showNotification(`Card rated: ${rating}/5`, 'success');
       },
 
-      customizeCard: (cardId: string, modifications: any[]) => {
+      customizeCard: (cardId: string, modifications: CardModification[]) => {
         const { legacyDecks, playerLegacy } = get();
         const deck = legacyDecks[playerLegacy];
 

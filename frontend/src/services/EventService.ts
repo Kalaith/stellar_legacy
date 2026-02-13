@@ -326,11 +326,12 @@ export class EventService {
     const effects: string[] = [];
 
     // Apply resource changes
+    const resources = mission.resources as unknown as Record<string, unknown>;
     Object.entries(outcome.resourceChanges).forEach(([resource, change]) => {
-      if (change !== undefined && change !== 0) {
-        const oldValue = (mission.resources as any)[resource] || 0;
+      if (typeof change === 'number' && change !== 0) {
+        const oldValue = typeof resources[resource] === 'number' ? (resources[resource] as number) : 0;
         const newValue = Math.max(0, oldValue + change);
-        (mission.resources as any)[resource] = newValue;
+        resources[resource] = newValue;
 
         effects.push(`${resource}: ${oldValue} → ${newValue}`);
       }

@@ -29,8 +29,11 @@ export class ServiceError extends Error {
     this.innerError = innerError;
 
     // Maintain proper stack trace in Node.js environments
-    if (typeof (Error as any).captureStackTrace === 'function') {
-      (Error as any).captureStackTrace(this, ServiceError);
+    const errorCtor = Error as ErrorConstructor & {
+      captureStackTrace?: (target: object, constructorOpt?: (...args: unknown[]) => unknown) => void;
+    };
+    if (typeof errorCtor.captureStackTrace === 'function') {
+      errorCtor.captureStackTrace(this, ServiceError);
     }
   }
 
@@ -52,7 +55,7 @@ export class ServiceError extends Error {
 /**
  * Pre-defined error codes for common scenarios
  */
-export const ERROR_CODES = {
+export const errorCodes = {
   // Validation errors
   INVALID_INPUT: 'INVALID_INPUT',
   REQUIRED_FIELD: 'REQUIRED_FIELD',
@@ -128,7 +131,7 @@ export const ResultHelpers = {
         ? error
         : new ServiceError(
             'Operation failed',
-            ERROR_CODES.OPERATION_FAILED,
+            errorCodes.OPERATION_FAILED,
             context,
             error instanceof Error ? error : new Error(String(error))
           );
@@ -152,7 +155,7 @@ export const ResultHelpers = {
         ? error
         : new ServiceError(
             'Async operation failed',
-            ERROR_CODES.OPERATION_FAILED,
+            errorCodes.OPERATION_FAILED,
             context,
             error instanceof Error ? error : new Error(String(error))
           );

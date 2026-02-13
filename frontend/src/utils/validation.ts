@@ -1,5 +1,5 @@
 // utils/validation.ts
-import { ServiceError, ERROR_CODES } from './result';
+import { ServiceError, errorCodes } from './result';
 import type { ChronicleEntry, ChronicleDecision } from '../types/chronicle';
 import type { HeritageModifier } from '../types/heritage';
 import type { LegacyCard } from '../types/legacyDecks';
@@ -176,20 +176,35 @@ export const DomainValidators = {
    * Validate PacingState
    */
   pacingState: (value: unknown): value is PacingState => {
-    if (!ValidationUtils.hasRequiredProperties(value, [
-      'currentPhase',
-      'timeAcceleration',
-      'paused',
-    ])) {
+    if (typeof value !== 'object' || value === null) {
       return false;
     }
 
-    const state = value as unknown as PacingState;
+    const state = value as Record<string, unknown>;
+
+    const pausedValue =
+      typeof state.paused === 'boolean'
+        ? state.paused
+        : typeof state.isPaused === 'boolean'
+          ? state.isPaused
+          : undefined;
+
+    if (
+      !ValidationUtils.hasRequiredProperties(value, [
+        'currentPhase',
+        'timeAcceleration',
+      ]) ||
+      pausedValue === undefined
+    ) {
+      return false;
+    }
+
+    const pacingState = state as unknown as PacingState;
 
     return (
-      ['early_game', 'mid_game', 'late_game', 'end_game'].includes(state.currentPhase) &&
-      ValidationUtils.isPositiveNumber(state.timeAcceleration) &&
-      typeof (state as any).paused === 'boolean' || typeof (state as any).isPaused === 'boolean'
+      ['early_game', 'mid_game', 'late_game', 'end_game'].includes(pacingState.currentPhase) &&
+      ValidationUtils.isPositiveNumber(pacingState.timeAcceleration) &&
+      typeof pausedValue === 'boolean'
     );
   },
 };
@@ -205,7 +220,7 @@ export const validate = {
     if (value === null || value === undefined) {
       throw new ServiceError(
         `${fieldName} is required`,
-        ERROR_CODES.REQUIRED_FIELD,
+        errorCodes.REQUIRED_FIELD,
         { fieldName, value }
       );
     }
@@ -224,7 +239,7 @@ export const validate = {
     if (!guard(value)) {
       throw new ServiceError(
         `${fieldName} must be a valid ${expectedType}`,
-        ERROR_CODES.INVALID_FORMAT,
+        errorCodes.INVALID_FORMAT,
         { fieldName, value, expectedType }
       );
     }
@@ -243,7 +258,7 @@ export const validate = {
     if (value.length < minLength || value.length > maxLength) {
       throw new ServiceError(
         `${fieldName} must be between ${minLength} and ${maxLength} characters`,
-        ERROR_CODES.INVALID_FORMAT,
+        errorCodes.INVALID_FORMAT,
         { fieldName, value, minLength, maxLength, actualLength: value.length }
       );
     }
@@ -262,7 +277,7 @@ export const validate = {
     if (value < min || value > max) {
       throw new ServiceError(
         `${fieldName} must be between ${min} and ${max}`,
-        ERROR_CODES.INVALID_FORMAT,
+        errorCodes.INVALID_FORMAT,
         { fieldName, value, min, max }
       );
     }
@@ -281,7 +296,7 @@ export const validate = {
     if (value.length < minLength || value.length > maxLength) {
       throw new ServiceError(
         `${fieldName} must contain between ${minLength} and ${maxLength} items`,
-        ERROR_CODES.INVALID_FORMAT,
+        errorCodes.INVALID_FORMAT,
         { fieldName, minLength, maxLength, actualLength: value.length }
       );
     }
@@ -299,7 +314,7 @@ export const validate = {
     if (!allowedValues.includes(value as T)) {
       throw new ServiceError(
         `${fieldName} must be one of: ${allowedValues.join(', ')}`,
-        ERROR_CODES.INVALID_FORMAT,
+        errorCodes.INVALID_FORMAT,
         { fieldName, value, allowedValues }
       );
     }

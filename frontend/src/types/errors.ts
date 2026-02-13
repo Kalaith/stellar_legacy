@@ -31,5 +31,5 @@ export interface ValidationResult {
 export type GameError = {
   type: 'VALIDATION' | 'RESOURCE' | 'NETWORK' | 'UNKNOWN';
   message: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 };

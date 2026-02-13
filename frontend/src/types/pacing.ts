@@ -79,7 +79,7 @@ export class MilestoneChoice {
 export class MilestoneConsequence {
   type!: 'immediate' | 'long-term' | 'chronicle';
   description!: string;
-  effects!: any[]; // Flexible effect system
+  effects!: unknown[]; // Flexible effect system
   narrativeWeight!: number;
 }
 
@@ -123,8 +123,8 @@ export class AdaptiveSettings {
 export class PlayerOverride {
   timestamp!: number;
   type!: 'speed' | 'automation' | 'event_density' | 'milestone_timing';
-  oldValue!: any;
-  newValue!: any;
+  oldValue!: unknown;
+  newValue!: unknown;
   reason!: string; // Why the player made this change
 }
 
@@ -171,7 +171,7 @@ export class PhaseTransitionCondition {
   type!: 'year' | 'mission_progress' | 'population' | 'resource' | 'event';
   target!: string;
   operator!: 'greater' | 'less' | 'equals' | 'contains';
-  value!: any;
+  value!: unknown;
   weight!: number; // How important this condition is
 }
 
@@ -261,7 +261,7 @@ export class AutomationPolicy {
 
 export class EscalationCondition {
   type!: 'resource_threshold' | 'population_crisis' | 'external_threat' | 'uncertainty';
-  threshold!: any;
+  threshold!: unknown;
   response!: 'pause' | 'notify' | 'reduce_automation' | 'emergency_protocol';
   description!: string;
 }

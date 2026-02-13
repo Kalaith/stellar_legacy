@@ -259,7 +259,7 @@ export const TimeController: React.FC<TimeControllerProps> = ({
                   value={localPreferences.preferredSpeed}
                   onChange={(e) => setLocalPreferences({
                     ...localPreferences,
-                    preferredSpeed: e.target.value as any
+                    preferredSpeed: e.target.value as PacingPreferences['preferredSpeed']
                   })}
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
                 >
@@ -276,7 +276,7 @@ export const TimeController: React.FC<TimeControllerProps> = ({
                   value={localPreferences.crisisHandling}
                   onChange={(e) => setLocalPreferences({
                     ...localPreferences,
-                    crisisHandling: e.target.value as any
+                    crisisHandling: e.target.value as PacingPreferences['crisisHandling']
                   })}
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
                 >
@@ -292,7 +292,7 @@ export const TimeController: React.FC<TimeControllerProps> = ({
                   value={localPreferences.milestoneFrequency}
                   onChange={(e) => setLocalPreferences({
                     ...localPreferences,
-                    milestoneFrequency: e.target.value as any
+                    milestoneFrequency: e.target.value as PacingPreferences['milestoneFrequency']
                   })}
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
                 >
@@ -308,7 +308,7 @@ export const TimeController: React.FC<TimeControllerProps> = ({
                   value={localPreferences.narrativeStyle}
                   onChange={(e) => setLocalPreferences({
                     ...localPreferences,
-                    narrativeStyle: e.target.value as any
+                    narrativeStyle: e.target.value as PacingPreferences['narrativeStyle']
                   })}
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
                 >

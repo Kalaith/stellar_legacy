@@ -1,5 +1,5 @@
 // constants/uiConstants.ts - Terminal UI Design System per Terminal_UI_Redesign_Plan.md
-export const UI_CONSTANTS = {
+export const uiConstants = {
   NAVIGATION: {
     CORE_SYSTEMS_HEADER_LENGTH: 15,
     GENERATIONAL_SYSTEMS_HEADER_LENGTH: 23,

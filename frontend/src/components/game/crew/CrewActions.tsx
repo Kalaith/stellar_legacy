@@ -4,7 +4,7 @@ import { useGameStore } from '../../../stores/useGameStore';
 import { useGameActions } from '../../../hooks/useGameActions';
 import Card from '../../ui/Card';
 import Button from '../../ui/Button';
-import { UI_CONSTANTS } from '../../../constants/uiConstants';
+import { uiConstants } from '../../../constants/uiConstants';
 
 const CrewActions: React.FC = React.memo(() => {
   const { resources, crew, ship } = useGameStore();
@@ -49,7 +49,7 @@ const CrewActions: React.FC = React.memo(() => {
         />
 
         {crew.length >= ship.stats.crewCapacity && (
-          <div className={`${UI_CONSTANTS.NOTIFICATIONS.WARNING} ${UI_CONSTANTS.SPACING.CARD_PADDING_SM}`}>
+          <div className={`${uiConstants.NOTIFICATIONS.WARNING} ${uiConstants.SPACING.CARD_PADDING_SM}`}>
             <p className="text-sm">
               Ship at maximum crew capacity. Upgrade living quarters to recruit more crew.
             </p>
@@ -79,12 +79,12 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   cost,
   canAfford
 }) => (
-  <div className={`${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded-lg p-4 border ${UI_CONSTANTS.COLORS.BORDER_LIGHT}`}>
-    <div className={`flex justify-between items-start ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM}`}>
-      <h4 className={`${UI_CONSTANTS.COLORS.TEXT_PRIMARY} font-semibold`}>{title}</h4>
-      <span className={`${UI_CONSTANTS.COLORS.TEXT_MUTED} text-sm`}>{cost}</span>
+  <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded-lg p-4 border ${uiConstants.COLORS.BORDER_LIGHT}`}>
+    <div className={`flex justify-between items-start ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
+      <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>{title}</h4>
+      <span className={`${uiConstants.COLORS.TEXT_MUTED} text-sm`}>{cost}</span>
     </div>
-    <p className={`${UI_CONSTANTS.COLORS.TEXT_SECONDARY} text-sm mb-3`}>{description}</p>
+    <p className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm mb-3`}>{description}</p>
     <Button
       onClick={onClick}
       disabled={disabled}

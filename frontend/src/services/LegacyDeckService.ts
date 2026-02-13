@@ -320,7 +320,7 @@ export class LegacyDeckService {
     deck: LegacyDeck,
     cardId: string,
     action: CurationAction,
-    value?: any
+    value?: unknown
   ): LegacyDeck {
     try {
       const newDeck = { ...deck };
@@ -426,12 +426,12 @@ export class LegacyDeckService {
     return null;
   }
 
-  private static createCardFromDiscovery(_discovery: any, _entry: ChronicleEntry): LegacyCardTemplate | null {
+  private static createCardFromDiscovery(_discovery: unknown, _entry: ChronicleEntry): LegacyCardTemplate | null {
     // Implementation for discovery-based cards
     return null;
   }
 
-  private static createCardFromEvolution(_evolution: any, _entry: ChronicleEntry): LegacyCardTemplate | null {
+  private static createCardFromEvolution(_evolution: unknown, _entry: ChronicleEntry): LegacyCardTemplate | null {
     // Implementation for evolution-based cards
     return null;
   }
@@ -459,7 +459,9 @@ export class LegacyDeckService {
 
       switch (condition.type) {
         case 'resource': {
-          const resourceValue = (gameState.resources as any)[condition.target] || 0;
+          const resources = gameState.resources as unknown as Record<string, unknown>;
+          const rawValue = resources[condition.target];
+          const resourceValue = typeof rawValue === 'number' ? rawValue : 0;
           return this.evaluateComparison(resourceValue, condition.operator, condition.value);
         }
 
@@ -480,11 +482,14 @@ export class LegacyDeckService {
     }
   }
 
-  private static evaluateComparison(actual: any, operator: string, expected: any): boolean {
+  private static evaluateComparison(actual: unknown, operator: string, expected: unknown): boolean {
+    const aNum = typeof actual === 'number' ? actual : NaN;
+    const eNum = typeof expected === 'number' ? expected : NaN;
+
     switch (operator) {
       case 'equals': return actual === expected;
-      case 'greater': return actual > expected;
-      case 'less': return actual < expected;
+      case 'greater': return aNum > eNum;
+      case 'less': return aNum < eNum;
       case 'contains': return String(actual).includes(String(expected));
       case 'not': return actual !== expected;
       default: return false;
@@ -495,8 +500,10 @@ export class LegacyDeckService {
     try {
       switch (effect.type) {
         case 'resource':
-          if (gameState.resources && effect.target in gameState.resources) {
-            (gameState.resources as any)[effect.target] += effect.magnitude;
+          if (gameState.resources) {
+            const resources = gameState.resources as unknown as Record<string, unknown>;
+            const current = typeof resources[effect.target] === 'number' ? (resources[effect.target] as number) : 0;
+            resources[effect.target] = current + effect.magnitude;
           }
           break;
 
@@ -746,7 +753,7 @@ export class LegacyDeckService {
     return Math.min(1.0, decision.chronicleWeight * 1.2);
   }
 
-  private static generateEffectTemplatesFromDecision(_decision: ChronicleDecision): any[] {
+  private static generateEffectTemplatesFromDecision(_decision: ChronicleDecision): unknown[] {
     // Generate effect templates based on decision category and impact
     return [];
   }

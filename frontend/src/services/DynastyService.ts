@@ -4,11 +4,18 @@ import type {
   DynastyMember,
   StoryThread,
   PopulationCohort,
+  ExtendedResources,
   AIDecision,
   MissionEvent
 } from '../types/generationalMissions';
 import type { LegacyTypeType, CohortTypeType } from '../types/enums';
 import Logger from '../utils/logger';
+
+interface DynastyDecisionContext {
+  availableResources: ExtendedResources;
+  currentCrisis?: MissionEvent;
+  populationNeeds: string[];
+}
 
 export class DynastyService {
   private static readonly DYNASTY_NAMES = {
@@ -255,11 +262,7 @@ export class DynastyService {
   // AI Decision Making for Dynasty Management
   static makeAutomatedDecision(
     dynasty: Dynasty,
-    context: {
-      availableResources: any;
-      currentCrisis?: MissionEvent;
-      populationNeeds: string[];
-    }
+    context: DynastyDecisionContext
   ): AIDecision {
     const decision = this.evaluateDecisionOptions(dynasty, context);
 
@@ -285,7 +288,7 @@ export class DynastyService {
   // Evaluate Decision Options for AI
   private static evaluateDecisionOptions(
     dynasty: Dynasty,
-    context: any
+    context: DynastyDecisionContext
   ): { action: string; reasoning: string; confidence: number } {
     const specialization = dynasty.specialization;
 

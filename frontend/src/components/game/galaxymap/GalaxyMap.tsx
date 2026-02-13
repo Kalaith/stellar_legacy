@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
-import { UI_CONSTANTS } from '../../../constants/uiConstants';
+import { uiConstants } from '../../../constants/uiConstants';
 import type { StarSystem } from '../../../types/game';
 
 const GalaxyMap: React.FC = React.memo(() => {
@@ -47,9 +47,9 @@ const GalaxyMap: React.FC = React.memo(() => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
       {/* Galaxy Map View */}
       <div className="lg:col-span-2">
-        <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.SPACING.CARD_PADDING} ${UI_CONSTANTS.CARDS.BORDER}`}>
-          <h3 className={`text-lg font-semibold ${UI_CONSTANTS.SPACING.SECTION_MARGIN} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Galaxy Map</h3>
-          <div className={`relative ${UI_CONSTANTS.COLORS.BG_PRIMARY} rounded-lg p-4 min-h-[400px] overflow-hidden`}>
+        <div className={`${uiConstants.CARDS.BACKGROUND} ${uiConstants.CARDS.BASE} ${uiConstants.SPACING.CARD_PADDING} ${uiConstants.CARDS.BORDER}`}>
+          <h3 className={`text-lg font-semibold ${uiConstants.SPACING.SECTION_MARGIN} ${uiConstants.COLORS.TEXT_PRIMARY}`}>Galaxy Map</h3>
+          <div className={`relative ${uiConstants.COLORS.BG_PRIMARY} rounded-lg p-4 min-h-[400px] overflow-hidden`}>
             <div className="absolute inset-0">
               {starSystems.map((system, index) => (
                 <div
@@ -76,13 +76,13 @@ const GalaxyMap: React.FC = React.memo(() => {
 
       {/* System Details */}
       <div className="space-y-4">
-        <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.SPACING.CARD_PADDING} ${UI_CONSTANTS.CARDS.BORDER}`}>
-          <h3 className={`text-lg font-semibold ${UI_CONSTANTS.SPACING.SECTION_MARGIN} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>System Details</h3>
+        <div className={`${uiConstants.CARDS.BACKGROUND} ${uiConstants.CARDS.BASE} ${uiConstants.SPACING.CARD_PADDING} ${uiConstants.CARDS.BORDER}`}>
+          <h3 className={`text-lg font-semibold ${uiConstants.SPACING.SECTION_MARGIN} ${uiConstants.COLORS.TEXT_PRIMARY}`}>System Details</h3>
           {selectedSystem ? (
             <div className="space-y-4">
               <div>
-                <h4 className={`font-medium text-lg ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>{selectedSystem.name}</h4>
-                <p className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_SECONDARY}`}>
+                <h4 className={`font-medium text-lg ${uiConstants.COLORS.TEXT_PRIMARY}`}>{selectedSystem.name}</h4>
+                <p className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}>
                   Status: <span className={`font-medium ${
                     selectedSystem.status === 'explored' ? 'text-green-400' : 'text-blue-400'
                   }`}>
@@ -92,14 +92,14 @@ const GalaxyMap: React.FC = React.memo(() => {
               </div>
 
               <div>
-                <h5 className={`font-medium mb-2 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Planets:</h5>
+                <h5 className={`font-medium mb-2 ${uiConstants.COLORS.TEXT_PRIMARY}`}>Planets:</h5>
                 <div className="space-y-2">
                   {selectedSystem.planets.map((planet, index) => (
                     <div
                       key={index}
-                      className={`flex justify-between items-center p-2 ${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded`}
+                      className={`flex justify-between items-center p-2 ${uiConstants.COLORS.BG_SECONDARY} rounded`}
                     >
-                      <span className={`text-sm ${UI_CONSTANTS.COLORS.TEXT_SECONDARY}`}>
+                      <span className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}>
                         {planet.name} ({planet.type})
                       </span>
                       <span className={`text-xs px-2 py-1 rounded ${
@@ -115,19 +115,19 @@ const GalaxyMap: React.FC = React.memo(() => {
               </div>
             </div>
           ) : (
-            <p className={UI_CONSTANTS.COLORS.TEXT_MUTED}>Select a system to view details</p>
+            <p className={uiConstants.COLORS.TEXT_MUTED}>Select a system to view details</p>
           )}
         </div>
 
         {/* System Actions */}
-        <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.SPACING.CARD_PADDING} ${UI_CONSTANTS.CARDS.BORDER}`}>
-          <h3 className={`text-lg font-semibold ${UI_CONSTANTS.SPACING.SECTION_MARGIN} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`}>Actions</h3>
+        <div className={`${uiConstants.CARDS.BACKGROUND} ${uiConstants.CARDS.BASE} ${uiConstants.SPACING.CARD_PADDING} ${uiConstants.CARDS.BORDER}`}>
+          <h3 className={`text-lg font-semibold ${uiConstants.SPACING.SECTION_MARGIN} ${uiConstants.COLORS.TEXT_PRIMARY}`}>Actions</h3>
           <div className="space-y-2">
             <button
               className={`w-full py-2 px-4 rounded font-medium transition-colors ${
                 canExplore
-                  ? `${UI_CONSTANTS.COLORS.BG_SUCCESS} hover:bg-teal-700 ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`
-                  : `${UI_CONSTANTS.COLORS.BG_TERTIARY} ${UI_CONSTANTS.COLORS.TEXT_MUTED} cursor-not-allowed`
+                  ? `${uiConstants.COLORS.BG_SUCCESS} hover:bg-teal-700 ${uiConstants.COLORS.TEXT_PRIMARY}`
+                  : `${uiConstants.COLORS.BG_TERTIARY} ${uiConstants.COLORS.TEXT_MUTED} cursor-not-allowed`
               }`}
               onClick={handleExplore}
               disabled={!canExplore}
@@ -137,8 +137,8 @@ const GalaxyMap: React.FC = React.memo(() => {
             <button
               className={`w-full py-2 px-4 rounded font-medium transition-colors ${
                 canEstablishColony
-                  ? `${UI_CONSTANTS.COLORS.BG_TERTIARY} ${UI_CONSTANTS.COLORS.HOVER_BG_SECONDARY} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY}`
-                  : `${UI_CONSTANTS.COLORS.BG_TERTIARY} ${UI_CONSTANTS.COLORS.TEXT_MUTED} cursor-not-allowed`
+                  ? `${uiConstants.COLORS.BG_TERTIARY} ${uiConstants.COLORS.HOVER_BG_SECONDARY} ${uiConstants.COLORS.TEXT_PRIMARY}`
+                  : `${uiConstants.COLORS.BG_TERTIARY} ${uiConstants.COLORS.TEXT_MUTED} cursor-not-allowed`
               }`}
               onClick={handleEstablishColony}
               disabled={!canEstablishColony}

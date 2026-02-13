@@ -1,6 +1,6 @@
 // components/ui/Button.tsx
 import React from 'react';
-import { UI_CONSTANTS } from '../../constants/uiConstants';
+import { uiConstants } from '../../constants/uiConstants';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
@@ -15,21 +15,21 @@ const Button: React.FC<ButtonProps> = React.memo(({
   className = '',
   ...props
 }) => {
-  const baseClasses = UI_CONSTANTS.BUTTONS.BASE_CLASSES;
+  const baseClasses = uiConstants.BUTTONS.BASE_CLASSES;
 
   const variantClasses = {
-    primary: UI_CONSTANTS.BUTTONS.VARIANT.PRIMARY,
-    secondary: UI_CONSTANTS.BUTTONS.VARIANT.SECONDARY,
-    danger: UI_CONSTANTS.BUTTONS.VARIANT.DANGER,
+    primary: uiConstants.BUTTONS.VARIANT.PRIMARY,
+    secondary: uiConstants.BUTTONS.VARIANT.SECONDARY,
+    danger: uiConstants.BUTTONS.VARIANT.DANGER,
   };
 
   const sizeClasses = {
-    sm: UI_CONSTANTS.BUTTONS.SIZE.SM,
-    md: UI_CONSTANTS.BUTTONS.SIZE.MD,
-    lg: UI_CONSTANTS.BUTTONS.SIZE.LG,
+    sm: uiConstants.BUTTONS.SIZE.SM,
+    md: uiConstants.BUTTONS.SIZE.MD,
+    lg: uiConstants.BUTTONS.SIZE.LG,
   };
 
-  const disabledClasses = props.disabled ? UI_CONSTANTS.BUTTONS.DISABLED : '';
+  const disabledClasses = props.disabled ? uiConstants.BUTTONS.DISABLED : '';
 
   return (
     <button

@@ -79,7 +79,7 @@ export class TriggerCondition {
   type!: 'resource' | 'population' | 'event' | 'year' | 'decision' | 'relationship';
   target!: string;
   operator!: 'equals' | 'greater' | 'less' | 'contains' | 'not';
-  value!: any;
+  value!: unknown;
   description!: string;
 }
 
@@ -267,7 +267,7 @@ export type CurationAction = 'rate' | 'disable' | 'modify' | 'favorite' | 'repor
 export interface CardModification {
   type: 'effect_magnitude' | 'trigger_condition' | 'narrative_text' | 'rarity_adjustment';
   target: string; // What part of the card to modify
-  newValue: any; // New value
+  newValue: unknown; // New value
   reason: string; // Why the player made this change
 }
 

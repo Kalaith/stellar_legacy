@@ -1,6 +1,6 @@
 // constants/gameConstants.ts
 import gameConfig from '../config/gameConfig';
-export const GAME_CONSTANTS = {
+export const gameConstants = {
   COSTS: {
     CREW_TRAINING: 100,
     MORALE_BOOST: 50,

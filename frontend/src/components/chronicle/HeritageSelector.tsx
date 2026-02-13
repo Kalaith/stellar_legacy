@@ -137,14 +137,14 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
 
           {/* Tab Navigation */}
           <div className="flex space-x-4 border-b border-gray-600">
-            {[
+            {([
               { id: 'available', label: 'Available Modifiers' },
               { id: 'selected', label: 'Selected' },
               { id: 'analysis', label: 'Analysis' }
-            ].map((tab) => (
+            ] as const).map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`pb-2 px-1 transition-colors ${
                   activeTab === tab.id
                     ? 'text-cyan-400 border-b-2 border-cyan-400'

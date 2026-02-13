@@ -15,31 +15,31 @@ class Logger {
     this.level = level;
   }
 
-  static debug(message: string, data?: any) {
+  static debug(message: string, data?: unknown) {
     if (this.level <= LogLevel.DEBUG) {
       console.debug(`[DEBUG] ${message}`, data);
     }
   }
 
-  static info(message: string, data?: any) {
+  static info(message: string, data?: unknown) {
     if (this.level <= LogLevel.INFO) {
       console.info(`[INFO] ${message}`, data);
     }
   }
 
-  static warn(message: string, data?: any) {
+  static warn(message: string, data?: unknown) {
     if (this.level <= LogLevel.WARN) {
       console.warn(`[WARN] ${message}`, data);
     }
   }
 
-  static error(message: string, error?: Error | any) {
+  static error(message: string, error?: unknown) {
     if (this.level <= LogLevel.ERROR) {
       console.error(`[ERROR] ${message}`, error);
     }
   }
 
-  static gameAction(action: string, data?: any) {
+  static gameAction(action: string, data?: unknown) {
     this.info(`Game Action: ${action}`, data);
   }
 
@@ -47,11 +47,11 @@ class Logger {
     this.debug(`Resource Change: ${resource} ${amount > 0 ? '+' : ''}${amount} (${reason})`);
   }
 
-  static crewAction(action: string, crewName: string, data?: any) {
+  static crewAction(action: string, crewName: string, data?: unknown) {
     this.info(`Crew Action: ${action} by ${crewName}`, data);
   }
 
-  static systemEvent(event: string, systemName: string, data?: any) {
+  static systemEvent(event: string, systemName: string, data?: unknown) {
     this.info(`System Event: ${event} in ${systemName}`, data);
   }
 
@@ -59,7 +59,7 @@ class Logger {
     this.debug(`Performance: ${metric} = ${value}${unit}`);
   }
 
-  static uiEvent(event: string, component: string, data?: any) {
+  static uiEvent(event: string, component: string, data?: unknown) {
     this.debug(`UI Event: ${event} in ${component}`, data);
   }
 }

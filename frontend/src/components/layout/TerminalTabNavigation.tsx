@@ -3,9 +3,10 @@ import React, { useMemo, useCallback } from 'react';
 import { useTabNavigation } from '../../hooks/useTabNavigation';
 import { generateTerminalBorder } from '../../utils/terminalBorders';
 import { useGameStore } from '../../stores/useGameStore';
+import type { TabIdType } from '../../types/enums';
 
 // Memoized icon mapping to prevent recreation
-const TAB_ICONS = {
+const tabIcons = {
   'dashboard': '⊡',      // Console/Dashboard
   'ship-builder': '⚙',   // Engineering
   'crew-quarters': '◈',  // Crew/Personnel
@@ -27,13 +28,13 @@ const TerminalTabNavigation: React.FC = React.memo(() => {
   const { coreSystemTabs, generationalTabs } = useTabNavigation();
 
   // Memoized icon getter
-  const getTabIcon = useCallback((tabId: string): string => {
-    return TAB_ICONS[tabId as keyof typeof TAB_ICONS] || '▫';
+  const getTabIcon = useCallback((tabId: TabIdType): string => {
+    return tabId in tabIcons ? tabIcons[tabId as keyof typeof tabIcons] : '▫';
   }, []);
 
   // Memoized tab switch handler
-  const handleTabSwitch = useCallback((tabId: string) => {
-    switchTab(tabId as any); // Type assertion needed due to TabIdType constraints
+  const handleTabSwitch = useCallback((tabId: TabIdType) => {
+    switchTab(tabId);
   }, [switchTab]);
 
   // Memoized border generation to prevent recreation

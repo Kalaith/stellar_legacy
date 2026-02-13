@@ -3,6 +3,14 @@ import type {
   Chronicle,
   ChronicleEntry,
   ChronicleDecision,
+  DecisionMetrics,
+  PopulationSnapshot,
+  CulturalSnapshot,
+  ChronicleArtifact,
+  Discovery,
+  LegacyEvolution,
+  EngagementMetrics,
+  AIPerformanceSnapshot,
   ChronicleValidationResult,
   ChronicleExportData,
   ChronicleSearchCriteria,
@@ -13,9 +21,9 @@ import type { HeritageModifier } from '../types/heritage';
 import type { GenerationalMission } from '../types/generationalMissions';
 import type { LegacyTypeType } from '../types/enums';
 import type { Result } from '../utils/result';
-import { ResultHelpers, ERROR_CODES } from '../utils/result';
+import { ResultHelpers, errorCodes } from '../utils/result';
 import { validate } from '../utils/validation';
-import { GAME_BALANCE } from '../constants/game-balance';
+import { gameBalance } from '../constants/game-balance';
 import Logger from '../utils/logger';
 
 export class ChronicleService {
@@ -97,11 +105,11 @@ export class ChronicleService {
       }
 
       // Validate chronicle doesn't exceed maximum entries
-      if (chronicle.entries.length >= GAME_BALANCE.CHRONICLE.MAX_ENTRIES_PER_MISSION) {
+      if (chronicle.entries.length >= gameBalance.CHRONICLE.MAX_ENTRIES_PER_MISSION) {
         return ResultHelpers.error(
           'Chronicle has reached maximum entries',
-          ERROR_CODES.CHRONICLE_GENERATION_FAILED,
-          { maxEntries: GAME_BALANCE.CHRONICLE.MAX_ENTRIES_PER_MISSION, currentCount: chronicle.entries.length }
+          errorCodes.CHRONICLE_GENERATION_FAILED,
+          { maxEntries: gameBalance.CHRONICLE.MAX_ENTRIES_PER_MISSION, currentCount: chronicle.entries.length }
         );
       }
 
@@ -125,7 +133,7 @@ export class ChronicleService {
       Logger.error('Failed to save chronicle entry', error);
       return ResultHelpers.error(
         'Failed to save chronicle entry',
-        ERROR_CODES.CHRONICLE_GENERATION_FAILED,
+        errorCodes.CHRONICLE_GENERATION_FAILED,
         { entry },
         error instanceof Error ? error : new Error(String(error))
       );
@@ -144,7 +152,7 @@ export class ChronicleService {
 
       // Generate modifiers based on key decisions
       for (const decision of entry.keyDecisions) {
-        if (decision.chronicleWeight > GAME_BALANCE.CHRONICLE.HIGH_IMPACT_THRESHOLD) {
+        if (decision.chronicleWeight > gameBalance.CHRONICLE.HIGH_IMPACT_THRESHOLD) {
           const modifier = this.createModifierFromDecision(decision, entry);
           if (modifier) {
             modifiers.push(modifier);
@@ -178,7 +186,7 @@ export class ChronicleService {
       Logger.error('Failed to generate heritage modifiers', error);
       return ResultHelpers.error(
         'Failed to generate heritage modifiers',
-        ERROR_CODES.HERITAGE_GENERATION_FAILED,
+        errorCodes.HERITAGE_GENERATION_FAILED,
         { entry },
         error instanceof Error ? error : new Error(String(error))
       );
@@ -409,27 +417,36 @@ export class ChronicleService {
     }
   }
 
-  private static validateChronicleData(data: any): ChronicleValidationResult {
+  private static validateChronicleData(data: unknown): ChronicleValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!data) {
+    if (typeof data !== 'object' || data === null) {
       errors.push('Chronicle data is null or undefined');
       return { isValid: false, errors, warnings };
     }
 
-    if (!data.id) errors.push('Chronicle missing required ID');
-    if (!data.version) warnings.push('Chronicle missing version information');
-    if (!data.entries || !Array.isArray(data.entries)) {
+    const record = data as Record<string, unknown>;
+
+    if (!record.id) errors.push('Chronicle missing required ID');
+    if (!record.version) warnings.push('Chronicle missing version information');
+
+    const entriesValue = record.entries;
+    if (!entriesValue || !Array.isArray(entriesValue)) {
       errors.push('Chronicle entries must be an array');
     }
 
     // Validate entries
-    if (data.entries) {
-      data.entries.forEach((entry: any, index: number) => {
-        if (!entry.missionId) errors.push(`Entry ${index} missing missionId`);
-        if (!entry.missionName) errors.push(`Entry ${index} missing missionName`);
-        if (!entry.successLevel) errors.push(`Entry ${index} missing successLevel`);
+    if (Array.isArray(entriesValue)) {
+      entriesValue.forEach((entry, index: number) => {
+        if (typeof entry !== 'object' || entry === null) {
+          errors.push(`Entry ${index} is not an object`);
+          return;
+        }
+        const entryRecord = entry as Record<string, unknown>;
+        if (!entryRecord.missionId) errors.push(`Entry ${index} missing missionId`);
+        if (!entryRecord.missionName) errors.push(`Entry ${index} missing missionName`);
+        if (!entryRecord.successLevel) errors.push(`Entry ${index} missing successLevel`);
       });
     }
 
@@ -440,7 +457,7 @@ export class ChronicleService {
     };
   }
 
-  private static migrateChronicleVersion(data: any, _targetVersion: string): Chronicle {
+  private static migrateChronicleVersion(data: unknown, _targetVersion: string): Chronicle {
     // For now, just return the data as-is since we're on version 1.0.0
     // Future versions would implement migration logic here
     return data as Chronicle;
@@ -486,7 +503,7 @@ export class ChronicleService {
     return [];
   }
 
-  private static calculateDecisionMetrics(_mission: GenerationalMission): any {
+  private static calculateDecisionMetrics(_mission: GenerationalMission): DecisionMetrics {
     return {
       totalDecisions: 0,
       averageDecisionTime: 30,
@@ -500,7 +517,7 @@ export class ChronicleService {
     };
   }
 
-  private static createPopulationSnapshot(mission: GenerationalMission): any {
+  private static createPopulationSnapshot(mission: GenerationalMission): PopulationSnapshot {
     return {
       total: mission.population.total,
       byLegacy: {
@@ -516,7 +533,7 @@ export class ChronicleService {
     };
   }
 
-  private static createCulturalSnapshot(_mission: GenerationalMission): any {
+  private static createCulturalSnapshot(_mission: GenerationalMission): CulturalSnapshot {
     return {
       dominantValues: ['exploration', 'preservation'],
       emergentTraditions: [],
@@ -527,22 +544,22 @@ export class ChronicleService {
     };
   }
 
-  private static generateArtifacts(_mission: GenerationalMission): any[] {
+  private static generateArtifacts(_mission: GenerationalMission): ChronicleArtifact[] {
     // Generate artifacts based on mission achievements and discoveries
     return [];
   }
 
-  private static extractDiscoveries(_mission: GenerationalMission): any[] {
+  private static extractDiscoveries(_mission: GenerationalMission): Discovery[] {
     // Extract discoveries from mission history
     return [];
   }
 
-  private static calculateLegacyEvolution(_mission: GenerationalMission): any[] {
+  private static calculateLegacyEvolution(_mission: GenerationalMission): LegacyEvolution[] {
     // Calculate how legacies evolved during the mission
     return [];
   }
 
-  private static calculateEngagementMetrics(_mission: GenerationalMission): any {
+  private static calculateEngagementMetrics(_mission: GenerationalMission): EngagementMetrics {
     return {
       totalPlayTime: 10,
       activeDecisionTime: 3,
@@ -554,7 +571,7 @@ export class ChronicleService {
     };
   }
 
-  private static calculateAIPerformance(_mission: GenerationalMission): any {
+  private static calculateAIPerformance(_mission: GenerationalMission): AIPerformanceSnapshot {
     return {
       decisionsAutomated: 30,
       playerOverrides: 5,
@@ -577,7 +594,7 @@ export class ChronicleService {
     return null;
   }
 
-  private static createModifierFromArtifact(_artifact: any, _entry: ChronicleEntry): HeritageModifier | null {
+  private static createModifierFromArtifact(_artifact: ChronicleArtifact, _entry: ChronicleEntry): HeritageModifier | null {
     // Create heritage modifier based on discovered artifact
     return null;
   }

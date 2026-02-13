@@ -1,15 +1,15 @@
 // components/game/crew/CrewGrid.tsx
 import React, { useMemo } from 'react';
 import { useGameStore } from '../../../stores/useGameStore';
-import { UI_CONSTANTS } from '../../../constants/uiConstants';
+import { uiConstants } from '../../../constants/uiConstants';
 import type { CrewMemberId } from '../../../types/branded';
 
 const CrewGrid: React.FC = () => {
   const { crew } = useGameStore();
 
   return (
-    <div className={`${UI_CONSTANTS.CARDS.BACKGROUND} ${UI_CONSTANTS.CARDS.BASE} ${UI_CONSTANTS.SPACING.CARD_PADDING} ${UI_CONSTANTS.CARDS.BORDER}`}>
-      <h3 className={`text-xl font-bold ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} ${UI_CONSTANTS.SPACING.SECTION_MARGIN}`}>Current Crew</h3>
+    <div className={`${uiConstants.CARDS.BACKGROUND} ${uiConstants.CARDS.BASE} ${uiConstants.SPACING.CARD_PADDING} ${uiConstants.CARDS.BORDER}`}>
+      <h3 className={`text-xl font-bold ${uiConstants.COLORS.TEXT_PRIMARY} ${uiConstants.SPACING.SECTION_MARGIN}`}>Current Crew</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {crew.map(member => (
@@ -54,28 +54,28 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
   );
 
   return (
-    <div className={`${UI_CONSTANTS.COLORS.BG_SECONDARY} rounded-lg p-4 border ${UI_CONSTANTS.COLORS.BORDER}`}>
-      <div className={`flex items-center justify-between ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM}`}>
+    <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded-lg p-4 border ${uiConstants.COLORS.BORDER}`}>
+      <div className={`flex items-center justify-between ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
         <div className="flex items-center space-x-3">
-          <div className={`w-10 h-10 ${UI_CONSTANTS.COLORS.BG_TERTIARY} rounded-full flex items-center justify-center`}>
+          <div className={`w-10 h-10 ${uiConstants.COLORS.BG_TERTIARY} rounded-full flex items-center justify-center`}>
             <span className="text-lg">👤</span>
           </div>
           <div>
-            <h4 className={`${UI_CONSTANTS.COLORS.TEXT_PRIMARY} font-semibold`}>{member.name}</h4>
-            <p className={`${UI_CONSTANTS.COLORS.TEXT_MUTED} text-sm`}>{member.role} • Age {member.age}</p>
+            <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>{member.name}</h4>
+            <p className={`${uiConstants.COLORS.TEXT_MUTED} text-sm`}>{member.role} • Age {member.age}</p>
           </div>
         </div>
         {member.isHeir && (
-          <span className={`${UI_CONSTANTS.COLORS.BG_WARNING} ${UI_CONSTANTS.COLORS.TEXT_PRIMARY} text-xs px-2 py-1 rounded`}>
+          <span className={`${uiConstants.COLORS.BG_WARNING} ${uiConstants.COLORS.TEXT_PRIMARY} text-xs px-2 py-1 rounded`}>
             Heir
           </span>
         )}
       </div>
 
-      <div className={`space-y-2 ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM}`}>
+      <div className={`space-y-2 ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
         {skillEntries.map(([skill, level]) => (
           <div key={skill} className="flex items-center justify-between">
-            <span className={`${UI_CONSTANTS.COLORS.TEXT_SECONDARY} text-sm capitalize w-20`}>{skill}</span>
+            <span className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm capitalize w-20`}>{skill}</span>
             <div className="flex-1 mx-2">
               <div className="w-full bg-gray-800 border border-gray-600 h-2" style={{ borderRadius: 0 }}>
                 <div
@@ -89,25 +89,25 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
                 />
               </div>
             </div>
-            <span className={`${UI_CONSTANTS.COLORS.TEXT_PRIMARY} text-sm w-6 text-right`}>{level}</span>
+            <span className={`${uiConstants.COLORS.TEXT_PRIMARY} text-sm w-6 text-right`}>{level}</span>
           </div>
         ))}
       </div>
 
-      <div className={`flex items-center justify-between ${UI_CONSTANTS.SPACING.SECTION_MARGIN_SM}`}>
-        <span className={`${UI_CONSTANTS.COLORS.TEXT_SECONDARY} text-sm`}>Morale</span>
+      <div className={`flex items-center justify-between ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
+        <span className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm`}>Morale</span>
         <div className="flex items-center space-x-2">
-          <div className={`w-20 ${UI_CONSTANTS.COLORS.BG_TERTIARY} rounded-full h-2`}>
+          <div className={`w-20 ${uiConstants.COLORS.BG_TERTIARY} rounded-full h-2`}>
             <div
               className={`h-2 rounded-full transition-all duration-300 ${getMoraleColor(member.morale)}`}
               style={{ width: `${member.morale}%` }}
             />
           </div>
-          <span className={`${UI_CONSTANTS.COLORS.TEXT_PRIMARY} text-sm w-8 text-right`}>{member.morale}</span>
+          <span className={`${uiConstants.COLORS.TEXT_PRIMARY} text-sm w-8 text-right`}>{member.morale}</span>
         </div>
       </div>
 
-      <p className={`${UI_CONSTANTS.COLORS.TEXT_MUTED} text-xs leading-relaxed`}>{member.background}</p>
+      <p className={`${uiConstants.COLORS.TEXT_MUTED} text-xs leading-relaxed`}>{member.background}</p>
     </div>
   );
 });

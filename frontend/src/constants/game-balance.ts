@@ -4,7 +4,7 @@
  * All values are centralized here for easy balancing and maintenance
  */
 
-export const GAME_BALANCE = {
+export const gameBalance = {
   CHRONICLE: {
     HIGH_IMPACT_THRESHOLD: 0.7,
     MAJOR_DECISION_WEIGHT: 0.8,
@@ -135,8 +135,8 @@ export const GAME_BALANCE = {
 /**
  * Type-safe helper to get nested balance values
  */
-export type GameBalanceKey = keyof typeof GAME_BALANCE;
-export type GameBalanceValue<K extends GameBalanceKey> = typeof GAME_BALANCE[K];
+export type GameBalanceKey = keyof typeof gameBalance;
+export type GameBalanceValue<K extends GameBalanceKey> = typeof gameBalance[K];
 
 /**
  * Helper function to get balance values with type safety
@@ -144,7 +144,7 @@ export type GameBalanceValue<K extends GameBalanceKey> = typeof GAME_BALANCE[K];
 export function getGameBalance<K extends GameBalanceKey>(
   category: K
 ): GameBalanceValue<K> {
-  return GAME_BALANCE[category];
+  return gameBalance[category];
 }
 
 /**
@@ -154,5 +154,5 @@ export function getBalanceValue<
   K extends GameBalanceKey,
   T extends keyof GameBalanceValue<K>
 >(category: K, key: T): GameBalanceValue<K>[T] {
-  return GAME_BALANCE[category][key];
+  return gameBalance[category][key];
 }
