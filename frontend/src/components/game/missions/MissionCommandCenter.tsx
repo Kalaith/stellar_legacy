@@ -1,4 +1,3 @@
-
 // components/game/missions/MissionCommandCenter.tsx
 import React, { useState } from 'react';
 import {
@@ -552,7 +551,10 @@ const TerminalCreateMission: React.FC<{
             <TerminalSelect
               value={config.objective}
               onChange={value =>
-                onChange({ ...config, objective: value as MissionObjectiveType })
+                onChange({
+                  ...config,
+                  objective: value as MissionObjectiveType,
+                })
               }
               options={[
                 { value: 'colonization', label: 'COLONIZATION' },

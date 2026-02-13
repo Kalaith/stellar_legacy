@@ -1,4 +1,3 @@
-
 // services/PacingService.ts
 import type {
   PacingState,

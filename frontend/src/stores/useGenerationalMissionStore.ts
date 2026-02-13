@@ -1,4 +1,3 @@
-
 // stores/useGenerationalMissionStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -276,10 +275,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         }
       },
 
-      forceEventGeneration: (
-        missionId: string,
-        category?: string
-      ) => {
+      forceEventGeneration: (missionId: string, category?: string) => {
         const mission = get().missions.find(m => m.id === missionId);
         if (!mission) return;
 

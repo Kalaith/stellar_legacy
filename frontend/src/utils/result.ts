@@ -1,4 +1,3 @@
-
 // utils/result.ts
 /**
  * Result type for consistent error handling across the application
