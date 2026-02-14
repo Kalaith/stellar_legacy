@@ -28,7 +28,7 @@ export class ServiceError extends Error {
 
     // Maintain proper stack trace in Node.js environments
     const errorCtor = Error as ErrorConstructor & {
-      captureStackTrace?: (target: object, constructorOpt?: new (...args: unknown[]) => unknown) => void;
+      captureStackTrace?: (target: object, constructorOpt?: new (...args: never[]) => unknown) => void;
     };
     if (typeof errorCtor.captureStackTrace === 'function') {
       errorCtor.captureStackTrace(this, ServiceError);
