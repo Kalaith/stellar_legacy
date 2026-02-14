@@ -15,9 +15,7 @@ import Logger from '../utils/logger';
 
 export class AutomationService {
   // Initialize Default Automation Config for New Mission
-  static createDefaultAutomationConfig(
-    legacy: LegacyTypeType
-  ): AutomationConfig {
+  static createDefaultAutomationConfig(legacy: LegacyTypeType): AutomationConfig {
     return {
       resourceThresholds: this.getDefaultResourceThresholds(legacy),
       crisisEscalationRules: this.getDefaultEscalationRules(legacy),
@@ -28,9 +26,7 @@ export class AutomationService {
   }
 
   // Default Resource Thresholds by Sect
-  private static getDefaultResourceThresholds(
-    legacy: LegacyTypeType
-  ): Record<string, number> {
+  private static getDefaultResourceThresholds(legacy: LegacyTypeType): Record<string, number> {
     const baseThresholds = {
       credits: 1000,
       energy: 500,
@@ -76,9 +72,7 @@ export class AutomationService {
   }
 
   // Default Crisis Escalation Rules
-  private static getDefaultEscalationRules(
-    legacy: LegacyTypeType
-  ): DelegationRule[] {
+  private static getDefaultEscalationRules(legacy: LegacyTypeType): DelegationRule[] {
     const rules: DelegationRule[] = [
       {
         id: 'critical_resources',
@@ -146,9 +140,7 @@ export class AutomationService {
   }
 
   // Default Delegation Rules
-  private static getDefaultDelegationRules(
-    _legacy: LegacyTypeType
-  ): DelegationRule[] {
+  private static getDefaultDelegationRules(_legacy: LegacyTypeType): DelegationRule[] {
     return [
       {
         id: 'routine_maintenance',
@@ -186,18 +178,14 @@ export class AutomationService {
   }
 
   // Default Emergency Protocols
-  private static getDefaultEmergencyProtocols(
-    legacy: LegacyTypeType
-  ): Record<string, string> {
+  private static getDefaultEmergencyProtocols(legacy: LegacyTypeType): Record<string, string> {
     const baseProtocols = {
       hull_breach: 'seal_compartments_evacuate_affected_areas',
-      life_support_failure:
-        'activate_emergency_systems_reduce_population_activity',
+      life_support_failure: 'activate_emergency_systems_reduce_population_activity',
       food_shortage: 'implement_rationing_activate_emergency_reserves',
       energy_crisis: 'power_down_non_essential_systems',
       population_unrest: 'deploy_security_open_communication_channels',
-      system_cascade_failure:
-        'activate_all_emergency_protocols_wake_leadership',
+      system_cascade_failure: 'activate_all_emergency_protocols_wake_leadership',
     };
 
     // Add legacy-specific protocols
@@ -289,10 +277,7 @@ export class AutomationService {
   }
 
   // Check if Dynasty is Qualified for Role
-  private static isDynastyQualified(
-    dynasty: Dynasty,
-    priority: string
-  ): boolean {
+  private static isDynastyQualified(dynasty: Dynasty, priority: string): boolean {
     const specialization = dynasty.specialization.toLowerCase();
     const influence = dynasty.influence;
 
@@ -308,18 +293,11 @@ export class AutomationService {
       diplomacy: ['diplomacy', 'trade', 'culture'],
     };
 
-    return (
-      specializationMatches[priority]?.some(spec =>
-        specialization.includes(spec)
-      ) || false
-    );
+    return specializationMatches[priority]?.some(spec => specialization.includes(spec)) || false;
   }
 
   // Calculate Dynasty Fitness for Role
-  private static calculateDynastyFitness(
-    dynasty: Dynasty,
-    priority: string
-  ): number {
+  private static calculateDynastyFitness(dynasty: Dynasty, priority: string): number {
     let fitness = dynasty.influence; // Base fitness from influence
 
     // Add leader skill bonus
@@ -357,11 +335,7 @@ export class AutomationService {
     const traitRelevance: Record<string, string[]> = {
       leadership: ['Natural Leader', 'Strategic Thinker', 'Inspiring Presence'],
       engineering: ['Technical Genius', 'System Optimizer', 'Problem Solver'],
-      agriculture: [
-        'Life Cultivator',
-        'Resource Manager',
-        'Ecosystem Guardian',
-      ],
+      agriculture: ['Life Cultivator', 'Resource Manager', 'Ecosystem Guardian'],
       security: ['Threat Assessor', 'Tactical Thinker', 'Guardian Spirit'],
       diplomacy: ['Negotiator', 'Cultural Bridge', 'Conflict Resolver'],
     };
@@ -379,9 +353,7 @@ export class AutomationService {
 
     // Check each council member's domain
     config.councilMembers.forEach(councilMember => {
-      const dynasty = mission.population.dynasties.find(
-        d => d.id === councilMember.dynastyId
-      );
+      const dynasty = mission.population.dynasties.find(d => d.id === councilMember.dynastyId);
       if (!dynasty) return;
 
       // Evaluate if automated action is needed
@@ -394,9 +366,7 @@ export class AutomationService {
       if (needsAction) {
         const decision = DynastyService.makeAutomatedDecision(dynasty, {
           availableResources: mission.resources,
-          populationNeeds: this.assessPopulationNeeds(
-            mission.population.cohorts
-          ),
+          populationNeeds: this.assessPopulationNeeds(mission.population.cohorts),
         });
 
         decisions.push(decision);
@@ -437,10 +407,7 @@ export class AutomationService {
 
     // Check population thresholds
     if (authority.includes('population')) {
-      if (
-        resources.morale < thresholds.morale ||
-        resources.unity < thresholds.unity
-      ) {
+      if (resources.morale < thresholds.morale || resources.unity < thresholds.unity) {
         return true;
       }
     }
@@ -465,10 +432,7 @@ export class AutomationService {
   }
 
   // Check if Event Should Escalate to Player
-  static shouldEscalateEvent(
-    event: MissionEvent,
-    config: AutomationConfig
-  ): boolean {
+  static shouldEscalateEvent(event: MissionEvent, config: AutomationConfig): boolean {
     // Always escalate if event specifically requires player decision
     if (event.requiresPlayerDecision) return true;
 
@@ -477,10 +441,7 @@ export class AutomationService {
       if (!rule.isActive) return false;
 
       // Simple rule evaluation (would be more sophisticated in production)
-      if (
-        event.category === 'immediate_crisis' &&
-        rule.condition.includes('immediate')
-      ) {
+      if (event.category === 'immediate_crisis' && rule.condition.includes('immediate')) {
         return true;
       }
 
@@ -517,21 +478,12 @@ export class AutomationService {
     switch (protocolName) {
       case 'hull_breach':
         effects.push('Sealed compartments', 'Evacuated affected areas');
-        mission.resources.hullIntegrity = Math.max(
-          0.3,
-          mission.resources.hullIntegrity
-        );
+        mission.resources.hullIntegrity = Math.max(0.3, mission.resources.hullIntegrity);
         break;
 
       case 'life_support_failure':
-        effects.push(
-          'Activated emergency systems',
-          'Reduced population activity'
-        );
-        mission.resources.lifeSupport = Math.max(
-          0.4,
-          mission.resources.lifeSupport
-        );
+        effects.push('Activated emergency systems', 'Reduced population activity');
+        mission.resources.lifeSupport = Math.max(0.4, mission.resources.lifeSupport);
         break;
 
       case 'food_shortage':
@@ -541,10 +493,7 @@ export class AutomationService {
 
       case 'energy_crisis':
         effects.push('Powered down non-essential systems');
-        mission.resources.energy = Math.max(
-          100,
-          mission.resources.energy + 200
-        );
+        mission.resources.energy = Math.max(100, mission.resources.energy + 200);
         break;
 
       default:
@@ -564,10 +513,7 @@ export class AutomationService {
   }
 
   // Update Council Performance
-  static updateCouncilPerformance(
-    councilMember: CouncilMember,
-    outcomeSuccess: boolean
-  ): void {
+  static updateCouncilPerformance(councilMember: CouncilMember, outcomeSuccess: boolean): void {
     const performanceDelta = outcomeSuccess ? 0.05 : -0.1;
     councilMember.performance = Math.max(
       0.1,
@@ -576,15 +522,9 @@ export class AutomationService {
 
     // Adjust autonomy based on performance
     if (councilMember.performance > 0.8) {
-      councilMember.autonomyLevel = Math.min(
-        0.95,
-        councilMember.autonomyLevel + 0.02
-      );
+      councilMember.autonomyLevel = Math.min(0.95, councilMember.autonomyLevel + 0.02);
     } else if (councilMember.performance < 0.4) {
-      councilMember.autonomyLevel = Math.max(
-        0.3,
-        councilMember.autonomyLevel - 0.05
-      );
+      councilMember.autonomyLevel = Math.max(0.3, councilMember.autonomyLevel - 0.05);
     }
   }
 }

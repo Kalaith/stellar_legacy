@@ -6,11 +6,7 @@ export class GameOperationError extends Error {
   public readonly reason: string;
   public readonly requiredResources?: ComponentCost;
 
-  constructor(
-    operation: string,
-    reason: string,
-    requiredResources?: ComponentCost
-  ) {
+  constructor(operation: string, reason: string, requiredResources?: ComponentCost) {
     super(`${operation} failed: ${reason}`);
     this.name = 'GameOperationError';
     this.operation = operation;

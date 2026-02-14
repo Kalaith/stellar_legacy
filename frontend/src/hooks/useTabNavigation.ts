@@ -54,15 +54,9 @@ export const useTabNavigation = () => {
   const { currentTab, switchTab } = useGameStore();
   const { activeMissions } = useGenerationalMissionStore();
 
-  const tabs = useMemo(
-    () => createTabDefinitions(activeMissions.length),
-    [activeMissions.length]
-  );
+  const tabs = useMemo(() => createTabDefinitions(activeMissions.length), [activeMissions.length]);
 
-  const coreSystemTabs = useMemo(
-    () => tabs.filter(tab => tab.category === 'CORE'),
-    [tabs]
-  );
+  const coreSystemTabs = useMemo(() => tabs.filter(tab => tab.category === 'CORE'), [tabs]);
 
   const generationalTabs = useMemo(
     () => tabs.filter(tab => tab.category === 'GENERATIONAL'),

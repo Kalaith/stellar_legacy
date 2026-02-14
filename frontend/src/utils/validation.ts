@@ -38,9 +38,7 @@ export const ValidationUtils = {
    * Check if value is within range
    */
   isInRange: (value: unknown, min: number, max: number): value is number => {
-    return (
-      typeof value === 'number' && value >= min && value <= max && !isNaN(value)
-    );
+    return typeof value === 'number' && value >= min && value <= max && !isNaN(value);
   },
 
   /**
@@ -53,10 +51,7 @@ export const ValidationUtils = {
   /**
    * Check if value is an array with minimum length
    */
-  isArrayWithMinLength: <T>(
-    value: unknown,
-    minLength: number
-  ): value is T[] => {
+  isArrayWithMinLength: <T>(value: unknown, minLength: number): value is T[] => {
     return Array.isArray(value) && value.length >= minLength;
   },
 
@@ -137,14 +132,7 @@ export const DomainValidators = {
    * Validate HeritageModifier
    */
   heritageModifier: (value: unknown): value is HeritageModifier => {
-    if (
-      !ValidationUtils.hasRequiredProperties(value, [
-        'id',
-        'name',
-        'source',
-        'tier',
-      ])
-    ) {
+    if (!ValidationUtils.hasRequiredProperties(value, ['id', 'name', 'source', 'tier'])) {
       return false;
     }
 
@@ -167,15 +155,7 @@ export const DomainValidators = {
    * Validate LegacyCard
    */
   legacyCard: (value: unknown): value is LegacyCard => {
-    if (
-      !ValidationUtils.hasRequiredProperties(value, [
-        'id',
-        'name',
-        'type',
-        'legacy',
-        'tier',
-      ])
-    ) {
+    if (!ValidationUtils.hasRequiredProperties(value, ['id', 'name', 'type', 'legacy', 'tier'])) {
       return false;
     }
 
@@ -184,14 +164,7 @@ export const DomainValidators = {
     return (
       ValidationUtils.isNonEmptyString(card.id) &&
       ValidationUtils.isNonEmptyString(card.name) &&
-      [
-        'event',
-        'bonus',
-        'crisis',
-        'opportunity',
-        'memory',
-        'tradition',
-      ].includes(card.type) &&
+      ['event', 'bonus', 'crisis', 'opportunity', 'memory', 'tradition'].includes(card.type) &&
       ['preservers', 'adaptors', 'wanderers'].includes(card.legacy) &&
       ['common', 'uncommon', 'rare', 'epic', 'legendary'].includes(card.tier)
     );
@@ -215,10 +188,7 @@ export const DomainValidators = {
           : undefined;
 
     if (
-      !ValidationUtils.hasRequiredProperties(value, [
-        'currentPhase',
-        'timeAcceleration',
-      ]) ||
+      !ValidationUtils.hasRequiredProperties(value, ['currentPhase', 'timeAcceleration']) ||
       pausedValue === undefined
     ) {
       return false;
@@ -227,9 +197,7 @@ export const DomainValidators = {
     const pacingState = state as unknown as PacingState;
 
     return (
-      ['early_game', 'mid_game', 'late_game', 'end_game'].includes(
-        pacingState.currentPhase
-      ) &&
+      ['early_game', 'mid_game', 'late_game', 'end_game'].includes(pacingState.currentPhase) &&
       ValidationUtils.isPositiveNumber(pacingState.timeAcceleration) &&
       typeof pausedValue === 'boolean'
     );
@@ -245,11 +213,10 @@ export const validate = {
    */
   required: <T>(value: T | null | undefined, fieldName: string): T => {
     if (value === null || value === undefined) {
-      throw new ServiceError(
-        `${fieldName} is required`,
-        errorCodes.REQUIRED_FIELD,
-        { fieldName, value }
-      );
+      throw new ServiceError(`${fieldName} is required`, errorCodes.REQUIRED_FIELD, {
+        fieldName,
+        value,
+      });
     }
     return value;
   },
@@ -388,24 +355,14 @@ export const validate = {
    * Validate LegacyCard with detailed error reporting
    */
   legacyCard: (value: unknown): LegacyCard => {
-    return validate.against(
-      value,
-      DomainValidators.legacyCard,
-      'legacyCard',
-      'LegacyCard'
-    );
+    return validate.against(value, DomainValidators.legacyCard, 'legacyCard', 'LegacyCard');
   },
 
   /**
    * Validate PacingState with detailed error reporting
    */
   pacingState: (value: unknown): PacingState => {
-    return validate.against(
-      value,
-      DomainValidators.pacingState,
-      'pacingState',
-      'PacingState'
-    );
+    return validate.against(value, DomainValidators.pacingState, 'pacingState', 'PacingState');
   },
 };
 
@@ -453,10 +410,5 @@ export const sanitize = {
 /**
  * Export commonly used validators for convenience
  */
-export const {
-  chronicleEntry,
-  chronicleDecision,
-  heritageModifier,
-  legacyCard,
-  pacingState,
-} = validate;
+export const { chronicleEntry, chronicleDecision, heritageModifier, legacyCard, pacingState } =
+  validate;

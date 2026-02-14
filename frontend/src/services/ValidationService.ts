@@ -9,14 +9,13 @@ export interface ResourceConstraints {
   dependencies?: Partial<Resources>;
 }
 
-export const resourceConstraints: Record<keyof Resources, ResourceConstraints> =
-  {
-    credits: { min: 0, max: 1_000_000 },
-    energy: { min: 0, max: 10_000 },
-    minerals: { min: 0, max: 50_000 },
-    food: { min: 0, max: 25_000 },
-    influence: { min: 0, max: 1_000 },
-  } as const;
+export const resourceConstraints: Record<keyof Resources, ResourceConstraints> = {
+  credits: { min: 0, max: 1_000_000 },
+  energy: { min: 0, max: 10_000 },
+  minerals: { min: 0, max: 50_000 },
+  food: { min: 0, max: 25_000 },
+  influence: { min: 0, max: 1_000 },
+} as const;
 
 export const ValidationService = {
   resourceConstraints,
@@ -81,9 +80,7 @@ export const ValidationService = {
 
     return { isValid: true };
   },
-  validateCrewTraining: (
-    credits: number
-  ): { isValid: boolean; message?: string } => {
+  validateCrewTraining: (credits: number): { isValid: boolean; message?: string } => {
     if (credits < gameConstants.COSTS.CREW_TRAINING) {
       return {
         isValid: false,
@@ -93,9 +90,7 @@ export const ValidationService = {
     return { isValid: true };
   },
 
-  validateMoraleBoost: (
-    credits: number
-  ): { isValid: boolean; message?: string } => {
+  validateMoraleBoost: (credits: number): { isValid: boolean; message?: string } => {
     if (credits < gameConstants.COSTS.MORALE_BOOST) {
       return {
         isValid: false,
@@ -125,9 +120,7 @@ export const ValidationService = {
     return { isValid: true };
   },
 
-  validateSystemExploration: (
-    energy: number
-  ): { isValid: boolean; message?: string } => {
+  validateSystemExploration: (energy: number): { isValid: boolean; message?: string } => {
     if (energy < gameConstants.COSTS.EXPLORATION.energy) {
       return {
         isValid: false,
@@ -137,18 +130,14 @@ export const ValidationService = {
     return { isValid: true };
   },
 
-  validateColonyEstablishment: (
-    resources: Resources
-  ): { isValid: boolean; message?: string } => {
+  validateColonyEstablishment: (resources: Resources): { isValid: boolean; message?: string } => {
     if (resources.credits < gameConstants.COSTS.COLONY_ESTABLISHMENT.credits) {
       return {
         isValid: false,
         message: `Need ${gameConstants.COSTS.COLONY_ESTABLISHMENT.credits} credits to establish colony`,
       };
     }
-    if (
-      resources.minerals < gameConstants.COSTS.COLONY_ESTABLISHMENT.minerals
-    ) {
+    if (resources.minerals < gameConstants.COSTS.COLONY_ESTABLISHMENT.minerals) {
       return {
         isValid: false,
         message: `Need ${gameConstants.COSTS.COLONY_ESTABLISHMENT.minerals} minerals to establish colony`,
@@ -216,9 +205,7 @@ export const ValidationService = {
     return { isValid: true };
   },
 
-  validateSkillLevel: (
-    skillLevel: number
-  ): { isValid: boolean; message?: string } => {
+  validateSkillLevel: (skillLevel: number): { isValid: boolean; message?: string } => {
     if (skillLevel < 0 || skillLevel > gameConstants.LIMITS.MAX_SKILL_LEVEL) {
       return {
         isValid: false,

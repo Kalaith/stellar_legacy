@@ -13,14 +13,11 @@ interface DynastyHallProps {
   onDynastyAction?: (dynastyId: string, action: string) => void;
 }
 
-export const DynastyHall: React.FC<DynastyHallProps> = ({
-  dynasties,
-  onDynastyAction,
-}) => {
+export const DynastyHall: React.FC<DynastyHallProps> = ({ dynasties, onDynastyAction }) => {
   const [selectedDynasty, setSelectedDynasty] = useState<Dynasty | null>(null);
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'members' | 'stories' | 'influence'
-  >('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'stories' | 'influence'>(
+    'overview'
+  );
 
   const handleDynastySelect = (dynasty: Dynasty) => {
     setSelectedDynasty(dynasty);
@@ -44,23 +41,17 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
               <div className="terminal-space-y-sm">
                 <div className="terminal-flex between">
                   <TerminalText variant="dim">GENERATION:</TerminalText>
-                  <TerminalText variant="primary">
-                    {dynasty.generationsActive}
-                  </TerminalText>
+                  <TerminalText variant="primary">{dynasty.generationsActive}</TerminalText>
                 </div>
 
                 <div className="terminal-flex between">
                   <TerminalText variant="dim">LEADER:</TerminalText>
-                  <TerminalText variant="success">
-                    {dynasty.currentLeader.name}
-                  </TerminalText>
+                  <TerminalText variant="success">{dynasty.currentLeader.name}</TerminalText>
                 </div>
 
                 <div className="terminal-flex between">
                   <TerminalText variant="dim">SPEC:</TerminalText>
-                  <TerminalText variant="warning">
-                    {dynasty.specialization}
-                  </TerminalText>
+                  <TerminalText variant="warning">{dynasty.specialization}</TerminalText>
                 </div>
 
                 <TerminalProgress
@@ -78,9 +69,7 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
 
                 <div className="terminal-flex between">
                   <TerminalText variant="dim">MEMBERS:</TerminalText>
-                  <TerminalText variant="primary">
-                    {dynasty.members.length}
-                  </TerminalText>
+                  <TerminalText variant="primary">{dynasty.members.length}</TerminalText>
                 </div>
 
                 {dynasty.legacyTraits.length > 0 && (
@@ -111,18 +100,16 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
         <div className="terminal-space-y">
           {/* Terminal Tab Navigation */}
           <div className="terminal-flex">
-            {(['overview', 'members', 'stories', 'influence'] as const).map(
-              tab => (
-                <TerminalButton
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  variant={activeTab === tab ? 'primary' : undefined}
-                  className={activeTab === tab ? 'terminal-glow-pulse' : ''}
-                >
-                  {tab.toUpperCase()}
-                </TerminalButton>
-              )
-            )}
+            {(['overview', 'members', 'stories', 'influence'] as const).map(tab => (
+              <TerminalButton
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                variant={activeTab === tab ? 'primary' : undefined}
+                className={activeTab === tab ? 'terminal-glow-pulse' : ''}
+              >
+                {tab.toUpperCase()}
+              </TerminalButton>
+            ))}
           </div>
 
           <AnimatePresence mode="wait">
@@ -168,38 +155,26 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
 
           <div className="terminal-flex between">
             <TerminalText variant="dim">AGE:</TerminalText>
-            <TerminalText variant="primary">
-              {selectedDynasty!.currentLeader.age}
-            </TerminalText>
+            <TerminalText variant="primary">{selectedDynasty!.currentLeader.age}</TerminalText>
           </div>
 
           <div className="terminal-flex between">
             <TerminalText variant="dim">ROLE:</TerminalText>
-            <TerminalText variant="primary">
-              {selectedDynasty!.currentLeader.role}
-            </TerminalText>
+            <TerminalText variant="primary">{selectedDynasty!.currentLeader.role}</TerminalText>
           </div>
 
           <div className="border-t border-terminal-border pt-2 mt-2">
             <TerminalText variant="dim" className="terminal-h3">
               SKILLS:
             </TerminalText>
-            {Object.entries(selectedDynasty!.currentLeader.skills).map(
-              ([skill, value]) => (
-                <div key={skill} className="terminal-flex between">
-                  <TerminalText variant="secondary">
-                    {skill.toUpperCase()}:
-                  </TerminalText>
-                  <TerminalText
-                    variant={
-                      value >= 8 ? 'success' : value >= 6 ? 'warning' : 'dim'
-                    }
-                  >
-                    {value}
-                  </TerminalText>
-                </div>
-              )
-            )}
+            {Object.entries(selectedDynasty!.currentLeader.skills).map(([skill, value]) => (
+              <div key={skill} className="terminal-flex between">
+                <TerminalText variant="secondary">{skill.toUpperCase()}:</TerminalText>
+                <TerminalText variant={value >= 8 ? 'success' : value >= 6 ? 'warning' : 'dim'}>
+                  {value}
+                </TerminalText>
+              </div>
+            ))}
           </div>
         </div>
       </TerminalWindow>
@@ -221,23 +196,17 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
 
           <div className="terminal-flex between">
             <TerminalText variant="dim">MEMBERS:</TerminalText>
-            <TerminalText variant="primary">
-              {selectedDynasty!.members.length}
-            </TerminalText>
+            <TerminalText variant="primary">{selectedDynasty!.members.length}</TerminalText>
           </div>
 
           <div className="terminal-flex between">
             <TerminalText variant="dim">GENERATIONS:</TerminalText>
-            <TerminalText variant="primary">
-              {selectedDynasty!.generationsActive}
-            </TerminalText>
+            <TerminalText variant="primary">{selectedDynasty!.generationsActive}</TerminalText>
           </div>
 
           <div className="terminal-flex between">
             <TerminalText variant="dim">SPECIALIZATION:</TerminalText>
-            <TerminalText variant="warning">
-              {selectedDynasty!.specialization}
-            </TerminalText>
+            <TerminalText variant="warning">{selectedDynasty!.specialization}</TerminalText>
           </div>
         </div>
       </TerminalWindow>
@@ -292,13 +261,7 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
                           {skill.substring(0, 3).toUpperCase()}
                         </TerminalText>
                         <TerminalText
-                          variant={
-                            value >= 8
-                              ? 'success'
-                              : value >= 6
-                                ? 'warning'
-                                : 'dim'
-                          }
+                          variant={value >= 8 ? 'success' : value >= 6 ? 'warning' : 'dim'}
                           className="block font-bold"
                         >
                           {value}
@@ -331,11 +294,7 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
               key={story.id}
               title={story.title.toUpperCase()}
               statusLine={story.isActive ? 'ACTIVE' : 'ARCHIVED'}
-              className={
-                story.isActive
-                  ? 'border-terminal-success'
-                  : 'border-terminal-dim'
-              }
+              className={story.isActive ? 'border-terminal-success' : 'border-terminal-dim'}
             >
               <div className="terminal-space-y-sm">
                 <div className="terminal-flex between">
@@ -347,9 +306,7 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
                 </div>
 
                 <div className="border-t border-terminal-border pt-2">
-                  <TerminalText variant="secondary">
-                    {story.description}
-                  </TerminalText>
+                  <TerminalText variant="secondary">{story.description}</TerminalText>
                 </div>
               </div>
             </TerminalWindow>
@@ -357,9 +314,7 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
         </div>
       ) : (
         <div className="text-center py-8">
-          <TerminalText variant="dim">
-            NO STORY THREADS RECORDED FOR THIS DYNASTY YET.
-          </TerminalText>
+          <TerminalText variant="dim">NO STORY THREADS RECORDED FOR THIS DYNASTY YET.</TerminalText>
         </div>
       )}
     </TerminalWindow>
@@ -368,10 +323,8 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
   const renderInfluenceTab = () => {
     const influenceLevel = selectedDynasty!.influence;
     const getInfluenceDescription = (level: number) => {
-      if (level > 80)
-        return 'DOMINANT - THIS DYNASTY LEADS IN ALL MAJOR DECISIONS';
-      if (level > 60)
-        return 'INFLUENTIAL - SIGNIFICANT VOICE IN COLONY MATTERS';
+      if (level > 80) return 'DOMINANT - THIS DYNASTY LEADS IN ALL MAJOR DECISIONS';
+      if (level > 60) return 'INFLUENTIAL - SIGNIFICANT VOICE IN COLONY MATTERS';
       if (level > 40) return 'RESPECTED - MODERATE INFLUENCE ON DECISIONS';
       if (level > 20) return 'LIMITED - MINOR VOICE IN GOVERNANCE';
       return 'MARGINAL - LITTLE POLITICAL INFLUENCE';
@@ -384,13 +337,7 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
             <TerminalProgress
               value={influenceLevel}
               label="CURRENT INFLUENCE"
-              variant={
-                influenceLevel > 70
-                  ? 'success'
-                  : influenceLevel > 40
-                    ? 'warning'
-                    : 'error'
-              }
+              variant={influenceLevel > 70 ? 'success' : influenceLevel > 40 ? 'warning' : 'error'}
               ascii={true}
             />
 
@@ -403,30 +350,20 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
         <TerminalWindow title="INFLUENCE SOURCES" statusLine="BREAKDOWN">
           <div className="terminal-space-y-sm">
             <div className="terminal-flex between">
-              <TerminalText variant="dim">
-                SPECIALIZATION AUTHORITY:
-              </TerminalText>
-              <TerminalText variant="warning">
-                +{Math.floor(influenceLevel * 0.3)}%
-              </TerminalText>
+              <TerminalText variant="dim">SPECIALIZATION AUTHORITY:</TerminalText>
+              <TerminalText variant="warning">+{Math.floor(influenceLevel * 0.3)}%</TerminalText>
             </div>
             <div className="terminal-flex between">
               <TerminalText variant="dim">LEADER SKILLS:</TerminalText>
-              <TerminalText variant="warning">
-                +{Math.floor(influenceLevel * 0.25)}%
-              </TerminalText>
+              <TerminalText variant="warning">+{Math.floor(influenceLevel * 0.25)}%</TerminalText>
             </div>
             <div className="terminal-flex between">
               <TerminalText variant="dim">HISTORICAL LEGACY:</TerminalText>
-              <TerminalText variant="warning">
-                +{Math.floor(influenceLevel * 0.2)}%
-              </TerminalText>
+              <TerminalText variant="warning">+{Math.floor(influenceLevel * 0.2)}%</TerminalText>
             </div>
             <div className="terminal-flex between">
               <TerminalText variant="dim">DYNASTY SIZE:</TerminalText>
-              <TerminalText variant="warning">
-                +{Math.floor(influenceLevel * 0.15)}%
-              </TerminalText>
+              <TerminalText variant="warning">+{Math.floor(influenceLevel * 0.15)}%</TerminalText>
             </div>
             <div className="terminal-flex between">
               <TerminalText variant="dim">RECENT ACTIONS:</TerminalText>
@@ -442,33 +379,25 @@ export const DynastyHall: React.FC<DynastyHallProps> = ({
           <TerminalWindow title="DYNASTY ACTIONS" statusLine="AVAILABLE">
             <div className="terminal-grid cols-2">
               <TerminalButton
-                onClick={() =>
-                  onDynastyAction(selectedDynasty!.id, 'grant_autonomy')
-                }
+                onClick={() => onDynastyAction(selectedDynasty!.id, 'grant_autonomy')}
                 variant="primary"
               >
                 GRANT AUTONOMY
               </TerminalButton>
               <TerminalButton
-                onClick={() =>
-                  onDynastyAction(selectedDynasty!.id, 'assign_mission')
-                }
+                onClick={() => onDynastyAction(selectedDynasty!.id, 'assign_mission')}
                 variant="success"
               >
                 ASSIGN MISSION
               </TerminalButton>
               <TerminalButton
-                onClick={() =>
-                  onDynastyAction(selectedDynasty!.id, 'promote_member')
-                }
+                onClick={() => onDynastyAction(selectedDynasty!.id, 'promote_member')}
                 variant="warning"
               >
                 PROMOTE MEMBER
               </TerminalButton>
               <TerminalButton
-                onClick={() =>
-                  onDynastyAction(selectedDynasty!.id, 'expand_influence')
-                }
+                onClick={() => onDynastyAction(selectedDynasty!.id, 'expand_influence')}
                 variant="primary"
               >
                 EXPAND INFLUENCE

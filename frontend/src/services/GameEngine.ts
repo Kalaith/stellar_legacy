@@ -1,11 +1,5 @@
 // services/GameEngine.ts
-import type {
-  CrewMember,
-  Resources,
-  Ship,
-  StarSystem,
-  Planet,
-} from '../types/game';
+import type { CrewMember, Resources, Ship, StarSystem, Planet } from '../types/game';
 import type { GameOperationResult } from '../types/errors';
 import { GameOperationError } from '../types/errors';
 import { CrewIdGenerator } from '../types/branded';
@@ -30,9 +24,7 @@ export class GameEngine {
     skill: string;
   } {
     const randomCrew = crew[Math.floor(Math.random() * crew.length)];
-    const skills = Object.keys(
-      randomCrew.skills
-    ) as (keyof typeof randomCrew.skills)[];
+    const skills = Object.keys(randomCrew.skills) as (keyof typeof randomCrew.skills)[];
     const randomSkill = skills[Math.floor(Math.random() * skills.length)];
 
     const updatedCrew = crew.map(member =>
@@ -81,9 +73,7 @@ export class GameEngine {
   static generateRandomCrew(): CrewMember {
     return {
       id: CrewIdGenerator.generate(),
-      name: this.getRandomFromArray(
-        gameConstants.RANDOM_NAMES.CREW_FIRST_NAMES
-      ),
+      name: this.getRandomFromArray(gameConstants.RANDOM_NAMES.CREW_FIRST_NAMES),
       role: this.getRandomFromArray(gameConstants.CREW_ROLES),
       skills: this.generateSkillSet(),
       morale: this.generateRandomInRange(
@@ -166,21 +156,13 @@ export class GameEngine {
     return planets;
   }
 
-  static calculateEmpireStats(
-    starSystems: StarSystem[],
-    legacy: { generation: number }
-  ) {
-    const exploredSystems = starSystems.filter(
-      s => s.status === 'explored'
-    ).length;
+  static calculateEmpireStats(starSystems: StarSystem[], legacy: { generation: number }) {
+    const exploredSystems = starSystems.filter(s => s.status === 'explored').length;
     const activeColonies = starSystems.reduce(
       (acc, sys) => acc + sys.planets.filter(p => p.developed).length,
       0
     );
-    const tradeRoutes = starSystems.reduce(
-      (acc, sys) => acc + sys.tradeRoutes.length,
-      0
-    );
+    const tradeRoutes = starSystems.reduce((acc, sys) => acc + sys.tradeRoutes.length, 0);
 
     return {
       exploredSystems,
@@ -228,9 +210,7 @@ export class GameEngine {
       skill: string;
     };
   }> {
-    const validation = ValidationService.validateCrewTraining(
-      resources.credits
-    );
+    const validation = ValidationService.validateCrewTraining(resources.credits);
     if (!validation.isValid) {
       return {
         success: false,
@@ -255,11 +235,7 @@ export class GameEngine {
     crew: CrewMember[],
     ship: Ship
   ): GameOperationResult<{ newResources: Resources; newCrew: CrewMember }> {
-    const validation = ValidationService.validateCrewRecruitment(
-      resources.credits,
-      crew,
-      ship
-    );
+    const validation = ValidationService.validateCrewRecruitment(resources.credits, crew, ship);
     if (!validation.isValid) {
       return {
         success: false,
@@ -286,16 +262,11 @@ export class GameEngine {
     if (!selectedSystem) {
       return {
         success: false,
-        error: new GameOperationError(
-          'System Exploration',
-          'No system selected'
-        ),
+        error: new GameOperationError('System Exploration', 'No system selected'),
       };
     }
 
-    const validation = ValidationService.validateSystemExploration(
-      resources.energy
-    );
+    const validation = ValidationService.validateSystemExploration(resources.energy);
     if (!validation.isValid) {
       return {
         success: false,
@@ -326,10 +297,7 @@ export class GameEngine {
     if (!selectedSystem) {
       return {
         success: false,
-        error: new GameOperationError(
-          'Colony Establishment',
-          'No system selected'
-        ),
+        error: new GameOperationError('Colony Establishment', 'No system selected'),
       };
     }
 
@@ -352,10 +320,7 @@ export class GameEngine {
     if (!undevelopedPlanet) {
       return {
         success: false,
-        error: new GameOperationError(
-          'Colony Establishment',
-          'No undeveloped planets available'
-        ),
+        error: new GameOperationError('Colony Establishment', 'No undeveloped planets available'),
       };
     }
 

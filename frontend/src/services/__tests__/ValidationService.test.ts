@@ -80,36 +80,22 @@ describe('ValidationService', () => {
 
   describe('validateCrewRecruitment', () => {
     it('should return valid when all conditions are met', () => {
-      const result = ValidationService.validateCrewRecruitment(
-        300,
-        mockCrew,
-        mockShip
-      );
+      const result = ValidationService.validateCrewRecruitment(300, mockCrew, mockShip);
       expect(result.isValid).toBe(true);
       expect(result.message).toBeUndefined();
     });
 
     it('should return invalid when credits are insufficient', () => {
-      const result = ValidationService.validateCrewRecruitment(
-        100,
-        mockCrew,
-        mockShip
-      );
+      const result = ValidationService.validateCrewRecruitment(100, mockCrew, mockShip);
       expect(result.isValid).toBe(false);
       expect(result.message).toBe('Need 200 credits to recruit crew');
     });
 
     it('should return invalid when ship is at capacity', () => {
       const fullCrew = Array(5).fill(mockCrew[0]);
-      const result = ValidationService.validateCrewRecruitment(
-        300,
-        fullCrew,
-        mockShip
-      );
+      const result = ValidationService.validateCrewRecruitment(300, fullCrew, mockShip);
       expect(result.isValid).toBe(false);
-      expect(result.message).toBe(
-        'Ship at crew capacity! Upgrade living quarters.'
-      );
+      expect(result.message).toBe('Ship at crew capacity! Upgrade living quarters.');
     });
   });
 
@@ -129,26 +115,21 @@ describe('ValidationService', () => {
 
   describe('validateColonyEstablishment', () => {
     it('should return valid when resources are sufficient', () => {
-      const result =
-        ValidationService.validateColonyEstablishment(mockResources);
+      const result = ValidationService.validateColonyEstablishment(mockResources);
       expect(result.isValid).toBe(true);
       expect(result.message).toBeUndefined();
     });
 
     it('should return invalid when credits are insufficient', () => {
       const insufficientResources = { ...mockResources, credits: 100 };
-      const result = ValidationService.validateColonyEstablishment(
-        insufficientResources
-      );
+      const result = ValidationService.validateColonyEstablishment(insufficientResources);
       expect(result.isValid).toBe(false);
       expect(result.message).toBe('Need 200 credits to establish colony');
     });
 
     it('should return invalid when minerals are insufficient', () => {
       const insufficientResources = { ...mockResources, minerals: 50 };
-      const result = ValidationService.validateColonyEstablishment(
-        insufficientResources
-      );
+      const result = ValidationService.validateColonyEstablishment(insufficientResources);
       expect(result.isValid).toBe(false);
       expect(result.message).toBe('Need 100 minerals to establish colony');
     });
@@ -156,34 +137,19 @@ describe('ValidationService', () => {
 
   describe('validateTrade', () => {
     it('should return valid for buying when credits are sufficient', () => {
-      const result = ValidationService.validateTrade(
-        mockResources,
-        'minerals',
-        'buy',
-        10
-      );
+      const result = ValidationService.validateTrade(mockResources, 'minerals', 'buy', 10);
       expect(result.isValid).toBe(true);
       expect(result.message).toBeUndefined();
     });
 
     it('should return invalid for buying when credits are insufficient', () => {
-      const result = ValidationService.validateTrade(
-        mockResources,
-        'minerals',
-        'buy',
-        200
-      );
+      const result = ValidationService.validateTrade(mockResources, 'minerals', 'buy', 200);
       expect(result.isValid).toBe(false);
       expect(result.message).toBe('Not enough credits!');
     });
 
     it('should return valid for selling when resource is sufficient', () => {
-      const result = ValidationService.validateTrade(
-        mockResources,
-        'minerals',
-        'sell',
-        10
-      );
+      const result = ValidationService.validateTrade(mockResources, 'minerals', 'sell', 10);
       expect(result.isValid).toBe(true);
       expect(result.message).toBeUndefined();
     });

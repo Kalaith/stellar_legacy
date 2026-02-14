@@ -41,36 +41,28 @@ interface CrewMemberItemProps {
   };
 }
 
-const CrewMemberItem: React.FC<CrewMemberItemProps> = React.memo(
-  ({ member }) => {
-    const getMoraleColor = useMemo(
-      () => (morale: number) => {
-        if (morale > 70) return 'bg-green-400'; // Keep green for morale visual - semantic use
-        if (morale > 50) return 'bg-yellow-600'; // Yellow for warning state
-        return 'bg-red-500'; // Red for low morale
-      },
-      []
-    );
+const CrewMemberItem: React.FC<CrewMemberItemProps> = React.memo(({ member }) => {
+  const getMoraleColor = useMemo(
+    () => (morale: number) => {
+      if (morale > 70) return 'bg-green-400'; // Keep green for morale visual - semantic use
+      if (morale > 50) return 'bg-yellow-600'; // Yellow for warning state
+      return 'bg-red-500'; // Red for low morale
+    },
+    []
+  );
 
-    return (
-      <div
-        className={`flex items-center justify-between ${uiConstants.COLORS.BG_SECONDARY} rounded ${uiConstants.SPACING.CARD_PADDING_SM}`}
-      >
-        <div className="flex-1">
-          <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
-            {member.name}
-          </div>
-          <div className={`${uiConstants.COLORS.TEXT_MUTED} text-sm`}>
-            {member.role}
-          </div>
-        </div>
-        <div
-          className={`w-3 h-3 rounded-full ${getMoraleColor(member.morale)}`}
-        />
+  return (
+    <div
+      className={`flex items-center justify-between ${uiConstants.COLORS.BG_SECONDARY} rounded ${uiConstants.SPACING.CARD_PADDING_SM}`}
+    >
+      <div className="flex-1">
+        <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>{member.name}</div>
+        <div className={`${uiConstants.COLORS.TEXT_MUTED} text-sm`}>{member.role}</div>
       </div>
-    );
-  }
-);
+      <div className={`w-3 h-3 rounded-full ${getMoraleColor(member.morale)}`} />
+    </div>
+  );
+});
 
 CrewMemberItem.displayName = 'CrewMemberItem';
 

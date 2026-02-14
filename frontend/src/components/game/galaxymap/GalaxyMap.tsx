@@ -4,14 +4,8 @@ import { uiConstants } from '../../../constants/uiConstants';
 import type { StarSystem } from '../../../types/game';
 
 const GalaxyMap: React.FC = React.memo(() => {
-  const {
-    starSystems,
-    selectedSystem,
-    resources,
-    exploreSystem,
-    establishColony,
-    selectSystem,
-  } = useGameStore();
+  const { starSystems, selectedSystem, resources, exploreSystem, establishColony, selectSystem } =
+    useGameStore();
 
   const handleSystemClick = useCallback(
     (system: StarSystem) => {
@@ -27,20 +21,13 @@ const GalaxyMap: React.FC = React.memo(() => {
   }, [selectedSystem, resources.energy, exploreSystem]);
 
   const handleEstablishColony = useCallback(() => {
-    if (
-      selectedSystem &&
-      resources.credits >= 200 &&
-      resources.minerals >= 100
-    ) {
+    if (selectedSystem && resources.credits >= 200 && resources.minerals >= 100) {
       establishColony();
     }
   }, [selectedSystem, resources.credits, resources.minerals, establishColony]);
 
   const canExplore = useMemo(
-    () =>
-      selectedSystem &&
-      selectedSystem.status === 'unexplored' &&
-      resources.energy >= 50,
+    () => selectedSystem && selectedSystem.status === 'unexplored' && resources.energy >= 50,
     [selectedSystem, resources.energy]
   );
 
@@ -74,13 +61,9 @@ const GalaxyMap: React.FC = React.memo(() => {
                 <div
                   key={index}
                   className={`absolute cursor-pointer transition-all duration-200 hover:scale-125 ${
-                    system.status === 'explored'
-                      ? 'text-yellow-400'
-                      : 'text-blue-400'
+                    system.status === 'explored' ? 'text-yellow-400' : 'text-blue-400'
                   } ${
-                    selectedSystem?.name === system.name
-                      ? 'scale-125 ring-2 ring-teal-400'
-                      : ''
+                    selectedSystem?.name === system.name ? 'scale-125 ring-2 ring-teal-400' : ''
                   }`}
                   style={{
                     left: `${system.coordinates.x}px`,
@@ -110,18 +93,14 @@ const GalaxyMap: React.FC = React.memo(() => {
           {selectedSystem ? (
             <div className="space-y-4">
               <div>
-                <h4
-                  className={`font-medium text-lg ${uiConstants.COLORS.TEXT_PRIMARY}`}
-                >
+                <h4 className={`font-medium text-lg ${uiConstants.COLORS.TEXT_PRIMARY}`}>
                   {selectedSystem.name}
                 </h4>
                 <p className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}>
                   Status:{' '}
                   <span
                     className={`font-medium ${
-                      selectedSystem.status === 'explored'
-                        ? 'text-green-400'
-                        : 'text-blue-400'
+                      selectedSystem.status === 'explored' ? 'text-green-400' : 'text-blue-400'
                     }`}
                   >
                     {selectedSystem.status}
@@ -130,20 +109,14 @@ const GalaxyMap: React.FC = React.memo(() => {
               </div>
 
               <div>
-                <h5
-                  className={`font-medium mb-2 ${uiConstants.COLORS.TEXT_PRIMARY}`}
-                >
-                  Planets:
-                </h5>
+                <h5 className={`font-medium mb-2 ${uiConstants.COLORS.TEXT_PRIMARY}`}>Planets:</h5>
                 <div className="space-y-2">
                   {selectedSystem.planets.map((planet, index) => (
                     <div
                       key={index}
                       className={`flex justify-between items-center p-2 ${uiConstants.COLORS.BG_SECONDARY} rounded`}
                     >
-                      <span
-                        className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}
-                      >
+                      <span className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}>
                         {planet.name} ({planet.type})
                       </span>
                       <span
@@ -161,9 +134,7 @@ const GalaxyMap: React.FC = React.memo(() => {
               </div>
             </div>
           ) : (
-            <p className={uiConstants.COLORS.TEXT_MUTED}>
-              Select a system to view details
-            </p>
+            <p className={uiConstants.COLORS.TEXT_MUTED}>Select a system to view details</p>
           )}
         </div>
 

@@ -6,10 +6,7 @@ export const useTradeActions = () => {
   const { resources, market, showNotification } = useGameStore();
 
   const tradeResource = useCallback(
-    (
-      resource: 'minerals' | 'energy' | 'food' | 'influence',
-      action: 'buy' | 'sell'
-    ) => {
+    (resource: 'minerals' | 'energy' | 'food' | 'influence', action: 'buy' | 'sell') => {
       const price = market.prices[resource];
       const amount = 10;
 
@@ -22,10 +19,7 @@ export const useTradeActions = () => {
             [resource]: resources[resource] + amount,
           };
           useGameStore.setState({ resources: newResources });
-          showNotification(
-            `Bought ${amount} ${resource} for ${cost} credits`,
-            'success'
-          );
+          showNotification(`Bought ${amount} ${resource} for ${cost} credits`, 'success');
         } else {
           showNotification('Not enough credits!', 'error');
         }
@@ -38,10 +32,7 @@ export const useTradeActions = () => {
             credits: resources.credits + earnings,
           };
           useGameStore.setState({ resources: newResources });
-          showNotification(
-            `Sold ${amount} ${resource} for ${earnings} credits`,
-            'success'
-          );
+          showNotification(`Sold ${amount} ${resource} for ${earnings} credits`, 'success');
         } else {
           showNotification(`Not enough ${resource}!`, 'error');
         }

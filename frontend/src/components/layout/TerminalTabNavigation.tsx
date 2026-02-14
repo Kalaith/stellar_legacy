@@ -41,14 +41,8 @@ const TerminalTabNavigation: React.FC = React.memo(() => {
   );
 
   // Memoized border generation to prevent recreation
-  const coreSystemBorder = useMemo(
-    () => generateTerminalBorder('CORE SYSTEMS', 65),
-    []
-  );
-  const generationalBorder = useMemo(
-    () => generateTerminalBorder('GENERATIONAL SYSTEMS', 80),
-    []
-  );
+  const coreSystemBorder = useMemo(() => generateTerminalBorder('CORE SYSTEMS', 65), []);
+  const generationalBorder = useMemo(() => generateTerminalBorder('GENERATIONAL SYSTEMS', 80), []);
 
   // Memoized style objects
   const navStyles = useMemo(

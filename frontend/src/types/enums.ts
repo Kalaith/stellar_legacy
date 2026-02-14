@@ -31,8 +31,7 @@ export const NotificationType = {
   INFO: 'info',
 } as const;
 
-export type NotificationTypeType =
-  (typeof NotificationType)[keyof typeof NotificationType];
+export type NotificationTypeType = (typeof NotificationType)[keyof typeof NotificationType];
 
 export const PlanetType = {
   ROCKY: 'Rocky',
@@ -69,8 +68,7 @@ export const ComponentCategory = {
   WEAPONS: 'weapons',
 } as const;
 
-export type ComponentCategoryType =
-  (typeof ComponentCategory)[keyof typeof ComponentCategory];
+export type ComponentCategoryType = (typeof ComponentCategory)[keyof typeof ComponentCategory];
 
 // Generational Mission Types
 export const LegacyType = {
@@ -99,8 +97,7 @@ export const MissionObjective = {
   RESCUE: 'rescue',
 } as const;
 
-export type MissionObjectiveType =
-  (typeof MissionObjective)[keyof typeof MissionObjective];
+export type MissionObjectiveType = (typeof MissionObjective)[keyof typeof MissionObjective];
 
 export const MissionPhase = {
   PREPARATION: 'preparation',
@@ -119,8 +116,7 @@ export const EventCategory = {
   LEGACY_MOMENT: 'legacy_moment',
 } as const;
 
-export type EventCategoryType =
-  (typeof EventCategory)[keyof typeof EventCategory];
+export type EventCategoryType = (typeof EventCategory)[keyof typeof EventCategory];
 
 export const ShipClass = {
   COLONY: 'colony',

@@ -33,10 +33,7 @@ export class EventService {
     const event = this.createEventFromTemplate(eventTemplate, mission);
 
     // Determine if this event requires player intervention
-    event.requiresPlayerDecision = this.shouldRequirePlayerDecision(
-      event,
-      mission
-    );
+    event.requiresPlayerDecision = this.shouldRequirePlayerDecision(event, mission);
 
     Logger.info(`Generated event: ${event.title}`, {
       category: event.category,
@@ -48,9 +45,7 @@ export class EventService {
   }
 
   // Select Event Category Based on Mission State
-  private static selectEventCategory(
-    mission: GenerationalMission
-  ): EventCategoryType {
+  private static selectEventCategory(mission: GenerationalMission): EventCategoryType {
     const weights = {
       immediate_crisis: this.calculateCrisisWeight(mission),
       generational_challenge: 0.3,
@@ -59,10 +54,7 @@ export class EventService {
     };
 
     // Weighted random selection
-    const totalWeight = Object.values(weights).reduce(
-      (sum, weight) => sum + weight,
-      0
-    );
+    const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
     let random = Math.random() * totalWeight;
 
     for (const [category, weight] of Object.entries(weights)) {
@@ -99,9 +91,7 @@ export class EventService {
   }
 
   // Calculate Milestone Weight
-  private static calculateMilestoneWeight(
-    mission: GenerationalMission
-  ): number {
+  private static calculateMilestoneWeight(mission: GenerationalMission): number {
     const progress = mission.phaseProgress / 100;
 
     // Higher chance near phase transitions
@@ -144,8 +134,7 @@ export class EventService {
     return allTemplates.filter(
       template =>
         template.category === category &&
-        (template.legacySpecific === null ||
-          template.legacySpecific === legacy) &&
+        (template.legacySpecific === null || template.legacySpecific === legacy) &&
         template.validPhases.includes(phase)
     );
   }
@@ -164,10 +153,7 @@ export class EventService {
       autoResolutionDelay: template.autoResolutionDelay,
       possibleOutcomes: template.outcomes.map(outcome => ({
         ...outcome,
-        description: this.processTemplateVariables(
-          outcome.description,
-          mission
-        ),
+        description: this.processTemplateVariables(outcome.description, mission),
       })),
       affectedCohorts: template.affectedCohorts,
       affectedDynasties: template.affectedDynasties,
@@ -181,10 +167,7 @@ export class EventService {
   }
 
   // Process Template Variables
-  private static processTemplateVariables(
-    text: string,
-    mission: GenerationalMission
-  ): string {
+  private static processTemplateVariables(text: string, mission: GenerationalMission): string {
     const variables: Record<string, string> = {
       '{SHIP_NAME}': mission.ship.name,
       '{YEAR}': mission.currentYear.toString(),
@@ -211,9 +194,7 @@ export class EventService {
     if (event.category === 'legacy_moment') return true;
 
     // Check automation config
-    if (
-      AutomationService.shouldEscalateEvent(event, mission.automationConfig)
-    ) {
+    if (AutomationService.shouldEscalateEvent(event, mission.automationConfig)) {
       return true;
     }
 
@@ -245,10 +226,7 @@ export class EventService {
     }
 
     // AI chooses best outcome based on mission state
-    const chosenOutcome = this.selectBestOutcome(
-      event.possibleOutcomes,
-      mission
-    );
+    const chosenOutcome = this.selectBestOutcome(event.possibleOutcomes, mission);
     const resolution = this.applyEventOutcome(chosenOutcome, mission);
 
     event.resolvedAt = Date.now();
@@ -308,10 +286,7 @@ export class EventService {
   }
 
   // Evaluate Outcome Score for AI Decision Making
-  private static evaluateOutcomeScore(
-    outcome: EventOutcome,
-    mission: GenerationalMission
-  ): number {
+  private static evaluateOutcomeScore(outcome: EventOutcome, mission: GenerationalMission): number {
     let score = 0;
 
     // Evaluate resource changes
@@ -358,9 +333,7 @@ export class EventService {
     Object.entries(outcome.resourceChanges).forEach(([resource, change]) => {
       if (typeof change === 'number' && change !== 0) {
         const oldValue =
-          typeof resources[resource] === 'number'
-            ? (resources[resource] as number)
-            : 0;
+          typeof resources[resource] === 'number' ? (resources[resource] as number) : 0;
         const newValue = Math.max(0, oldValue + change);
         resources[resource] = newValue;
 
@@ -370,23 +343,17 @@ export class EventService {
 
     // Apply population effects
     outcome.populationEffects.forEach(effect => {
-      const cohort = mission.population.cohorts.find(
-        c => c.type === effect.cohortType
-      );
+      const cohort = mission.population.cohorts.find(c => c.type === effect.cohortType);
       if (cohort) {
         this.applyPopulationEffect(cohort, effect);
-        effects.push(
-          `${effect.cohortType} ${effect.effectType}: ${effect.description}`
-        );
+        effects.push(`${effect.cohortType} ${effect.effectType}: ${effect.description}`);
       }
     });
 
     // Record long-term consequences
     if (outcome.longTermConsequences.length > 0) {
       // In a full implementation, these would be stored and affect future events
-      effects.push(
-        `Long-term effects: ${outcome.longTermConsequences.join(', ')}`
-      );
+      effects.push(`Long-term effects: ${outcome.longTermConsequences.join(', ')}`);
     }
 
     return {
@@ -398,25 +365,16 @@ export class EventService {
   }
 
   // Apply Population Effect to Cohort
-  private static applyPopulationEffect(
-    cohort: PopulationCohort,
-    effect: PopulationEffect
-  ): void {
+  private static applyPopulationEffect(cohort: PopulationCohort, effect: PopulationEffect): void {
     switch (effect.effectType) {
       case 'count':
         cohort.count = Math.max(0, cohort.count + effect.magnitude);
         break;
       case 'effectiveness':
-        cohort.effectiveness = Math.max(
-          0,
-          Math.min(1, cohort.effectiveness + effect.magnitude)
-        );
+        cohort.effectiveness = Math.max(0, Math.min(1, cohort.effectiveness + effect.magnitude));
         break;
       case 'morale':
-        cohort.morale = Math.max(
-          0,
-          Math.min(100, cohort.morale + effect.magnitude)
-        );
+        cohort.morale = Math.max(0, Math.min(100, cohort.morale + effect.magnitude));
         break;
       case 'traits':
         // Add trait effect (would be more sophisticated in production)
@@ -432,8 +390,7 @@ export class EventService {
       {
         id: 'system_failure',
         title: 'Critical System Failure',
-        description:
-          'Multiple ship systems are failing simultaneously. Immediate action required.',
+        description: 'Multiple ship systems are failing simultaneously. Immediate action required.',
         category: 'immediate_crisis',
         legacySpecific: null,
         validPhases: ['travel', 'operation'],
@@ -480,8 +437,7 @@ export class EventService {
       {
         id: 'population_growth',
         title: 'Population Boom',
-        description:
-          'Birth rates have increased significantly. Resources are being strained.',
+        description: 'Birth rates have increased significantly. Resources are being strained.',
         category: 'generational_challenge',
         legacySpecific: null,
         validPhases: ['travel', 'operation'],
@@ -546,8 +502,7 @@ export class EventService {
       {
         id: 'arrival_at_target',
         title: 'Arrival at Target System',
-        description:
-          'After {YEAR} years of travel, we have reached our destination.',
+        description: 'After {YEAR} years of travel, we have reached our destination.',
         category: 'mission_milestone',
         legacySpecific: null,
         validPhases: ['travel'],

@@ -53,18 +53,8 @@ export class ChronicleEntry {
   aiPerformance!: AIPerformanceSnapshot;
 }
 
-export type SuccessLevel =
-  | 'complete'
-  | 'partial'
-  | 'pyrrhic'
-  | 'failure'
-  | 'abandoned';
-export type PopulationOutcome =
-  | 'thrived'
-  | 'survived'
-  | 'diminished'
-  | 'transformed'
-  | 'extinct';
+export type SuccessLevel = 'complete' | 'partial' | 'pyrrhic' | 'failure' | 'abandoned';
+export type PopulationOutcome = 'thrived' | 'survived' | 'diminished' | 'transformed' | 'extinct';
 
 export class ChronicleDecision {
   id!: string;
@@ -102,12 +92,7 @@ export type DecisionCategory =
   | 'exploration'
   | 'legacy';
 export type DecisionUrgency = 'immediate' | 'urgent' | 'moderate' | 'routine';
-export type DecisionScope =
-  | 'individual'
-  | 'cohort'
-  | 'dynasty'
-  | 'legacy'
-  | 'civilization';
+export type DecisionScope = 'individual' | 'cohort' | 'dynasty' | 'legacy' | 'civilization';
 
 export class ImmediateConsequence {
   type!: 'resource' | 'population' | 'relationship' | 'event';

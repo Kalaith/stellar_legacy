@@ -4,9 +4,7 @@
  * Eliminates the need for throwing exceptions and provides type-safe error handling
  */
 
-export type Result<T, E = ServiceError> =
-  | { success: true; data: T }
-  | { success: false; error: E };
+export type Result<T, E = ServiceError> = { success: true; data: T } | { success: false; error: E };
 
 /**
  * Custom error class for service-layer errors
@@ -122,10 +120,7 @@ export const ResultHelpers = {
   /**
    * Convert a potentially throwing function to return a Result
    */
-  fromThrowable: <T>(
-    fn: () => T,
-    context?: Record<string, unknown>
-  ): Result<T> => {
+  fromThrowable: <T>(fn: () => T, context?: Record<string, unknown>): Result<T> => {
     try {
       const data = fn();
       return ResultHelpers.success(data);
@@ -173,15 +168,11 @@ export const ResultHelpers = {
 /**
  * Type guards for Result types
  */
-export const isSuccess = <T, E>(
-  result: Result<T, E>
-): result is { success: true; data: T } => {
+export const isSuccess = <T, E>(result: Result<T, E>): result is { success: true; data: T } => {
   return result.success;
 };
 
-export const isError = <T, E>(
-  result: Result<T, E>
-): result is { success: false; error: E } => {
+export const isError = <T, E>(result: Result<T, E>): result is { success: false; error: E } => {
   return !result.success;
 };
 
@@ -192,10 +183,7 @@ export const ResultUtils = {
   /**
    * Map over the data in a successful result
    */
-  map: <T, U, E = ServiceError>(
-    result: Result<T, E>,
-    mapFn: (data: T) => U
-  ): Result<U, E> => {
+  map: <T, U, E = ServiceError>(result: Result<T, E>, mapFn: (data: T) => U): Result<U, E> => {
     if (isSuccess(result)) {
       return ResultHelpers.success(mapFn(result.data)) as Result<U, E>;
     }

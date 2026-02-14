@@ -8,14 +8,12 @@ import { uiConstants } from '../../../constants/uiConstants';
 
 const CrewActions: React.FC = React.memo(() => {
   const { resources, crew, ship } = useGameStore();
-  const { handleTrainCrew, handleBoostMorale, handleRecruitCrew } =
-    useGameActions();
+  const { handleTrainCrew, handleBoostMorale, handleRecruitCrew } = useGameActions();
 
   const actionStates = useMemo(() => {
     const canTrain = resources.credits >= 100;
     const canBoostMorale = resources.credits >= 50;
-    const canRecruit =
-      resources.credits >= 200 && crew.length < ship.stats.crewCapacity;
+    const canRecruit = resources.credits >= 200 && crew.length < ship.stats.crewCapacity;
 
     return { canTrain, canBoostMorale, canRecruit };
   }, [resources.credits, crew.length, ship.stats.crewCapacity]);
@@ -55,8 +53,7 @@ const CrewActions: React.FC = React.memo(() => {
             className={`${uiConstants.NOTIFICATIONS.WARNING} ${uiConstants.SPACING.CARD_PADDING_SM}`}
           >
             <p className="text-sm">
-              Ship at maximum crew capacity. Upgrade living quarters to recruit
-              more crew.
+              Ship at maximum crew capacity. Upgrade living quarters to recruit more crew.
             </p>
           </div>
         )}
@@ -87,17 +84,11 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   <div
     className={`${uiConstants.COLORS.BG_SECONDARY} rounded-lg p-4 border ${uiConstants.COLORS.BORDER_LIGHT}`}
   >
-    <div
-      className={`flex justify-between items-start ${uiConstants.SPACING.SECTION_MARGIN_SM}`}
-    >
-      <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>
-        {title}
-      </h4>
+    <div className={`flex justify-between items-start ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
+      <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>{title}</h4>
       <span className={`${uiConstants.COLORS.TEXT_MUTED} text-sm`}>{cost}</span>
     </div>
-    <p className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm mb-3`}>
-      {description}
-    </p>
+    <p className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm mb-3`}>{description}</p>
     <Button
       onClick={onClick}
       disabled={disabled}

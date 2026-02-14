@@ -44,12 +44,8 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
     >
       {/* Terminal Header */}
       <div className="terminal-header">
-        <div
-          ref={titleRef}
-          className={`terminal-title-bar ${isTyping ? 'terminal-typing' : ''}`}
-        >
-          ┌─[{title.toUpperCase()}]
-          {generateBorder(borderLength - titleLength - 4)}┐
+        <div ref={titleRef} className={`terminal-title-bar ${isTyping ? 'terminal-typing' : ''}`}>
+          ┌─[{title.toUpperCase()}]{generateBorder(borderLength - titleLength - 4)}┐
         </div>
 
         {statusLine && (
@@ -83,32 +79,21 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
           {' '.repeat(Math.max(0, borderLength - 15))} │
         </div>
 
-        <div className="terminal-separator">
-          ├{generateBorder(borderLength)}┤
-        </div>
+        <div className="terminal-separator">├{generateBorder(borderLength)}┤</div>
       </div>
 
       {/* Terminal Content */}
       {!isCollapsed && <div className="terminal-content">{children}</div>}
 
       {/* Terminal Footer */}
-      {!isCollapsed && (
-        <div className="terminal-footer">└{generateBorder(borderLength)}┘</div>
-      )}
+      {!isCollapsed && <div className="terminal-footer">└{generateBorder(borderLength)}┘</div>}
     </div>
   );
 };
 
 interface TerminalTextProps {
   children: React.ReactNode;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'warning'
-    | 'error'
-    | 'dim'
-    | 'bright';
+  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'dim' | 'bright';
   className?: string;
   glow?: boolean;
   typing?: boolean;
@@ -268,13 +253,8 @@ export const TerminalProgress: React.FC<TerminalProgressProps> = ({
     <div className={`terminal-progress ${variant} ${className}`}>
       {label && <div className="terminal-text mb-1">{label}</div>}
       <div className="terminal-progress-container">
-        <div
-          className={`terminal-progress-bar ${variant}`}
-          style={{ width: `${percentage}%` }}
-        />
-        {showText && (
-          <div className="terminal-progress-text">{percentage.toFixed(1)}%</div>
-        )}
+        <div className={`terminal-progress-bar ${variant}`} style={{ width: `${percentage}%` }} />
+        {showText && <div className="terminal-progress-text">{percentage.toFixed(1)}%</div>}
       </div>
     </div>
   );
@@ -403,9 +383,7 @@ export const TerminalBoot: React.FC<TerminalBootProps> = ({
         ))}
 
         {isComplete && (
-          <div className="terminal-text success terminal-glow-pulse">
-            ▶ SYSTEM OPERATIONAL
-          </div>
+          <div className="terminal-text success terminal-glow-pulse">▶ SYSTEM OPERATIONAL</div>
         )}
       </div>
     </div>

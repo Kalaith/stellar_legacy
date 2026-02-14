@@ -5,14 +5,9 @@ import { uiConstants } from '../../constants/uiConstants';
 
 const Header: React.FC = React.memo(() => {
   const { resources, legacy } = useGameStore();
-  const captain = useGameStore(state =>
-    state.crew.find(c => c.role === 'Captain')
-  );
+  const captain = useGameStore(state => state.crew.find(c => c.role === 'Captain'));
 
-  const captainName = useMemo(
-    () => captain?.name.split(' ')[1] || 'Unknown',
-    [captain?.name]
-  );
+  const captainName = useMemo(() => captain?.name.split(' ')[1] || 'Unknown', [captain?.name]);
 
   return (
     <header
@@ -21,9 +16,7 @@ const Header: React.FC = React.memo(() => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-6">
           <div>
-            <h1
-              className={`text-2xl font-bold ${uiConstants.COLORS.TEXT_PRIMARY}`}
-            >
+            <h1 className={`text-2xl font-bold ${uiConstants.COLORS.TEXT_PRIMARY}`}>
               Stellar Legacy
             </h1>
             <p className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>
@@ -34,26 +27,10 @@ const Header: React.FC = React.memo(() => {
 
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-4">
-            <ResourceItem
-              icon="💰"
-              label="Credits"
-              value={Math.floor(resources.credits)}
-            />
-            <ResourceItem
-              icon="⚡"
-              label="Energy"
-              value={Math.floor(resources.energy)}
-            />
-            <ResourceItem
-              icon="⛏️"
-              label="Minerals"
-              value={Math.floor(resources.minerals)}
-            />
-            <ResourceItem
-              icon="🍎"
-              label="Food"
-              value={Math.floor(resources.food)}
-            />
+            <ResourceItem icon="💰" label="Credits" value={Math.floor(resources.credits)} />
+            <ResourceItem icon="⚡" label="Energy" value={Math.floor(resources.energy)} />
+            <ResourceItem icon="⛏️" label="Minerals" value={Math.floor(resources.minerals)} />
+            <ResourceItem icon="🍎" label="Food" value={Math.floor(resources.food)} />
             <ResourceItem
               icon="🎖️"
               label="Influence"
@@ -81,11 +58,7 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ icon, label, value }) => (
     <span className="text-lg">{icon}</span>
     <div className="text-center">
       <div className={`text-xs ${uiConstants.COLORS.TEXT_MUTED}`}>{label}</div>
-      <div
-        className={`text-sm font-semibold ${uiConstants.COLORS.TEXT_PRIMARY}`}
-      >
-        {value}
-      </div>
+      <div className={`text-sm font-semibold ${uiConstants.COLORS.TEXT_PRIMARY}`}>{value}</div>
     </div>
   </div>
 );

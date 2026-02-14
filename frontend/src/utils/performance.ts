@@ -175,8 +175,7 @@ export class PerformanceMonitor {
 
     return {
       count: measurements.length,
-      average:
-        measurements.reduce((acc, val) => acc + val, 0) / measurements.length,
+      average: measurements.reduce((acc, val) => acc + val, 0) / measurements.length,
       min: Math.min(...measurements),
       max: Math.max(...measurements),
     };
@@ -218,15 +217,12 @@ export function usePerformanceMonitor(label: string, enabled: boolean = true) {
 /**
  * Higher-order component for automatic performance monitoring
  */
-export function withPerformanceMonitoring<
-  TProps extends Record<string, unknown>,
->(
+export function withPerformanceMonitoring<TProps extends Record<string, unknown>>(
   Component: React.ComponentType<TProps>,
   componentName?: string
 ): React.ComponentType<TProps> {
   const WrappedComponent: React.FC<TProps> = (props: TProps) => {
-    const name =
-      componentName || Component.displayName || Component.name || 'Anonymous';
+    const name = componentName || Component.displayName || Component.name || 'Anonymous';
     const { start, end } = usePerformanceMonitor(`component-${name}`);
 
     React.useLayoutEffect(() => {
@@ -271,10 +267,7 @@ export function calculateVirtualScrollItems<T>(
 
   const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
   const visibleCount = Math.ceil(containerHeight / itemHeight);
-  const endIndex = Math.min(
-    items.length - 1,
-    startIndex + visibleCount + overscan
-  );
+  const endIndex = Math.min(items.length - 1, startIndex + visibleCount + overscan);
 
   const visibleItems = items.slice(startIndex, endIndex + 1);
   const offsetY = startIndex * itemHeight;

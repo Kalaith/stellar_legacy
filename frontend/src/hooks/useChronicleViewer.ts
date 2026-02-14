@@ -18,12 +18,7 @@ export interface ChronicleFilter {
  * Sort criteria for chronicle entries
  */
 export interface ChronicleSortCriteria {
-  field:
-    | 'missionNumber'
-    | 'startedAt'
-    | 'completedAt'
-    | 'successLevel'
-    | 'dominantLegacy';
+  field: 'missionNumber' | 'startedAt' | 'completedAt' | 'successLevel' | 'dominantLegacy';
   direction: 'asc' | 'desc';
 }
 
@@ -36,9 +31,7 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
     field: 'missionNumber',
     direction: 'desc',
   });
-  const [selectedEntry, setSelectedEntry] = useState<ChronicleEntry | null>(
-    null
-  );
+  const [selectedEntry, setSelectedEntry] = useState<ChronicleEntry | null>(null);
   const [showHeritageGenerator, setShowHeritageGenerator] = useState(false);
 
   /**
@@ -110,15 +103,8 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
           comparison = a.completedAt.getTime() - b.completedAt.getTime();
           break;
         case 'successLevel': {
-          const successOrder = [
-            'failure',
-            'partial',
-            'success',
-            'major_success',
-          ];
-          comparison =
-            successOrder.indexOf(a.successLevel) -
-            successOrder.indexOf(b.successLevel);
+          const successOrder = ['failure', 'partial', 'success', 'major_success'];
+          comparison = successOrder.indexOf(a.successLevel) - successOrder.indexOf(b.successLevel);
           break;
         }
         case 'dominantLegacy':
@@ -152,10 +138,7 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
       return level === 'success' || level === 'major_success';
     }).length;
 
-    const totalDuration = filteredEntries.reduce(
-      (sum, e) => sum + e.actualDuration,
-      0
-    );
+    const totalDuration = filteredEntries.reduce((sum, e) => sum + e.actualDuration, 0);
 
     const legacyDistribution = filteredEntries.reduce(
       (acc, entry) => {
@@ -165,10 +148,7 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
       {} as Record<string, number>
     );
 
-    const artifactCount = filteredEntries.reduce(
-      (sum, e) => sum + (e.artifacts?.length || 0),
-      0
-    );
+    const artifactCount = filteredEntries.reduce((sum, e) => sum + (e.artifacts?.length || 0), 0);
 
     return {
       total,
@@ -290,9 +270,7 @@ export const useChronicleViewer = (entries: ChronicleEntry[]) => {
  */
 export const useHeritageGeneration = () => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedModifiers, setGeneratedModifiers] = useState<
-    HeritageModifier[]
-  >([]);
+  const [generatedModifiers, setGeneratedModifiers] = useState<HeritageModifier[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const generateModifiers = useCallback(async (_entry: ChronicleEntry) => {
@@ -385,8 +363,7 @@ export const ChronicleUtils = {
       success: 1.0,
       major_success: 1.5,
     };
-    score +=
-      successWeights[entry.successLevel as keyof typeof successWeights] || 0.5;
+    score += successWeights[entry.successLevel as keyof typeof successWeights] || 0.5;
 
     // Decision impact weight
     const avgDecisionWeight =
@@ -414,9 +391,7 @@ export const ChronicleUtils = {
   ): Record<string, ChronicleEntry[]> => {
     return entries.reduce(
       (groups, entry) => {
-        const period =
-          Math.floor(entry.missionNumber / (periodYears / 10)) *
-          (periodYears / 10);
+        const period = Math.floor(entry.missionNumber / (periodYears / 10)) * (periodYears / 10);
         const key = `Years ${period}-${period + periodYears - 1}`;
         groups[key] = groups[key] || [];
         groups[key].push(entry);

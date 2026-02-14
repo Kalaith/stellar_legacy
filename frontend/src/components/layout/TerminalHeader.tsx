@@ -25,21 +25,14 @@ const TerminalHeader: React.FC = () => {
   return (
     <header className="terminal-header-main" style={{ padding: '0.5rem 1rem' }}>
       {/* Compact Title */}
-      <div
-        className="terminal-text bright"
-        style={{ textAlign: 'center', marginBottom: '0.5rem' }}
-      >
+      <div className="terminal-text bright" style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
         STELLAR LEGACY COMMAND INTERFACE
       </div>
 
       {/* Compact Status Display */}
       <div className="terminal-status-bar" style={{ marginBottom: '0.25rem' }}>
-        <div
-          className="terminal-status-section"
-          style={{ marginBottom: '0.25rem' }}
-        >
-          ┌─[SYSTEM
-          STATUS]─────────────────────────────────────────────────────────────┐
+        <div className="terminal-status-section" style={{ marginBottom: '0.25rem' }}>
+          ┌─[SYSTEM STATUS]─────────────────────────────────────────────────────────────┐
         </div>
         <div
           style={{
@@ -50,18 +43,13 @@ const TerminalHeader: React.FC = () => {
           }}
         >
           <div className="terminal-status-item">
-            │ VESSEL: {ship.name.toUpperCase()} │ HULL:{' '}
-            {ship.hull.toUpperCase()} │ LEGACY:{' '}
+            │ VESSEL: {ship.name.toUpperCase()} │ HULL: {ship.hull.toUpperCase()} │ LEGACY:{' '}
             {legacy.familyName.toUpperCase()} GEN-
             {legacy.generation.toString().padStart(2, '0')} │
           </div>
         </div>
-        <div
-          className="terminal-status-section"
-          style={{ margin: '0.25rem 0' }}
-        >
-          ├─[RESOURCE
-          MANIFEST]───────────────────────────────────────────────────────┤
+        <div className="terminal-status-section" style={{ margin: '0.25rem 0' }}>
+          ├─[RESOURCE MANIFEST]───────────────────────────────────────────────────────┤
         </div>
         <div
           style={{
@@ -95,10 +83,7 @@ const TerminalHeader: React.FC = () => {
             │
           </div>
         </div>
-        <div
-          className="terminal-status-section"
-          style={{ marginTop: '0.25rem' }}
-        >
+        <div className="terminal-status-section" style={{ marginTop: '0.25rem' }}>
           └─────────────────────────────────────────────────────────────────────────────┘
         </div>
       </div>

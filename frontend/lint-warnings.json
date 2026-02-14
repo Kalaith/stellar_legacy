@@ -55,7 +55,12 @@
         "nodeType": "ArrayExpression",
         "endLine": 65,
         "endColumn": 62,
-        "suggestions": [{ "desc": "Update the dependencies array to be: [chronicleViewer, stableProps]", "fix": { "range": [2139, 2195], "text": "[chronicleViewer, stableProps]" } }]
+        "suggestions": [
+          {
+            "desc": "Update the dependencies array to be: [chronicleViewer, stableProps]",
+            "fix": { "range": [2139, 2195], "text": "[chronicleViewer, stableProps]" }
+          }
+        ]
       },
       {
         "ruleId": "react-hooks/exhaustive-deps",
@@ -66,7 +71,12 @@
         "nodeType": "ArrayExpression",
         "endLine": 70,
         "endColumn": 80,
-        "suggestions": [{ "desc": "Update the dependencies array to be: [chronicleViewer, stableProps]", "fix": { "range": [2376, 2450], "text": "[chronicleViewer, stableProps]" } }]
+        "suggestions": [
+          {
+            "desc": "Update the dependencies array to be: [chronicleViewer, stableProps]",
+            "fix": { "range": [2376, 2450], "text": "[chronicleViewer, stableProps]" }
+          }
+        ]
       }
     ],
     "suppressedMessages": [],
@@ -93,7 +103,10 @@
         "suggestions": [
           {
             "desc": "Update the dependencies array to be: [availableModifiers, targetMission, criteria, analyzeOptions]",
-            "fix": { "range": [1583, 1628], "text": "[availableModifiers, targetMission, criteria, analyzeOptions]" }
+            "fix": {
+              "range": [1583, 1628],
+              "text": "[availableModifiers, targetMission, criteria, analyzeOptions]"
+            }
           }
         ]
       },
@@ -288,7 +301,12 @@
         "nodeType": "ArrayExpression",
         "endLine": 18,
         "endColumn": 52,
-        "suggestions": [{ "desc": "Update the dependencies array to be: [starSystems, legacy, captain?.age]", "fix": { "range": [705, 751], "text": "[starSystems, legacy, captain?.age]" } }]
+        "suggestions": [
+          {
+            "desc": "Update the dependencies array to be: [starSystems, legacy, captain?.age]",
+            "fix": { "range": [705, 751], "text": "[starSystems, legacy, captain?.age]" }
+          }
+        ]
       }
     ],
     "suppressedMessages": [],
@@ -2166,7 +2184,10 @@
         "suggestions": [
           {
             "messageId": "addBrackets",
-            "fix": { "range": [14196, 14329], "text": "{ const popValue = gameState.population.total;\n          return this.evaluateComparison(popValue, condition.operator, condition.value); }" },
+            "fix": {
+              "range": [14196, 14329],
+              "text": "{ const popValue = gameState.population.total;\n          return this.evaluateComparison(popValue, condition.operator, condition.value); }"
+            },
             "desc": "Add {} brackets around the case block."
           }
         ]
@@ -4254,7 +4275,12 @@
         "nodeType": "ArrayExpression",
         "endLine": 99,
         "endColumn": 50,
-        "suggestions": [{ "desc": "Update the dependencies array to be: [obj]", "fix": { "range": [2340, 2361], "text": "[obj]" } }]
+        "suggestions": [
+          {
+            "desc": "Update the dependencies array to be: [obj]",
+            "fix": { "range": [2340, 2361], "text": "[obj]" }
+          }
+        ]
       },
       {
         "ruleId": "react-hooks/exhaustive-deps",
@@ -4275,7 +4301,12 @@
         "nodeType": "ArrayExpression",
         "endLine": 106,
         "endColumn": 50,
-        "suggestions": [{ "desc": "Update the dependencies array to be: [arr]", "fix": { "range": [2499, 2520], "text": "[arr]" } }]
+        "suggestions": [
+          {
+            "desc": "Update the dependencies array to be: [arr]",
+            "fix": { "range": [2499, 2520], "text": "[arr]" }
+          }
+        ]
       },
       {
         "ruleId": "react-hooks/exhaustive-deps",
@@ -4296,7 +4327,12 @@
         "nodeType": "ArrayExpression",
         "endLine": 300,
         "endColumn": 86,
-        "suggestions": [{ "desc": "Update the dependencies array to be: [items, scrollTop, options]", "fix": { "range": [7442, 7523], "text": "[items, scrollTop, options]" } }]
+        "suggestions": [
+          {
+            "desc": "Update the dependencies array to be: [items, scrollTop, options]",
+            "fix": { "range": [7442, 7523], "text": "[items, scrollTop, options]" }
+          }
+        ]
       }
     ],
     "suppressedMessages": [],

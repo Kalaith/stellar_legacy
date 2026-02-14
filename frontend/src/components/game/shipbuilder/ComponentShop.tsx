@@ -7,10 +7,8 @@ import type { ComponentCategoryType } from '../../../types/enums';
 import type { ComponentCost } from '../../../types/game';
 
 const ComponentShop: React.FC = React.memo(() => {
-  const { shipComponents, currentComponentCategory, resources } =
-    useGameStore();
-  const { handlePurchaseComponent, handleSwitchComponentCategory } =
-    useGameActions();
+  const { shipComponents, currentComponentCategory, resources } = useGameStore();
+  const { handlePurchaseComponent, handleSwitchComponentCategory } = useGameActions();
 
   const categories = useMemo(
     () =>
@@ -26,13 +24,11 @@ const ComponentShop: React.FC = React.memo(() => {
 
   const canAfford = useCallback(
     (cost: ComponentCost) => {
-      return (Object.keys(cost) as Array<keyof ComponentCost>).every(
-        resource => {
-          const amount = cost[resource];
-          if (amount === undefined) return true;
-          return resources[resource] >= amount;
-        }
-      );
+      return (Object.keys(cost) as Array<keyof ComponentCost>).every(resource => {
+        const amount = cost[resource];
+        if (amount === undefined) return true;
+        return resources[resource] >= amount;
+      });
     },
     [resources]
   );
@@ -88,14 +84,9 @@ const ComponentShop: React.FC = React.memo(() => {
       {/* Components List */}
       <div className="space-y-3">
         {currentComponents.map(component => (
-          <div
-            key={component.name}
-            className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}
-          >
+          <div key={component.name} className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
             <div className="flex justify-between items-start mb-2">
-              <h4
-                className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}
-              >
+              <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>
                 {component.name}
               </h4>
               <button

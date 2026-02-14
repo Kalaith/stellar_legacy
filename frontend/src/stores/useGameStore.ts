@@ -26,16 +26,9 @@ import { ChronicleService } from '../services/ChronicleService';
 import { HeritageService } from '../services/HeritageService';
 import { PacingService } from '../services/PacingService';
 import { LegacyDeckService } from '../services/LegacyDeckService';
-import {
-  DecisionTrackingService,
-  type DecisionInput,
-} from '../services/DecisionTrackingService';
+import { DecisionTrackingService, type DecisionInput } from '../services/DecisionTrackingService';
 import { gameConstants } from '../constants/gameConstants';
-import type {
-  TabIdType,
-  TradeActionType,
-  LegacyTypeType,
-} from '../types/enums';
+import type { TabIdType, TradeActionType, LegacyTypeType } from '../types/enums';
 import { TabId } from '../types/enums';
 import { DynastyService } from '../services/DynastyService';
 import { CrewIdGenerator } from '../types/branded';
@@ -287,9 +280,7 @@ interface GameStore extends GameState {
   selectSystem: (system: StarSystem) => void;
   exploreSystem: () => void;
   establishColony: () => void;
-  switchComponentCategory: (
-    category: keyof typeof initialGameData.shipComponents
-  ) => void;
+  switchComponentCategory: (category: keyof typeof initialGameData.shipComponents) => void;
   purchaseComponent: (category: string, componentName: string) => void;
   selectHeir: (heirId: CrewMemberId) => void;
   showNotification: (message: string, type?: Notification['type']) => void;
@@ -481,10 +472,7 @@ export const useGameStore = create<GameStore>()(
           get().generateResources();
         };
         generateResources();
-        const intervalId = setInterval(
-          generateResources,
-          gameConfig.intervals.resourceGeneration
-        );
+        const intervalId = setInterval(generateResources, gameConfig.intervals.resourceGeneration);
         set({ resourceIntervalId: intervalId });
         Logger.info('Game initialized successfully');
       },
@@ -504,10 +492,7 @@ export const useGameStore = create<GameStore>()(
 
       generateResources: () => {
         const { resources, resourceGenerationRate } = get();
-        const newResources = ResourceService.generateResources(
-          resources,
-          resourceGenerationRate
-        );
+        const newResources = ResourceService.generateResources(resources, resourceGenerationRate);
         set({ resources: newResources });
         Logger.resourceChange('all', 0, 'Resource generation tick');
       },
@@ -541,10 +526,7 @@ export const useGameStore = create<GameStore>()(
           });
         } catch (error) {
           Logger.error('Crew training failed', error);
-          get().showNotification(
-            'An error occurred during crew training.',
-            'error'
-          );
+          get().showNotification('An error occurred during crew training.', 'error');
         }
       },
 
@@ -568,21 +550,14 @@ export const useGameStore = create<GameStore>()(
           });
         } catch (error) {
           Logger.error('Morale boost failed', error);
-          get().showNotification(
-            'An error occurred during morale boost.',
-            'error'
-          );
+          get().showNotification('An error occurred during morale boost.', 'error');
         }
       },
 
       recruitCrew: () => {
         try {
           const { resources, crew, ship } = get();
-          const result = GameEngine.processCrewRecruitment(
-            resources,
-            crew,
-            ship
-          );
+          const result = GameEngine.processCrewRecruitment(resources, crew, ship);
 
           if (!result.success) {
             get().showNotification(result.error.message, 'error');
@@ -605,10 +580,7 @@ export const useGameStore = create<GameStore>()(
           });
         } catch (error) {
           Logger.error('Crew recruitment failed', error);
-          get().showNotification(
-            'An error occurred during crew recruitment.',
-            'error'
-          );
+          get().showNotification('An error occurred during crew recruitment.', 'error');
         }
       },
 
@@ -627,10 +599,7 @@ export const useGameStore = create<GameStore>()(
       exploreSystem: () => {
         try {
           const { selectedSystem, resources } = get();
-          const result = GameEngine.processSystemExploration(
-            resources,
-            selectedSystem
-          );
+          const result = GameEngine.processSystemExploration(resources, selectedSystem);
 
           if (!result.success) {
             get().showNotification(result.error.message, 'error');
@@ -667,20 +636,14 @@ export const useGameStore = create<GameStore>()(
           }
         } catch (error) {
           Logger.error('System exploration failed', error);
-          get().showNotification(
-            'An error occurred during system exploration.',
-            'error'
-          );
+          get().showNotification('An error occurred during system exploration.', 'error');
         }
       },
 
       establishColony: () => {
         try {
           const { selectedSystem, resources, resourceGenerationRate } = get();
-          const result = GameEngine.processColonyEstablishment(
-            resources,
-            selectedSystem
-          );
+          const result = GameEngine.processColonyEstablishment(resources, selectedSystem);
 
           if (!result.success) {
             get().showNotification(result.error.message, 'error');
@@ -713,10 +676,7 @@ export const useGameStore = create<GameStore>()(
               },
             });
 
-            const message = NotificationManager.createSystemMessage(
-              'colonized',
-              colonyPlanet.name
-            );
+            const message = NotificationManager.createSystemMessage('colonized', colonyPlanet.name);
             get().showNotification(message, 'success');
             Logger.systemEvent('colony_established', selectedSystem.name, {
               planet: colonyPlanet.name,
@@ -724,10 +684,7 @@ export const useGameStore = create<GameStore>()(
           }
         } catch (error) {
           Logger.error('Colony establishment failed', error);
-          get().showNotification(
-            'An error occurred during colony establishment.',
-            'error'
-          );
+          get().showNotification('An error occurred during colony establishment.', 'error');
         }
       },
 
@@ -747,16 +704,13 @@ export const useGameStore = create<GameStore>()(
       purchaseComponent: (category: string, componentName: string) => {
         try {
           const { shipComponents, resources, ship } = get();
-          const component = shipComponents[
-            category as keyof typeof shipComponents
-          ].find(c => c.name === componentName);
+          const component = shipComponents[category as keyof typeof shipComponents].find(
+            c => c.name === componentName
+          );
 
           if (component && get().canAffordComponent(component.cost)) {
             // Deduct cost using ResourceService
-            const newResources = ResourceService.deductCost(
-              resources,
-              component.cost
-            );
+            const newResources = ResourceService.deductCost(resources, component.cost);
 
             let updatedShip = { ...ship };
 
@@ -776,12 +730,8 @@ export const useGameStore = create<GameStore>()(
               // Add component stats to ship
               updatedShip.stats = { ...updatedShip.stats };
               Object.entries(component.stats).forEach(([stat, value]) => {
-                if (
-                  updatedShip.stats[stat as keyof typeof updatedShip.stats] !==
-                  undefined
-                ) {
-                  updatedShip.stats[stat as keyof typeof updatedShip.stats] +=
-                    value as number;
+                if (updatedShip.stats[stat as keyof typeof updatedShip.stats] !== undefined) {
+                  updatedShip.stats[stat as keyof typeof updatedShip.stats] += value as number;
                 }
               });
             }
@@ -791,10 +741,7 @@ export const useGameStore = create<GameStore>()(
           }
         } catch (error) {
           Logger.error('Component purchase failed', error);
-          get().showNotification(
-            'An error occurred during component purchase.',
-            'error'
-          );
+          get().showNotification('An error occurred during component purchase.', 'error');
         }
       },
 
@@ -821,10 +768,7 @@ export const useGameStore = create<GameStore>()(
         get().showNotification(message, 'success');
       },
 
-      showNotification: (
-        message: string,
-        type: Notification['type'] = 'info'
-      ) => {
+      showNotification: (message: string, type: Notification['type'] = 'info') => {
         const notification = NotificationManager.create(message, type);
         set(state => ({
           notifications: [...state.notifications, notification],
@@ -863,12 +807,7 @@ export const useGameStore = create<GameStore>()(
 
           const { resources, market } = get();
           const price = market.prices[resource];
-          const validation = ValidationService.validateTrade(
-            resources,
-            resource,
-            action,
-            price
-          );
+          const validation = ValidationService.validateTrade(resources, resource, action, price);
 
           if (!validation.isValid) {
             get().showNotification(validation.message!, 'error');
@@ -902,10 +841,7 @@ export const useGameStore = create<GameStore>()(
           });
         } catch (error) {
           Logger.error('Resource trade failed', error);
-          get().showNotification(
-            'An error occurred during resource trade.',
-            'error'
-          );
+          get().showNotification('An error occurred during resource trade.', 'error');
         }
       },
 
@@ -928,9 +864,7 @@ export const useGameStore = create<GameStore>()(
               message = `Granted autonomy to ${dynasty.name}`;
               // Update dynasty influence or other properties
               updatedDynasties = dynasties.map(d =>
-                d.id === dynastyId
-                  ? { ...d, influence: Math.min(100, d.influence + 10) }
-                  : d
+                d.id === dynastyId ? { ...d, influence: Math.min(100, d.influence + 10) } : d
               );
               break;
             case 'assign_mission':
@@ -942,9 +876,7 @@ export const useGameStore = create<GameStore>()(
             case 'expand_influence':
               message = `Expanded influence for ${dynasty.name}`;
               updatedDynasties = dynasties.map(d =>
-                d.id === dynastyId
-                  ? { ...d, influence: Math.min(100, d.influence + 5) }
-                  : d
+                d.id === dynastyId ? { ...d, influence: Math.min(100, d.influence + 5) } : d
               );
               break;
             default:
@@ -1035,10 +967,7 @@ export const useGameStore = create<GameStore>()(
 
       initializeDynasties: (legacy: LegacyTypeType) => {
         try {
-          const dynasties = DynastyService.generateInitialDynasties(
-            legacy,
-            50000
-          ); // 50k population
+          const dynasties = DynastyService.generateInitialDynasties(legacy, 50000); // 50k population
           set({ dynasties, playerLegacy: legacy });
           get().showNotification(
             `Initialized ${dynasties.length} dynasties for ${legacy} legacy`,
@@ -1099,10 +1028,7 @@ export const useGameStore = create<GameStore>()(
           const result = ChronicleService.generateHeritageModifiers(entry);
           if (result.success) {
             set({ availableHeritageModifiers: result.data });
-            get().showNotification(
-              `Generated ${result.data.length} heritage modifiers`,
-              'success'
-            );
+            get().showNotification(`Generated ${result.data.length} heritage modifiers`, 'success');
             Logger.info('Heritage modifiers generated', {
               count: result.data.length,
             });
@@ -1112,10 +1038,7 @@ export const useGameStore = create<GameStore>()(
           }
         } catch (error) {
           Logger.error('Failed to generate heritage modifiers', error);
-          get().showNotification(
-            'Failed to generate heritage modifiers',
-            'error'
-          );
+          get().showNotification('Failed to generate heritage modifiers', 'error');
         }
       },
 
@@ -1128,10 +1051,7 @@ export const useGameStore = create<GameStore>()(
         try {
           const { selectedHeritageModifiers, selectedMission } = get();
           if (!selectedMission) {
-            get().showNotification(
-              'No mission selected for heritage application',
-              'error'
-            );
+            get().showNotification('No mission selected for heritage application', 'error');
             return;
           }
 
@@ -1143,16 +1063,14 @@ export const useGameStore = create<GameStore>()(
           // Apply resource changes to current resources
           const currentResources = get().resources;
           const updatedResources = { ...currentResources };
-          (
-            Object.keys(result.resourceChanges) as Array<
-              keyof typeof updatedResources
-            >
-          ).forEach(resource => {
-            const change = result.resourceChanges[resource];
-            if (typeof change === 'number') {
-              updatedResources[resource] += change;
+          (Object.keys(result.resourceChanges) as Array<keyof typeof updatedResources>).forEach(
+            resource => {
+              const change = result.resourceChanges[resource];
+              if (typeof change === 'number') {
+                updatedResources[resource] += change;
+              }
             }
-          });
+          );
 
           set({ resources: updatedResources });
           get().showNotification(
@@ -1195,10 +1113,7 @@ export const useGameStore = create<GameStore>()(
             return;
           }
 
-          const entry = DecisionTrackingService.recordDecision(
-            decision,
-            selectedMission
-          );
+          const entry = DecisionTrackingService.recordDecision(decision, selectedMission);
           get().showNotification('Decision recorded in chronicle', 'success');
           Logger.info('Decision recorded', {
             decisionId: entry.id,
@@ -1274,10 +1189,7 @@ export const useGameStore = create<GameStore>()(
 
       forceTimeAcceleration: (acceleration: number) => {
         get().updatePacingState({ timeAcceleration: acceleration });
-        get().showNotification(
-          `Time acceleration set to ${acceleration}x`,
-          'info'
-        );
+        get().showNotification(`Time acceleration set to ${acceleration}x`, 'info');
       },
 
       // Legacy Deck Actions
@@ -1301,17 +1213,11 @@ export const useGameStore = create<GameStore>()(
           if (!selectedMission) return;
 
           const currentDeck = legacyDecks[playerLegacy];
-          const triggers = LegacyDeckService.checkCardTriggers(
-            currentDeck,
-            selectedMission
-          );
+          const triggers = LegacyDeckService.checkCardTriggers(currentDeck, selectedMission);
 
           set({ pendingCardChoices: triggers });
           if (triggers.length > 0) {
-            get().showNotification(
-              `${triggers.length} legacy cards triggered`,
-              'info'
-            );
+            get().showNotification(`${triggers.length} legacy cards triggered`, 'info');
           }
         } catch (error) {
           Logger.error('Failed to check card triggers', error);
@@ -1324,10 +1230,7 @@ export const useGameStore = create<GameStore>()(
 
         if (trigger) {
           set({ activeCards: [...get().activeCards, trigger.card] });
-          get().showNotification(
-            `Legacy card activated: ${trigger.card.name}`,
-            'info'
-          );
+          get().showNotification(`Legacy card activated: ${trigger.card.name}`, 'info');
           Logger.info('Legacy card triggered', {
             cardId,
             cardName: trigger.card.name,
@@ -1346,19 +1249,12 @@ export const useGameStore = create<GameStore>()(
             return;
           }
 
-          const result = LegacyDeckService.resolveCardChoice(
-            card,
-            choice,
-            selectedMission
-          );
+          const result = LegacyDeckService.resolveCardChoice(card, choice, selectedMission);
 
           // Remove card from active cards
           set({ activeCards: activeCards.filter(c => c.id !== cardId) });
 
-          get().showNotification(
-            `Card resolved: ${result.narrativeOutcome}`,
-            'success'
-          );
+          get().showNotification(`Card resolved: ${result.narrativeOutcome}`, 'success');
           Logger.info('Card choice resolved', {
             cardId,
             choiceId,
@@ -1374,12 +1270,7 @@ export const useGameStore = create<GameStore>()(
         const { legacyDecks, playerLegacy } = get();
         const deck = legacyDecks[playerLegacy];
 
-        const updatedDeck = LegacyDeckService.applyCuration(
-          deck,
-          cardId,
-          'rate',
-          rating
-        );
+        const updatedDeck = LegacyDeckService.applyCuration(deck, cardId, 'rate', rating);
 
         set({
           legacyDecks: {
@@ -1395,12 +1286,7 @@ export const useGameStore = create<GameStore>()(
         const { legacyDecks, playerLegacy } = get();
         const deck = legacyDecks[playerLegacy];
 
-        const updatedDeck = LegacyDeckService.applyCuration(
-          deck,
-          cardId,
-          'modify',
-          modifications
-        );
+        const updatedDeck = LegacyDeckService.applyCuration(deck, cardId, 'modify', modifications);
 
         set({
           legacyDecks: {

@@ -4,15 +4,8 @@ import { TerminalWindow } from '../ui/TerminalWindow';
 import { TerminalText } from '../ui/TerminalWindow';
 import type { Chronicle, ChronicleEntry } from '../../types/chronicle';
 import { ChronicleService } from '../../services/ChronicleService';
-import {
-  useChronicleViewer,
-  ChronicleUtils,
-} from '../../hooks/useChronicleViewer';
-import {
-  useDebounce,
-  usePerformanceMonitor,
-  useStableObject,
-} from '../../utils/performance';
+import { useChronicleViewer, ChronicleUtils } from '../../hooks/useChronicleViewer';
+import { useDebounce, usePerformanceMonitor, useStableObject } from '../../utils/performance';
 
 interface ChronicleViewerProps {
   onEntrySelect?: (entry: ChronicleEntry) => void;
@@ -26,9 +19,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
     const [error, setError] = useState<string | null>(null);
 
     // Performance monitoring
-    const { start: startRender, end: endRender } = usePerformanceMonitor(
-      'ChronicleViewer-render'
-    );
+    const { start: startRender, end: endRender } = usePerformanceMonitor('ChronicleViewer-render');
 
     React.useLayoutEffect(() => {
       startRender();
@@ -59,9 +50,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
           setError(result.error.message);
         }
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to load chronicle'
-        );
+        setError(err instanceof Error ? err.message : 'Failed to load chronicle');
       } finally {
         setLoading(false);
       }
@@ -108,9 +97,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
     if (loading) {
       return (
         <TerminalWindow title="LOADING CHRONICLES" className="min-h-96">
-          <TerminalText className="dim">
-            Accessing temporal databank...
-          </TerminalText>
+          <TerminalText className="dim">Accessing temporal databank...</TerminalText>
         </TerminalWindow>
       );
     }
@@ -133,8 +120,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
       return (
         <TerminalWindow title="CHRONICLE ARCHIVE" className="min-h-96">
           <TerminalText className="dim">
-            No chronicle entries found. Begin your legacy by completing your
-            first mission.
+            No chronicle entries found. Begin your legacy by completing your first mission.
           </TerminalText>
           {onHeritageGenerate && (
             <button
@@ -184,9 +170,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
         <TerminalWindow title="CHRONICLE FILTERS">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Legacy Filter
-              </label>
+              <label className="block text-sm text-gray-400 mb-2">Legacy Filter</label>
               <select
                 value={chronicleViewer.filters.legacy || ''}
                 onChange={e =>
@@ -206,9 +190,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Success Level
-              </label>
+              <label className="block text-sm text-gray-400 mb-2">Success Level</label>
               <select
                 value={chronicleViewer.filters.successLevel || ''}
                 onChange={e =>
@@ -242,8 +224,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
           {chronicleViewer.hasFilters && (
             <div className="mt-4 flex justify-between items-center">
               <TerminalText className="dim">
-                Showing {chronicleViewer.entries.length} of{' '}
-                {chronicle.entries.length} entries
+                Showing {chronicleViewer.entries.length} of {chronicle.entries.length} entries
               </TerminalText>
               <button
                 onClick={chronicleViewer.clearFilters}
@@ -276,16 +257,9 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
                     <div className="text-gray-400 text-sm mt-1">
                       <span>Target: {entry.targetSystem}</span>
                       <span className="mx-2">•</span>
-                      <span>
-                        Duration:{' '}
-                        {ChronicleUtils.formatDuration(entry.actualDuration)}
-                      </span>
+                      <span>Duration: {ChronicleUtils.formatDuration(entry.actualDuration)}</span>
                       <span className="mx-2">•</span>
-                      <span
-                        className={ChronicleUtils.getSuccessLevelColor(
-                          entry.successLevel
-                        )}
-                      >
+                      <span className={ChronicleUtils.getSuccessLevelColor(entry.successLevel)}>
                         {ChronicleUtils.getSuccessLevelText(entry.successLevel)}
                       </span>
                     </div>
@@ -306,8 +280,7 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
                       Generate Heritage
                     </button>
                     <div className="text-right text-xs text-gray-500">
-                      Significance:{' '}
-                      {ChronicleUtils.calculateSignificance(entry).toFixed(1)}
+                      Significance: {ChronicleUtils.calculateSignificance(entry).toFixed(1)}
                     </div>
                   </div>
                 </div>
@@ -324,15 +297,11 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
 
         {/* Selected Entry Details */}
         {chronicleViewer.selectedEntry && (
-          <TerminalWindow
-            title={`MISSION DETAILS: ${chronicleViewer.selectedEntry.missionName}`}
-          >
+          <TerminalWindow title={`MISSION DETAILS: ${chronicleViewer.selectedEntry.missionName}`}>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <TerminalText className="dim">
-                    Mission Parameters
-                  </TerminalText>
+                  <TerminalText className="dim">Mission Parameters</TerminalText>
                   <div className="mt-2 space-y-1 text-sm">
                     <div>
                       Legacy:{' '}
@@ -385,21 +354,12 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
                 <div>
                   <TerminalText className="dim">Key Decisions</TerminalText>
                   <div className="mt-2 space-y-2">
-                    {chronicleViewer.selectedEntry.keyDecisions.map(
-                      (decision, index) => (
-                        <div
-                          key={decision.id || index}
-                          className="border-l-2 border-yellow-600 pl-3"
-                        >
-                          <div className="text-sm text-yellow-400">
-                            {decision.title}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {decision.description}
-                          </div>
-                        </div>
-                      )
-                    )}
+                    {chronicleViewer.selectedEntry.keyDecisions.map((decision, index) => (
+                      <div key={decision.id || index} className="border-l-2 border-yellow-600 pl-3">
+                        <div className="text-sm text-yellow-400">{decision.title}</div>
+                        <div className="text-xs text-gray-400">{decision.description}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -407,25 +367,14 @@ export const ChronicleViewer: React.FC<ChronicleViewerProps> = React.memo(
               {chronicleViewer.selectedEntry.artifacts &&
                 chronicleViewer.selectedEntry.artifacts.length > 0 && (
                   <div>
-                    <TerminalText className="dim">
-                      Artifacts Discovered
-                    </TerminalText>
+                    <TerminalText className="dim">Artifacts Discovered</TerminalText>
                     <div className="mt-2 space-y-2">
-                      {chronicleViewer.selectedEntry.artifacts.map(
-                        (artifact, index) => (
-                          <div
-                            key={artifact.id || index}
-                            className="border-l-2 border-blue-600 pl-3"
-                          >
-                            <div className="text-sm text-blue-400">
-                              {artifact.name}
-                            </div>
-                            <div className="text-xs text-gray-400">
-                              {artifact.description}
-                            </div>
-                          </div>
-                        )
-                      )}
+                      {chronicleViewer.selectedEntry.artifacts.map((artifact, index) => (
+                        <div key={artifact.id || index} className="border-l-2 border-blue-600 pl-3">
+                          <div className="text-sm text-blue-400">{artifact.name}</div>
+                          <div className="text-xs text-gray-400">{artifact.description}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

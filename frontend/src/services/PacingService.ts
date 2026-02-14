@@ -58,37 +58,19 @@ export class PacingService {
         phaseStartYear: this.calculatePhaseStartYear(mission, currentPhase),
 
         // Timing Control
-        timeAcceleration: this.calculateOptimalAcceleration(
-          mission,
-          preferences,
-          engagementScore
-        ),
-        eventDensity: this.calculateEventDensity(
-          mission,
-          currentPhase,
-          preferences
-        ),
-        interactionDensity: this.calculateInteractionDensity(
-          preferences,
-          engagementScore
-        ),
+        timeAcceleration: this.calculateOptimalAcceleration(mission, preferences, engagementScore),
+        eventDensity: this.calculateEventDensity(mission, currentPhase, preferences),
+        interactionDensity: this.calculateInteractionDensity(preferences, engagementScore),
 
         // Player Engagement
         lastPlayerInteraction: Date.now(),
         interactionHistory: [],
         engagementScore,
-        automationLevel: this.calculateAutomationLevel(
-          preferences,
-          engagementScore
-        ),
+        automationLevel: this.calculateAutomationLevel(preferences, engagementScore),
 
         // Narrative Flow
         tensionLevel: this.calculateNarrativeTension(mission, currentPhase),
-        nextMilestone: this.scheduleNextMilestone(
-          mission,
-          currentPhase,
-          chronicle
-        ),
+        nextMilestone: this.scheduleNextMilestone(mission, currentPhase, chronicle),
         emergentEventQueue: [],
 
         // Adaptive Elements
@@ -124,10 +106,7 @@ export class PacingService {
 
       // Add chronicle-influenced milestones
       if (chronicle) {
-        const chronicleMilestones = this.generateChronicleInfluencedMilestones(
-          mission,
-          chronicle
-        );
+        const chronicleMilestones = this.generateChronicleInfluencedMilestones(mission, chronicle);
         milestones.push(...chronicleMilestones);
       }
 
@@ -138,9 +117,7 @@ export class PacingService {
         return a.scheduledYear - b.scheduledYear;
       });
 
-      const nextMilestone = milestones.find(
-        m => m.scheduledYear > mission.currentYear
-      );
+      const nextMilestone = milestones.find(m => m.scheduledYear > mission.currentYear);
 
       if (nextMilestone) {
         Logger.info('Next milestone scheduled', {
@@ -226,31 +203,19 @@ export class PacingService {
       const events: EmergentEvent[] = [];
 
       // Dynasty-based emergent events
-      const dynastyEvents = this.generateDynastyEmergentEvents(
-        mission,
-        pacingState
-      );
+      const dynastyEvents = this.generateDynastyEmergentEvents(mission, pacingState);
       events.push(...dynastyEvents);
 
       // Legacy conflict events
-      const legacyEvents = this.generateLegacyEmergentEvents(
-        mission,
-        pacingState
-      );
+      const legacyEvents = this.generateLegacyEmergentEvents(mission, pacingState);
       events.push(...legacyEvents);
 
       // Population-driven events
-      const populationEvents = this.generatePopulationEmergentEvents(
-        mission,
-        pacingState
-      );
+      const populationEvents = this.generatePopulationEmergentEvents(mission, pacingState);
       events.push(...populationEvents);
 
       // External events based on mission phase and state
-      const externalEvents = this.generateExternalEmergentEvents(
-        mission,
-        pacingState
-      );
+      const externalEvents = this.generateExternalEmergentEvents(mission, pacingState);
       events.push(...externalEvents);
 
       // Sort by priority and urgency
@@ -277,14 +242,10 @@ export class PacingService {
     pacingState: PacingState
   ): PhaseTransition | null {
     try {
-      const transitions = this.getAvailablePhaseTransitions(
-        pacingState.currentPhase
-      );
+      const transitions = this.getAvailablePhaseTransitions(pacingState.currentPhase);
 
       for (const transition of transitions) {
-        if (
-          this.evaluateTransitionConditions(transition, mission, pacingState)
-        ) {
+        if (this.evaluateTransitionConditions(transition, mission, pacingState)) {
           Logger.info('Phase transition triggered', {
             missionId: mission.id,
             from: transition.fromPhase,
@@ -313,14 +274,11 @@ export class PacingService {
       let acceleration = this.DEFAULT_ACCELERATION;
 
       // Base acceleration on phase
-      const phaseAcceleration = this.getPhaseBaseAcceleration(
-        pacingState.currentPhase
-      );
+      const phaseAcceleration = this.getPhaseBaseAcceleration(pacingState.currentPhase);
       acceleration *= phaseAcceleration;
 
       // Adjust for player preferences
-      const preferenceMultiplier =
-        this.getPreferenceAccelerationMultiplier(preferences);
+      const preferenceMultiplier = this.getPreferenceAccelerationMultiplier(preferences);
       acceleration *= preferenceMultiplier;
 
       // Adjust for engagement level
@@ -335,10 +293,7 @@ export class PacingService {
       }
 
       // Apply limits
-      acceleration = Math.max(
-        this.MIN_ACCELERATION,
-        Math.min(this.MAX_ACCELERATION, acceleration)
-      );
+      acceleration = Math.max(this.MIN_ACCELERATION, Math.min(this.MAX_ACCELERATION, acceleration));
 
       Logger.debug('Time acceleration calculated', {
         missionId: mission.id,
@@ -373,23 +328,18 @@ export class PacingService {
 
       // Check automation policies
       const applicablePolicy = automationPolicies.find(
-        policy =>
-          policy.category === event.category || policy.category === 'all'
+        policy => policy.category === event.category || policy.category === 'all'
       );
 
       if (applicablePolicy) {
         // Check if automation level allows handling this event
-        if (
-          applicablePolicy.automationLevel >= 0.8 &&
-          !applicablePolicy.playerApprovalRequired
-        ) {
+        if (applicablePolicy.automationLevel >= 0.8 && !applicablePolicy.playerApprovalRequired) {
           return false;
         }
 
         // Check escalation conditions
-        const shouldEscalate = applicablePolicy.escalationConditions.some(
-          condition =>
-            this.evaluateEscalationCondition(condition, event, pacingState)
+        const shouldEscalate = applicablePolicy.escalationConditions.some(condition =>
+          this.evaluateEscalationCondition(condition, event, pacingState)
         );
 
         if (shouldEscalate) {
@@ -409,10 +359,7 @@ export class PacingService {
       // Medium engagement - pause for moderate+ importance events
       return (event.importance ?? 0.5) >= 0.6;
     } catch (error) {
-      Logger.error(
-        'Failed to determine if should pause for interaction',
-        error
-      );
+      Logger.error('Failed to determine if should pause for interaction', error);
       return true; // Default to pausing for safety
     }
   }
@@ -429,20 +376,11 @@ export class PacingService {
         return this.getDefaultEngagementAnalysis();
       }
 
-      const currentLevel = this.classifyEngagementLevel(
-        pacingState.engagementScore
-      );
+      const currentLevel = this.classifyEngagementLevel(pacingState.engagementScore);
       const trend = this.calculateEngagementTrend(interactions);
       const factors = this.identifyEngagementFactors(interactions, pacingState);
-      const predictions = this.generateEngagementPredictions(
-        interactions,
-        pacingState
-      );
-      const recommendations = this.generateEngagementRecommendations(
-        currentLevel,
-        trend,
-        factors
-      );
+      const predictions = this.generateEngagementPredictions(interactions, pacingState);
+      const recommendations = this.generateEngagementRecommendations(currentLevel, trend, factors);
 
       return {
         currentLevel,
@@ -510,10 +448,7 @@ export class PacingService {
     return 'arrival';
   }
 
-  private static calculatePhaseProgress(
-    mission: GenerationalMission,
-    phase: GamePhase
-  ): number {
+  private static calculatePhaseProgress(mission: GenerationalMission, phase: GamePhase): number {
     const year = mission.currentYear;
     const total = mission.estimatedDuration;
 
@@ -531,10 +466,7 @@ export class PacingService {
     }
   }
 
-  private static calculatePhaseStartYear(
-    mission: GenerationalMission,
-    phase: GamePhase
-  ): number {
+  private static calculatePhaseStartYear(mission: GenerationalMission, phase: GamePhase): number {
     const total = mission.estimatedDuration;
 
     switch (phase) {
@@ -551,9 +483,7 @@ export class PacingService {
     }
   }
 
-  private static calculateEngagementScore(
-    mission: GenerationalMission
-  ): number {
+  private static calculateEngagementScore(mission: GenerationalMission): number {
     // Simple engagement calculation based on mission state
     // In a real implementation, this would consider interaction history
     let score = 0.5;
@@ -603,10 +533,7 @@ export class PacingService {
       acceleration *= 0.3;
     }
 
-    return Math.max(
-      this.MIN_ACCELERATION,
-      Math.min(this.MAX_ACCELERATION, acceleration)
-    );
+    return Math.max(this.MIN_ACCELERATION, Math.min(this.MAX_ACCELERATION, acceleration));
   }
 
   private static calculateEventDensity(
@@ -684,16 +611,11 @@ export class PacingService {
     return automation;
   }
 
-  private static calculateNarrativeTension(
-    mission: GenerationalMission,
-    phase: GamePhase
-  ): number {
+  private static calculateNarrativeTension(mission: GenerationalMission, phase: GamePhase): number {
     let tension = 0.5;
 
     // Increase tension based on active crises
-    const crises = mission.activeEvents.filter(
-      e => e.category === 'immediate_crisis'
-    ).length;
+    const crises = mission.activeEvents.filter(e => e.category === 'immediate_crisis').length;
     tension += crises * 0.2;
 
     // Adjust based on phase
@@ -728,9 +650,7 @@ export class PacingService {
     return critical.reduce((sum, stress) => sum + stress, 0) / critical.length;
   }
 
-  private static createAdaptiveSettings(
-    _preferences: PacingPreferences
-  ): AdaptiveSettings {
+  private static createAdaptiveSettings(_preferences: PacingPreferences): AdaptiveSettings {
     return {
       learningRate: 0.1,
       sensitivityThreshold: 0.2,
@@ -750,9 +670,7 @@ export class PacingService {
     };
   }
 
-  private static createDefaultPacingState(
-    preferences: PacingPreferences
-  ): PacingState {
+  private static createDefaultPacingState(preferences: PacingPreferences): PacingState {
     return {
       currentPhase: 'early',
       phaseProgress: 0,
@@ -796,15 +714,11 @@ export class PacingService {
 
     return {
       averageEngagement:
-        recentInteractions.reduce(
-          (sum, i) => sum + (i.satisfaction || 0.5),
-          0
-        ) / recentInteractions.length,
-      crisisOverload:
-        recentInteractions.filter(i => i.type === 'crisis').length > 5,
+        recentInteractions.reduce((sum, i) => sum + (i.satisfaction || 0.5), 0) /
+        recentInteractions.length,
+      crisisOverload: recentInteractions.filter(i => i.type === 'crisis').length > 5,
       boredom:
-        recentInteractions.length < 3 &&
-        Date.now() - recentInteractions[0]?.timestamp > 300000, // 5 minutes
+        recentInteractions.length < 3 && Date.now() - recentInteractions[0]?.timestamp > 300000, // 5 minutes
     };
   }
 
@@ -859,9 +773,7 @@ export class PacingService {
     return [];
   }
 
-  private static getAvailablePhaseTransitions(
-    _currentPhase: GamePhase
-  ): PhaseTransition[] {
+  private static getAvailablePhaseTransitions(_currentPhase: GamePhase): PhaseTransition[] {
     // Return possible transitions from current phase
     return [];
   }
@@ -890,9 +802,7 @@ export class PacingService {
     }
   }
 
-  private static getPreferenceAccelerationMultiplier(
-    preferences: PacingPreferences
-  ): number {
+  private static getPreferenceAccelerationMultiplier(preferences: PacingPreferences): number {
     switch (preferences.preferredSpeed) {
       case 'slow':
         return 0.6;
@@ -905,9 +815,7 @@ export class PacingService {
     }
   }
 
-  private static getEngagementAccelerationMultiplier(
-    engagementScore: number
-  ): number {
+  private static getEngagementAccelerationMultiplier(engagementScore: number): number {
     // Lower engagement = higher acceleration to get to interesting parts faster
     return 2.0 - engagementScore;
   }
@@ -937,11 +845,8 @@ export class PacingService {
     const recent = interactions.slice(-5);
     const older = interactions.slice(-10, -5);
 
-    const recentAvg =
-      recent.reduce((sum, i) => sum + (i.satisfaction || 0.5), 0) /
-      recent.length;
-    const olderAvg =
-      older.reduce((sum, i) => sum + (i.satisfaction || 0.5), 0) / older.length;
+    const recentAvg = recent.reduce((sum, i) => sum + (i.satisfaction || 0.5), 0) / recent.length;
+    const olderAvg = older.reduce((sum, i) => sum + (i.satisfaction || 0.5), 0) / older.length;
 
     if (recentAvg > olderAvg + 0.1) return 'increasing';
     if (recentAvg < olderAvg - 0.1) return 'decreasing';

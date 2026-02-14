@@ -7,8 +7,7 @@ export const CrewIdGenerator = {
   generate: (): CrewMemberId =>
     `crew_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` as CrewMemberId,
 
-  isValid: (id: string): id is CrewMemberId =>
-    typeof id === 'string' && id.startsWith('crew_'),
+  isValid: (id: string): id is CrewMemberId => typeof id === 'string' && id.startsWith('crew_'),
 };
 
 export const NotificationIdGenerator = {
@@ -23,6 +22,5 @@ export const TradeRouteIdGenerator = {
   generate: (): TradeRouteId =>
     `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` as TradeRouteId,
 
-  isValid: (id: string): id is TradeRouteId =>
-    typeof id === 'string' && id.startsWith('trade_'),
+  isValid: (id: string): id is TradeRouteId => typeof id === 'string' && id.startsWith('trade_'),
 };

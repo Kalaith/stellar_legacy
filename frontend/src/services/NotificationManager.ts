@@ -4,10 +4,7 @@ import { NotificationIdGenerator } from '../types/branded';
 import gameConfig from '../config/gameConfig';
 
 export class NotificationManager {
-  static create(
-    message: string,
-    type: NotificationTypeType = 'info'
-  ): Notification {
+  static create(message: string, type: NotificationTypeType = 'info'): Notification {
     return {
       id: NotificationIdGenerator.generate(),
       message,
@@ -20,16 +17,10 @@ export class NotificationManager {
     notification: Notification,
     removeCallback: (id: Notification['id']) => void
   ): void {
-    setTimeout(
-      () => removeCallback(notification.id),
-      gameConfig.intervals.notificationTimeout
-    );
+    setTimeout(() => removeCallback(notification.id), gameConfig.intervals.notificationTimeout);
   }
 
-  static formatMessage(
-    template: string,
-    variables: Record<string, string | number>
-  ): string {
+  static formatMessage(template: string, variables: Record<string, string | number>): string {
     return template.replace(/\{(\w+)\}/g, (match, key) => {
       return variables[key]?.toString() || match;
     });

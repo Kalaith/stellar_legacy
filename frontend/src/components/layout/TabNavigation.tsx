@@ -31,9 +31,7 @@ const TabNavigation: React.FC = React.memo(() => {
   );
 
   return (
-    <nav
-      className={`${uiConstants.COLORS.BG_PRIMARY} border-b ${uiConstants.COLORS.BORDER} px-6`}
-    >
+    <nav className={`${uiConstants.COLORS.BG_PRIMARY} border-b ${uiConstants.COLORS.BORDER} px-6`}>
       <div className="flex space-x-1">
         {tabs.map(tab => (
           <button

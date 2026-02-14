@@ -116,10 +116,7 @@ export interface HeritageSelectionCriteria {
 export interface HeritageConflict {
   modifier1: string; // modifier ID
   modifier2: string; // modifier ID
-  conflictType:
-    | 'mutually_exclusive'
-    | 'resource_conflict'
-    | 'narrative_inconsistency';
+  conflictType: 'mutually_exclusive' | 'resource_conflict' | 'narrative_inconsistency';
   severity: 'minor' | 'major' | 'critical';
   resolution: string; // How to resolve the conflict
 }

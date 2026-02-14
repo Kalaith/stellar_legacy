@@ -23,58 +23,42 @@ const ShipDesign: React.FC = React.memo(() => {
           >
             <div className="text-6xl">🚀</div>
           </div>
-          <h4
-            className={`text-lg ${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}
-          >
+          <h4 className={`text-lg ${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>
             {ship.name}
           </h4>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
-            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>
-              Hull
-            </div>
-            <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
-              {ship.hull}
-            </div>
+            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>Hull</div>
+            <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>{ship.hull}</div>
           </div>
           <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
-            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>
-              Engine
-            </div>
+            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>Engine</div>
             <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
               {ship.components.engine}
             </div>
           </div>
           <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
-            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>
-              Cargo
-            </div>
+            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>Cargo</div>
             <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
               {ship.components.cargo}
             </div>
           </div>
           <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
-            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>
-              Weapons
-            </div>
+            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>Weapons</div>
             <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
               {ship.components.weapons}
             </div>
           </div>
           <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
-            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>
-              Research
-            </div>
+            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>Research</div>
             <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
               {ship.components.research}
             </div>
           </div>
           <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
-            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>
-              Quarters
-            </div>
+            <div className={`text-sm ${uiConstants.COLORS.TEXT_MUTED}`}>Quarters</div>
             <div className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
               {ship.components.quarters}
             </div>
@@ -82,41 +66,26 @@ const ShipDesign: React.FC = React.memo(() => {
         </div>
 
         <div className={`${uiConstants.COLORS.BG_SECONDARY} rounded p-4`}>
-          <h4
-            className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold mb-2`}
-          >
+          <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold mb-2`}>
             Ship Statistics
           </h4>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
-              Speed:{' '}
-              <span className={uiConstants.COLORS.TEXT_SUCCESS}>
-                {ship.stats.speed}
-              </span>
+              Speed: <span className={uiConstants.COLORS.TEXT_SUCCESS}>{ship.stats.speed}</span>
             </div>
             <div>
-              Cargo:{' '}
-              <span className={uiConstants.COLORS.TEXT_SUCCESS}>
-                {ship.stats.cargo}
-              </span>
+              Cargo: <span className={uiConstants.COLORS.TEXT_SUCCESS}>{ship.stats.cargo}</span>
             </div>
             <div>
-              Combat:{' '}
-              <span className={uiConstants.COLORS.TEXT_SUCCESS}>
-                {ship.stats.combat}
-              </span>
+              Combat: <span className={uiConstants.COLORS.TEXT_SUCCESS}>{ship.stats.combat}</span>
             </div>
             <div>
               Research:{' '}
-              <span className={uiConstants.COLORS.TEXT_SUCCESS}>
-                {ship.stats.research}
-              </span>
+              <span className={uiConstants.COLORS.TEXT_SUCCESS}>{ship.stats.research}</span>
             </div>
             <div>
               Crew Capacity:{' '}
-              <span className={uiConstants.COLORS.TEXT_SUCCESS}>
-                {ship.stats.crewCapacity}
-              </span>
+              <span className={uiConstants.COLORS.TEXT_SUCCESS}>{ship.stats.crewCapacity}</span>
             </div>
           </div>
         </div>

@@ -100,12 +100,8 @@ export const TimeController: React.FC<TimeControllerProps> = ({
           {/* Status Display */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <TerminalText className="text-gray-400 text-sm">
-                Current Phase
-              </TerminalText>
-              <TerminalText
-                className={`font-bold ${getPhaseColor(pacingState.currentPhase)}`}
-              >
+              <TerminalText className="text-gray-400 text-sm">Current Phase</TerminalText>
+              <TerminalText className={`font-bold ${getPhaseColor(pacingState.currentPhase)}`}>
                 {pacingState.currentPhase}
               </TerminalText>
               <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
@@ -117,30 +113,21 @@ export const TimeController: React.FC<TimeControllerProps> = ({
             </div>
 
             <div className="text-center">
-              <TerminalText className="text-gray-400 text-sm">
-                Time Speed
-              </TerminalText>
+              <TerminalText className="text-gray-400 text-sm">Time Speed</TerminalText>
               <TerminalText className="font-bold text-cyan-400">
                 {formatAcceleration(pacingState.timeAcceleration)}
               </TerminalText>
-              <TerminalText
-                className={`text-sm ${isPaused ? 'text-red-400' : 'text-green-400'}`}
-              >
+              <TerminalText className={`text-sm ${isPaused ? 'text-red-400' : 'text-green-400'}`}>
                 {isPaused ? 'PAUSED' : 'RUNNING'}
               </TerminalText>
             </div>
 
             <div className="text-center">
-              <TerminalText className="text-gray-400 text-sm">
-                Player Engagement
-              </TerminalText>
+              <TerminalText className="text-gray-400 text-sm">Player Engagement</TerminalText>
               <TerminalText
                 className={`font-bold ${getEngagementColor(formatEngagement(pacingState.engagementScore))}`}
               >
-                {formatEngagement(pacingState.engagementScore).replace(
-                  '_',
-                  ' '
-                )}
+                {formatEngagement(pacingState.engagementScore).replace('_', ' ')}
               </TerminalText>
               <TerminalText className="text-sm text-gray-400">
                 {(pacingState.engagementScore * 100).toFixed(0)}%
@@ -148,15 +135,11 @@ export const TimeController: React.FC<TimeControllerProps> = ({
             </div>
 
             <div className="text-center">
-              <TerminalText className="text-gray-400 text-sm">
-                Automation
-              </TerminalText>
+              <TerminalText className="text-gray-400 text-sm">Automation</TerminalText>
               <TerminalText className="font-bold text-purple-400">
                 {(pacingState.automationLevel * 100).toFixed(0)}%
               </TerminalText>
-              <TerminalText className="text-sm text-gray-400">
-                Active
-              </TerminalText>
+              <TerminalText className="text-sm text-gray-400">Active</TerminalText>
             </div>
           </div>
 
@@ -165,27 +148,20 @@ export const TimeController: React.FC<TimeControllerProps> = ({
             {/* Time Acceleration Control */}
             <div>
               <label className="block text-sm text-gray-400 mb-2">
-                Time Acceleration:{' '}
-                {formatAcceleration(pacingState.timeAcceleration)}
+                Time Acceleration: {formatAcceleration(pacingState.timeAcceleration)}
               </label>
               <div className="flex items-center space-x-4">
-                <TerminalText className="text-sm text-gray-400">
-                  0.1x
-                </TerminalText>
+                <TerminalText className="text-sm text-gray-400">0.1x</TerminalText>
                 <input
                   type="range"
                   min="0.1"
                   max="10"
                   step="0.1"
                   value={pacingState.timeAcceleration}
-                  onChange={e =>
-                    handleAccelerationChange(parseFloat(e.target.value))
-                  }
+                  onChange={e => handleAccelerationChange(parseFloat(e.target.value))}
                   className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                 />
-                <TerminalText className="text-sm text-gray-400">
-                  10x
-                </TerminalText>
+                <TerminalText className="text-sm text-gray-400">10x</TerminalText>
               </div>
               <div className="flex justify-between mt-2">
                 <button
@@ -215,27 +191,20 @@ export const TimeController: React.FC<TimeControllerProps> = ({
             {/* Automation Control */}
             <div>
               <label className="block text-sm text-gray-400 mb-2">
-                Automation Level:{' '}
-                {(pacingState.automationLevel * 100).toFixed(0)}%
+                Automation Level: {(pacingState.automationLevel * 100).toFixed(0)}%
               </label>
               <div className="flex items-center space-x-4">
-                <TerminalText className="text-sm text-gray-400">
-                  Manual
-                </TerminalText>
+                <TerminalText className="text-sm text-gray-400">Manual</TerminalText>
                 <input
                   type="range"
                   min="0"
                   max="1"
                   step="0.1"
                   value={pacingState.automationLevel}
-                  onChange={e =>
-                    handleAutomationChange(parseFloat(e.target.value))
-                  }
+                  onChange={e => handleAutomationChange(parseFloat(e.target.value))}
                   className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                 />
-                <TerminalText className="text-sm text-gray-400">
-                  Auto
-                </TerminalText>
+                <TerminalText className="text-sm text-gray-400">Auto</TerminalText>
               </div>
             </div>
 
@@ -299,16 +268,13 @@ export const TimeController: React.FC<TimeControllerProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
-                  Preferred Speed
-                </label>
+                <label className="block text-sm text-gray-400 mb-2">Preferred Speed</label>
                 <select
                   value={localPreferences.preferredSpeed}
                   onChange={e =>
                     setLocalPreferences({
                       ...localPreferences,
-                      preferredSpeed: e.target
-                        .value as PacingPreferences['preferredSpeed'],
+                      preferredSpeed: e.target.value as PacingPreferences['preferredSpeed'],
                     })
                   }
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
@@ -321,16 +287,13 @@ export const TimeController: React.FC<TimeControllerProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
-                  Crisis Handling
-                </label>
+                <label className="block text-sm text-gray-400 mb-2">Crisis Handling</label>
                 <select
                   value={localPreferences.crisisHandling}
                   onChange={e =>
                     setLocalPreferences({
                       ...localPreferences,
-                      crisisHandling: e.target
-                        .value as PacingPreferences['crisisHandling'],
+                      crisisHandling: e.target.value as PacingPreferences['crisisHandling'],
                     })
                   }
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
@@ -342,16 +305,13 @@ export const TimeController: React.FC<TimeControllerProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
-                  Milestone Frequency
-                </label>
+                <label className="block text-sm text-gray-400 mb-2">Milestone Frequency</label>
                 <select
                   value={localPreferences.milestoneFrequency}
                   onChange={e =>
                     setLocalPreferences({
                       ...localPreferences,
-                      milestoneFrequency: e.target
-                        .value as PacingPreferences['milestoneFrequency'],
+                      milestoneFrequency: e.target.value as PacingPreferences['milestoneFrequency'],
                     })
                   }
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
@@ -363,16 +323,13 @@ export const TimeController: React.FC<TimeControllerProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
-                  Narrative Style
-                </label>
+                <label className="block text-sm text-gray-400 mb-2">Narrative Style</label>
                 <select
                   value={localPreferences.narrativeStyle}
                   onChange={e =>
                     setLocalPreferences({
                       ...localPreferences,
-                      narrativeStyle: e.target
-                        .value as PacingPreferences['narrativeStyle'],
+                      narrativeStyle: e.target.value as PacingPreferences['narrativeStyle'],
                     })
                   }
                   className="w-full bg-gray-800 border border-gray-600 text-green-400 p-2 rounded"
@@ -386,8 +343,7 @@ export const TimeController: React.FC<TimeControllerProps> = ({
 
             <div>
               <label className="block text-sm text-gray-400 mb-2">
-                Automation Threshold:{' '}
-                {(localPreferences.automationThreshold * 100).toFixed(0)}%
+                Automation Threshold: {(localPreferences.automationThreshold * 100).toFixed(0)}%
               </label>
               <input
                 type="range"
@@ -404,8 +360,7 @@ export const TimeController: React.FC<TimeControllerProps> = ({
                 className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
               />
               <TerminalText className="text-xs text-gray-500 mt-1">
-                How quickly the game should automate decisions when you're not
-                actively playing
+                How quickly the game should automate decisions when you're not actively playing
               </TerminalText>
             </div>
 

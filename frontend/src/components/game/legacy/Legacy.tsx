@@ -8,9 +8,7 @@ const Legacy: React.FC = () => {
   const { crew, legacy, selectHeir } = useGameStore();
 
   const captain = crew.find(c => c.role === 'Captain');
-  const potentialHeirs = crew.filter(
-    member => member.role !== 'Captain' && member.age < 50
-  );
+  const potentialHeirs = crew.filter(member => member.role !== 'Captain' && member.age < 50);
 
   const handleSelectHeir = (heirId: CrewMemberId) => {
     selectHeir(heirId);
@@ -36,9 +34,7 @@ const Legacy: React.FC = () => {
         </h3>
         <div className="space-y-4">
           <div className={`p-4 ${uiConstants.COLORS.BG_SECONDARY} rounded-lg`}>
-            <h4
-              className={`font-medium mb-3 ${uiConstants.COLORS.TEXT_PRIMARY}`}
-            >
+            <h4 className={`font-medium mb-3 ${uiConstants.COLORS.TEXT_PRIMARY}`}>
               Current Generation: {legacy.generation}
             </h4>
             {captain && (
@@ -49,18 +45,14 @@ const Legacy: React.FC = () => {
                   👩‍✈️
                 </div>
                 <div className="flex-1">
-                  <h5
-                    className={`font-medium text-lg ${uiConstants.COLORS.TEXT_PRIMARY}`}
-                  >
+                  <h5 className={`font-medium text-lg ${uiConstants.COLORS.TEXT_PRIMARY}`}>
                     {captain.name}
                   </h5>
                   <p className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}>
                     Age: {captain.age} | {legacy.traits.join(', ')}
                   </p>
                   <div className="mt-2">
-                    <div className={`text-xs ${uiConstants.COLORS.TEXT_MUTED}`}>
-                      Best Skills:
-                    </div>
+                    <div className={`text-xs ${uiConstants.COLORS.TEXT_MUTED}`}>Best Skills:</div>
                     <div className="flex space-x-2 mt-1">
                       {getTopSkills(captain.skills).map((skill, index) => (
                         <span
@@ -78,32 +70,21 @@ const Legacy: React.FC = () => {
           </div>
 
           <div>
-            <h4
-              className={`font-medium mb-3 ${uiConstants.COLORS.TEXT_PRIMARY}`}
-            >
+            <h4 className={`font-medium mb-3 ${uiConstants.COLORS.TEXT_PRIMARY}`}>
               Potential Heirs
             </h4>
             <div className="space-y-2">
               {potentialHeirs.map(heir => (
-                <div
-                  key={heir.id}
-                  className={`p-3 ${uiConstants.COLORS.BG_SECONDARY} rounded-lg`}
-                >
+                <div key={heir.id} className={`p-3 ${uiConstants.COLORS.BG_SECONDARY} rounded-lg`}>
                   <div className="flex justify-between items-center">
                     <div className="flex-1">
-                      <div
-                        className={`font-medium ${uiConstants.COLORS.TEXT_PRIMARY}`}
-                      >
+                      <div className={`font-medium ${uiConstants.COLORS.TEXT_PRIMARY}`}>
                         {heir.name}
                       </div>
-                      <div
-                        className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}
-                      >
+                      <div className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}>
                         Age: {heir.age} | {heir.role}
                       </div>
-                      <div
-                        className={`text-xs ${uiConstants.COLORS.TEXT_MUTED} mt-1`}
-                      >
+                      <div className={`text-xs ${uiConstants.COLORS.TEXT_MUTED} mt-1`}>
                         Best Skills: {getTopSkills(heir.skills).join(', ')}
                       </div>
                     </div>
@@ -138,9 +119,7 @@ const Legacy: React.FC = () => {
                 className={`flex items-center space-x-3 p-3 ${uiConstants.COLORS.BG_SECONDARY} rounded-lg`}
               >
                 <span className="text-2xl">🏆</span>
-                <span
-                  className={`font-medium ${uiConstants.COLORS.TEXT_PRIMARY}`}
-                >
+                <span className={`font-medium ${uiConstants.COLORS.TEXT_PRIMARY}`}>
                   {achievement}
                 </span>
               </div>
@@ -160,20 +139,14 @@ const Legacy: React.FC = () => {
             {Object.entries(legacy.reputation).map(([faction, reputation]) => (
               <div key={faction}>
                 <div className="flex justify-between items-center mb-1">
-                  <span
-                    className={`capitalize font-medium ${uiConstants.COLORS.TEXT_PRIMARY}`}
-                  >
+                  <span className={`capitalize font-medium ${uiConstants.COLORS.TEXT_PRIMARY}`}>
                     {faction}
                   </span>
-                  <span
-                    className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}
-                  >
+                  <span className={`text-sm ${uiConstants.COLORS.TEXT_SECONDARY}`}>
                     {reputation}
                   </span>
                 </div>
-                <div
-                  className={`w-full ${uiConstants.COLORS.BG_TERTIARY} rounded-full h-2`}
-                >
+                <div className={`w-full ${uiConstants.COLORS.BG_TERTIARY} rounded-full h-2`}>
                   <div
                     className={`${uiConstants.COLORS.BG_SUCCESS} h-2 rounded-full transition-all duration-300`}
                     style={{

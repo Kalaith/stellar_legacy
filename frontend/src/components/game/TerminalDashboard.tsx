@@ -33,9 +33,7 @@ const TerminalDashboard: React.FC = () => {
 
   const systemsStatus = getSystemsStatus();
   const avgCrewMorale = getCrewMorale();
-  const activeMissionsList = missions.filter(m =>
-    activeMissions.includes(m.id)
-  );
+  const activeMissionsList = missions.filter(m => activeMissions.includes(m.id));
 
   return (
     <div className="terminal-grid responsive">
@@ -95,22 +93,14 @@ const TerminalDashboard: React.FC = () => {
               value={crew.length}
               max={ship.stats.crewCapacity}
               ascii
-              variant={
-                crew.length >= ship.stats.crewCapacity * 0.9
-                  ? 'warning'
-                  : 'success'
-              }
+              variant={crew.length >= ship.stats.crewCapacity * 0.9 ? 'warning' : 'success'}
             />
           </div>
         </div>
       </TerminalWindow>
 
       {/* Resource Management Terminal */}
-      <TerminalWindow
-        title="RESOURCE MANAGEMENT"
-        statusLine="MONITORING"
-        isActive
-      >
+      <TerminalWindow title="RESOURCE MANAGEMENT" statusLine="MONITORING" isActive>
         <div className="terminal-space-y">
           <TerminalTable
             headers={['RESOURCE', 'QUANTITY', 'STATUS']}
@@ -177,18 +167,10 @@ const TerminalDashboard: React.FC = () => {
                 formatNumber(resources.food),
                 <TerminalText
                   variant={
-                    resources.food > 800
-                      ? 'success'
-                      : resources.food > 400
-                        ? 'warning'
-                        : 'error'
+                    resources.food > 800 ? 'success' : resources.food > 400 ? 'warning' : 'error'
                   }
                 >
-                  {resources.food > 800
-                    ? 'OPTIMAL'
-                    : resources.food > 400
-                      ? 'LOW'
-                      : 'CRITICAL'}
+                  {resources.food > 800 ? 'OPTIMAL' : resources.food > 400 ? 'LOW' : 'CRITICAL'}
                 </TerminalText>,
               ],
               [
@@ -223,12 +205,7 @@ const TerminalDashboard: React.FC = () => {
             <div className="terminal-text">
               {systemsStatus.explored}/{systemsStatus.total} SYSTEMS MAPPED
             </div>
-            <TerminalProgress
-              value={systemsStatus.percentage}
-              max={100}
-              ascii
-              variant="primary"
-            />
+            <TerminalProgress value={systemsStatus.percentage} max={100} ascii variant="primary" />
           </div>
 
           <div>
@@ -237,13 +214,7 @@ const TerminalDashboard: React.FC = () => {
               value={avgCrewMorale}
               max={100}
               ascii
-              variant={
-                avgCrewMorale > 80
-                  ? 'success'
-                  : avgCrewMorale > 60
-                    ? 'warning'
-                    : 'error'
-              }
+              variant={avgCrewMorale > 80 ? 'success' : avgCrewMorale > 60 ? 'warning' : 'error'}
             />
           </div>
 
@@ -255,14 +226,11 @@ const TerminalDashboard: React.FC = () => {
                 .slice(-3)
                 .map((system, index) => (
                   <div key={index} className="terminal-list-item">
-                    {system.name.toUpperCase()} - {system.planets.length}{' '}
-                    PLANETS
+                    {system.name.toUpperCase()} - {system.planets.length} PLANETS
                   </div>
                 ))}
               {systemsStatus.explored === 0 && (
-                <div className="terminal-text dim">
-                  NO RECENT EXPLORATION DATA
-                </div>
+                <div className="terminal-text dim">NO RECENT EXPLORATION DATA</div>
               )}
             </div>
           </div>
@@ -274,16 +242,12 @@ const TerminalDashboard: React.FC = () => {
         <div className="terminal-space-y">
           <div>
             <TerminalText variant="bright">FAMILY LINEAGE:</TerminalText>
-            <div className="terminal-text">
-              {legacy.familyName.toUpperCase()}
-            </div>
+            <div className="terminal-text">{legacy.familyName.toUpperCase()}</div>
           </div>
 
           <div>
             <TerminalText variant="bright">GENERATION:</TerminalText>
-            <div className="terminal-text">
-              GEN-{legacy.generation.toString().padStart(2, '0')}
-            </div>
+            <div className="terminal-text">GEN-{legacy.generation.toString().padStart(2, '0')}</div>
           </div>
 
           <div>
@@ -346,9 +310,7 @@ const TerminalDashboard: React.FC = () => {
         <div className="terminal-space-y">
           <div>
             <TerminalText variant="bright">ACTIVE MISSIONS:</TerminalText>
-            <div className="terminal-text">
-              {activeMissionsList.length} OPERATIONS
-            </div>
+            <div className="terminal-text">{activeMissionsList.length} OPERATIONS</div>
           </div>
 
           {activeMissionsList.length > 0 ? (
@@ -357,8 +319,7 @@ const TerminalDashboard: React.FC = () => {
               <div className="terminal-list">
                 {activeMissionsList.slice(0, 3).map((mission, index) => (
                   <div key={index} className="terminal-list-item">
-                    {mission.name.toUpperCase()} -{' '}
-                    {mission.legacy.toUpperCase()}
+                    {mission.name.toUpperCase()} - {mission.legacy.toUpperCase()}
                     <div className="terminal-text dim">
                       YEAR {mission.currentYear}/{mission.estimatedDuration}
                     </div>
@@ -373,19 +334,13 @@ const TerminalDashboard: React.FC = () => {
             </div>
           ) : (
             <div>
-              <TerminalText variant="dim">
-                NO ACTIVE GENERATIONAL MISSIONS
-              </TerminalText>
-              <div className="terminal-text dim">
-                ACCESS MISSION COMMAND TO LAUNCH OPERATIONS
-              </div>
+              <TerminalText variant="dim">NO ACTIVE GENERATIONAL MISSIONS</TerminalText>
+              <div className="terminal-text dim">ACCESS MISSION COMMAND TO LAUNCH OPERATIONS</div>
             </div>
           )}
 
           <div>
-            <TerminalText variant="bright">
-              SYSTEM RECOMMENDATIONS:
-            </TerminalText>
+            <TerminalText variant="bright">SYSTEM RECOMMENDATIONS:</TerminalText>
             <div className="terminal-list">
               {resources.credits < 1000 && (
                 <div className="terminal-list-item terminal-text error">
@@ -418,11 +373,7 @@ const TerminalDashboard: React.FC = () => {
       </TerminalWindow>
 
       {/* Command Interface Terminal */}
-      <TerminalWindow
-        title="COMMAND INTERFACE"
-        statusLine="AWAITING INPUT"
-        isActive
-      >
+      <TerminalWindow title="COMMAND INTERFACE" statusLine="AWAITING INPUT" isActive>
         <div className="terminal-space-y">
           <div>
             <TerminalText variant="bright">QUICK ACTIONS:</TerminalText>
@@ -473,9 +424,7 @@ const TerminalDashboard: React.FC = () => {
           <div>
             <TerminalText variant="bright">SYSTEM STATUS:</TerminalText>
             <div className="terminal-text success">ALL SYSTEMS OPERATIONAL</div>
-            <div className="terminal-text dim">
-              LAST UPDATE: {new Date().toLocaleTimeString()}
-            </div>
+            <div className="terminal-text dim">LAST UPDATE: {new Date().toLocaleTimeString()}</div>
           </div>
         </div>
       </TerminalWindow>

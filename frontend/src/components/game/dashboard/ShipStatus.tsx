@@ -16,11 +16,7 @@ const ShipStatus: React.FC = React.memo(() => {
         >
           <div className="text-6xl">🚀</div>
         </div>
-        <h4
-          className={`text-lg ${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}
-        >
-          {ship.name}
-        </h4>
+        <h4 className={`text-lg ${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>{ship.name}</h4>
       </div>
 
       <Grid
@@ -36,9 +32,7 @@ const ShipStatus: React.FC = React.memo(() => {
       </Grid>
 
       <div className={`border-t ${uiConstants.COLORS.BORDER} pt-4`}>
-        <h4
-          className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY} mb-3`}
-        >
+        <h4 className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY} mb-3`}>
           Components
         </h4>
         <div className="space-y-2">
@@ -65,14 +59,10 @@ const StatItem: React.FC<StatItemProps> = React.memo(({ label, value }) => (
   <div
     className={`${uiConstants.SHIP_STATUS.STAT_ITEM_BG} rounded ${uiConstants.SPACING.CARD_PADDING}`}
   >
-    <div
-      className={`text-xs ${uiConstants.COLORS.TEXT_MUTED} uppercase tracking-wide`}
-    >
+    <div className={`text-xs ${uiConstants.COLORS.TEXT_MUTED} uppercase tracking-wide`}>
       {label}
     </div>
-    <div className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY}`}>
-      {value}
-    </div>
+    <div className={`text-lg font-semibold ${uiConstants.COLORS.TEXT_PRIMARY}`}>{value}</div>
   </div>
 ));
 StatItem.displayName = 'StatItem';
@@ -82,16 +72,12 @@ interface ComponentItemProps {
   value: string;
 }
 
-const ComponentItem: React.FC<ComponentItemProps> = React.memo(
-  ({ label, value }) => (
-    <div className="flex justify-between items-center py-1">
-      <span className={uiConstants.COLORS.TEXT_SECONDARY}>{label}:</span>
-      <span className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>
-        {value}
-      </span>
-    </div>
-  )
-);
+const ComponentItem: React.FC<ComponentItemProps> = React.memo(({ label, value }) => (
+  <div className="flex justify-between items-center py-1">
+    <span className={uiConstants.COLORS.TEXT_SECONDARY}>{label}:</span>
+    <span className={`${uiConstants.COLORS.TEXT_PRIMARY} font-medium`}>{value}</span>
+  </div>
+));
 ComponentItem.displayName = 'ComponentItem';
 
 export default ShipStatus;

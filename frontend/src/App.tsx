@@ -80,9 +80,7 @@ const App: React.FC = () => {
       case 'mission-command':
         return <MissionCommandCenter />;
       case 'dynasty-hall':
-        return (
-          <DynastyHall dynasties={dynasties} onDynastyAction={dynastyAction} />
-        );
+        return <DynastyHall dynasties={dynasties} onDynastyAction={dynastyAction} />;
       case 'legacy-relations':
         return (
           <LegacyRelations

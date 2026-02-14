@@ -136,24 +136,21 @@ export const gameBalance = {
  * Type-safe helper to get nested balance values
  */
 export type GameBalanceKey = keyof typeof gameBalance;
-export type GameBalanceValue<K extends GameBalanceKey> =
-  (typeof gameBalance)[K];
+export type GameBalanceValue<K extends GameBalanceKey> = (typeof gameBalance)[K];
 
 /**
  * Helper function to get balance values with type safety
  */
-export function getGameBalance<K extends GameBalanceKey>(
-  category: K
-): GameBalanceValue<K> {
+export function getGameBalance<K extends GameBalanceKey>(category: K): GameBalanceValue<K> {
   return gameBalance[category];
 }
 
 /**
  * Helper function to get nested balance values
  */
-export function getBalanceValue<
-  K extends GameBalanceKey,
-  T extends keyof GameBalanceValue<K>,
->(category: K, key: T): GameBalanceValue<K>[T] {
+export function getBalanceValue<K extends GameBalanceKey, T extends keyof GameBalanceValue<K>>(
+  category: K,
+  key: T
+): GameBalanceValue<K>[T] {
   return gameBalance[category][key];
 }

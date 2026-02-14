@@ -44,9 +44,7 @@ class Logger {
   }
 
   static resourceChange(resource: string, amount: number, reason: string) {
-    this.debug(
-      `Resource Change: ${resource} ${amount > 0 ? '+' : ''}${amount} (${reason})`
-    );
+    this.debug(`Resource Change: ${resource} ${amount > 0 ? '+' : ''}${amount} (${reason})`);
   }
 
   static crewAction(action: string, crewName: string, data?: unknown) {

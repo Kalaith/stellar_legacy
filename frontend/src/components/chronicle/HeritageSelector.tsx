@@ -27,9 +27,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
   onApply,
   maxSelections = 5,
 }) => {
-  const [selectedModifiers, setSelectedModifiers] = useState<
-    HeritageModifier[]
-  >([]);
+  const [selectedModifiers, setSelectedModifiers] = useState<HeritageModifier[]>([]);
   const [analysis, setAnalysis] = useState<HeritageAnalysis | null>(null);
   const [conflicts, setConflicts] = useState<HeritageConflict[]>([]);
   const [criteria] = useState<HeritageSelectionCriteria>({
@@ -41,9 +39,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
       minor: 5,
     },
   });
-  const [activeTab, setActiveTab] = useState<
-    'available' | 'selected' | 'analysis'
-  >('available');
+  const [activeTab, setActiveTab] = useState<'available' | 'selected' | 'analysis'>('available');
 
   const analyzeOptions = useCallback(async () => {
     try {
@@ -81,9 +77,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
       }
 
       // Check tier limits
-      const currentTierCount = selectedModifiers.filter(
-        m => m.tier === modifier.tier
-      ).length;
+      const currentTierCount = selectedModifiers.filter(m => m.tier === modifier.tier).length;
       const tierLimit = criteria.tierLimits?.[modifier.tier];
       if (tierLimit && currentTierCount >= tierLimit) {
         return; // Tier limit reached
@@ -99,9 +93,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
 
     if (selectedModifiers.length >= maxSelections) return false;
 
-    const currentTierCount = selectedModifiers.filter(
-      m => m.tier === modifier.tier
-    ).length;
+    const currentTierCount = selectedModifiers.filter(m => m.tier === modifier.tier).length;
     const tierLimit = criteria.tierLimits?.[modifier.tier];
     if (tierLimit && currentTierCount >= tierLimit) return false;
 
@@ -137,8 +129,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
   };
 
   const canApply =
-    selectedModifiers.length > 0 &&
-    conflicts.filter(c => c.severity === 'critical').length === 0;
+    selectedModifiers.length > 0 && conflicts.filter(c => c.severity === 'critical').length === 0;
 
   return (
     <div className="space-y-6">
@@ -180,14 +171,10 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
           {/* Tier Limits Display */}
           <div className="grid grid-cols-4 gap-4 text-sm">
             {Object.entries(criteria.tierLimits || {}).map(([tier, limit]) => {
-              const currentCount = selectedModifiers.filter(
-                m => m.tier === tier
-              ).length;
+              const currentCount = selectedModifiers.filter(m => m.tier === tier).length;
               return (
                 <div key={tier} className="text-center">
-                  <TerminalText className={getTierColor(tier as HeritageTier)}>
-                    {tier}
-                  </TerminalText>
+                  <TerminalText className={getTierColor(tier as HeritageTier)}>{tier}</TerminalText>
                   <TerminalText className="text-gray-400">
                     {currentCount} / {limit}
                   </TerminalText>
@@ -214,9 +201,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
             {activeTab === 'available' && (
               <>
                 {availableModifiers.map(modifier => {
-                  const isSelected = selectedModifiers.some(
-                    m => m.id === modifier.id
-                  );
+                  const isSelected = selectedModifiers.some(m => m.id === modifier.id);
                   const isSelectable = isModifierSelectable(modifier);
 
                   return (
@@ -235,9 +220,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
                         <TerminalText className="font-bold text-cyan-400">
                           {modifier.name}
                         </TerminalText>
-                        <TerminalText
-                          className={`text-sm ${getTierColor(modifier.tier)}`}
-                        >
+                        <TerminalText className={`text-sm ${getTierColor(modifier.tier)}`}>
                           {modifier.tier}
                         </TerminalText>
                       </div>
@@ -254,15 +237,13 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
 
                         {modifier.resourceModifiers.length > 0 && (
                           <TerminalText className="text-green-400">
-                            Resource Effects:{' '}
-                            {modifier.resourceModifiers.length}
+                            Resource Effects: {modifier.resourceModifiers.length}
                           </TerminalText>
                         )}
 
                         {modifier.populationModifiers.length > 0 && (
                           <TerminalText className="text-yellow-400">
-                            Population Effects:{' '}
-                            {modifier.populationModifiers.length}
+                            Population Effects: {modifier.populationModifiers.length}
                           </TerminalText>
                         )}
 
@@ -279,8 +260,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
 
                 {availableModifiers.length === 0 && (
                   <TerminalText className="text-gray-500 text-center py-8">
-                    No heritage modifiers available. Complete missions to
-                    generate modifiers.
+                    No heritage modifiers available. Complete missions to generate modifiers.
                   </TerminalText>
                 )}
               </>
@@ -333,17 +313,14 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
                       Recommendations
                     </TerminalText>
                     {analysis.recommendations.slice(0, 3).map((rec, index) => (
-                      <div
-                        key={index}
-                        className="p-2 border border-gray-600 rounded mb-2"
-                      >
+                      <div key={index} className="p-2 border border-gray-600 rounded mb-2">
                         <TerminalText className="text-cyan-400 font-bold text-sm">
                           {rec.modifier.name}
                         </TerminalText>
                         <TerminalText className="text-gray-400 text-xs">
-                          Relevance: {(rec.relevanceScore * 100).toFixed(0)}% •
-                          Balance: {(rec.balanceScore * 100).toFixed(0)}% •
-                          Narrative: {(rec.narrativeScore * 100).toFixed(0)}%
+                          Relevance: {(rec.relevanceScore * 100).toFixed(0)}% • Balance:{' '}
+                          {(rec.balanceScore * 100).toFixed(0)}% • Narrative:{' '}
+                          {(rec.narrativeScore * 100).toFixed(0)}%
                         </TerminalText>
                         <TerminalText className="text-green-400 text-xs">
                           {rec.reasoning.join(' • ')}
@@ -355,14 +332,9 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
 
                 {analysis.warnings.length > 0 && (
                   <div>
-                    <TerminalText className="text-orange-400 font-bold mb-2">
-                      Warnings
-                    </TerminalText>
+                    <TerminalText className="text-orange-400 font-bold mb-2">Warnings</TerminalText>
                     {analysis.warnings.map((warning, index) => (
-                      <TerminalText
-                        key={index}
-                        className="text-orange-400 text-sm"
-                      >
+                      <TerminalText key={index} className="text-orange-400 text-sm">
                         • {warning}
                       </TerminalText>
                     ))}
@@ -395,10 +367,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
                 </TerminalText>
                 <div className="space-y-2">
                   {conflicts.map((conflict, index) => (
-                    <div
-                      key={index}
-                      className="p-2 border border-red-600 rounded"
-                    >
+                    <div key={index} className="p-2 border border-red-600 rounded">
                       <TerminalText
                         className={`text-sm ${getConflictSeverityColor(conflict.severity)}`}
                       >
@@ -422,24 +391,15 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
                 <div className="space-y-1 text-sm">
                   <TerminalText className="text-gray-400">
                     Resource Modifiers:{' '}
-                    {selectedModifiers.reduce(
-                      (sum, m) => sum + m.resourceModifiers.length,
-                      0
-                    )}
+                    {selectedModifiers.reduce((sum, m) => sum + m.resourceModifiers.length, 0)}
                   </TerminalText>
                   <TerminalText className="text-gray-400">
                     Population Effects:{' '}
-                    {selectedModifiers.reduce(
-                      (sum, m) => sum + m.populationModifiers.length,
-                      0
-                    )}
+                    {selectedModifiers.reduce((sum, m) => sum + m.populationModifiers.length, 0)}
                   </TerminalText>
                   <TerminalText className="text-gray-400">
                     Event Modifiers:{' '}
-                    {selectedModifiers.reduce(
-                      (sum, m) => sum + m.eventModifiers.length,
-                      0
-                    )}
+                    {selectedModifiers.reduce((sum, m) => sum + m.eventModifiers.length, 0)}
                   </TerminalText>
                 </div>
               </div>
@@ -456,9 +416,7 @@ export const HeritageSelector: React.FC<HeritageSelectorProps> = ({
                     : 'bg-gray-900/30 border-2 border-gray-600 text-gray-500 cursor-not-allowed'
                 }`}
               >
-                {canApply
-                  ? 'Apply Heritage Modifiers'
-                  : 'Resolve Conflicts First'}
+                {canApply ? 'Apply Heritage Modifiers' : 'Resolve Conflicts First'}
               </button>
 
               {selectedModifiers.length === 0 && (

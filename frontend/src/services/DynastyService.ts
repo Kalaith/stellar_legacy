@@ -31,18 +31,7 @@ export class DynastyService {
       'Santos',
       'Petrov',
     ],
-    adaptors: [
-      'Helix',
-      'Strand',
-      'Nexus',
-      'Prime',
-      'Vex',
-      'Zara',
-      'Kaine',
-      'Flux',
-      'Nova',
-      'Arc',
-    ],
+    adaptors: ['Helix', 'Strand', 'Nexus', 'Prime', 'Vex', 'Zara', 'Kaine', 'Flux', 'Nova', 'Arc'],
     wanderers: [
       'Drift',
       'Void',
@@ -95,14 +84,8 @@ export class DynastyService {
   };
 
   // Generate Initial Dynasties for a Mission
-  static generateInitialDynasties(
-    legacy: LegacyTypeType,
-    populationSize: number
-  ): Dynasty[] {
-    const dynastyCount = Math.min(
-      8,
-      Math.max(5, Math.floor(populationSize / 5000))
-    );
+  static generateInitialDynasties(legacy: LegacyTypeType, populationSize: number): Dynasty[] {
+    const dynastyCount = Math.min(8, Math.max(5, Math.floor(populationSize / 5000)));
     const dynasties: Dynasty[] = [];
 
     for (let i = 0; i < dynastyCount; i++) {
@@ -114,25 +97,15 @@ export class DynastyService {
   }
 
   // Create a Single Dynasty
-  private static createDynasty(
-    legacy: LegacyTypeType,
-    isLeadership: boolean = false
-  ): Dynasty {
+  private static createDynasty(legacy: LegacyTypeType, isLeadership: boolean = false): Dynasty {
     const names = this.DYNASTY_NAMES[legacy];
     const traits = this.TRAITS[legacy];
     const name = names[Math.floor(Math.random() * names.length)];
     const specialization = isLeadership
       ? 'Leadership'
-      : this.SPECIALIZATIONS[
-          Math.floor(Math.random() * this.SPECIALIZATIONS.length)
-        ];
+      : this.SPECIALIZATIONS[Math.floor(Math.random() * this.SPECIALIZATIONS.length)];
 
-    const leader = this.generateDynastyMember(
-      name,
-      specialization,
-      true,
-      legacy
-    );
+    const leader = this.generateDynastyMember(name, specialization, true, legacy);
 
     const dynasty: Dynasty = {
       id: `dynasty_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -150,12 +123,7 @@ export class DynastyService {
     // Add 2-4 additional family members
     const memberCount = Math.floor(Math.random() * 3) + 2;
     for (let i = 0; i < memberCount; i++) {
-      const member = this.generateDynastyMember(
-        name,
-        specialization,
-        false,
-        legacy
-      );
+      const member = this.generateDynastyMember(name, specialization, false, legacy);
       dynasty.members.push(member);
     }
 
@@ -203,10 +171,7 @@ export class DynastyService {
   }
 
   // Generate Skills Based on Specialization
-  private static generateSkills(
-    specialization: string,
-    isLeader: boolean
-  ): Record<string, number> {
+  private static generateSkills(specialization: string, isLeader: boolean): Record<string, number> {
     const baseSkill = isLeader ? 6 : 4;
     const skills = {
       leadership: baseSkill + (isLeader ? 3 : 0),
@@ -257,10 +222,7 @@ export class DynastyService {
   }
 
   // Generate Member Traits
-  private static generateMemberTraits(
-    legacy: LegacyTypeType,
-    specialization: string
-  ): string[] {
+  private static generateMemberTraits(legacy: LegacyTypeType, specialization: string): string[] {
     const legacyTraits = this.TRAITS[legacy];
     const traits: string[] = [];
 
@@ -270,11 +232,7 @@ export class DynastyService {
     // Add specialization trait
     const specializationTraits: Record<string, string[]> = {
       Engineering: ['Technical Genius', 'System Optimizer', 'Problem Solver'],
-      Agriculture: [
-        'Life Cultivator',
-        'Resource Manager',
-        'Ecosystem Guardian',
-      ],
+      Agriculture: ['Life Cultivator', 'Resource Manager', 'Ecosystem Guardian'],
       Research: ['Knowledge Seeker', 'Data Analyst', 'Theory Crafter'],
       Security: ['Threat Assessor', 'Tactical Thinker', 'Guardian Spirit'],
       Diplomacy: ['Negotiator', 'Cultural Bridge', 'Conflict Resolver'],
@@ -284,9 +242,7 @@ export class DynastyService {
       Leadership: ['Natural Leader', 'Strategic Thinker', 'Inspiring Presence'],
     };
 
-    const specTraits = specializationTraits[specialization] || [
-      'Dedicated Professional',
-    ];
+    const specTraits = specializationTraits[specialization] || ['Dedicated Professional'];
     traits.push(specTraits[Math.floor(Math.random() * specTraits.length)]);
 
     return traits;
@@ -296,41 +252,17 @@ export class DynastyService {
   private static getRandomRole(specialization: string): string {
     const roles: Record<string, string[]> = {
       Engineering: ['Chief Engineer', 'Systems Specialist', 'Maintenance Lead'],
-      Agriculture: [
-        'Food Production Manager',
-        'Hydroponics Specialist',
-        'Nutrition Officer',
-      ],
+      Agriculture: ['Food Production Manager', 'Hydroponics Specialist', 'Nutrition Officer'],
       Research: ['Senior Researcher', 'Data Analyst', 'Laboratory Director'],
       Security: ['Security Chief', 'Defense Coordinator', 'Safety Officer'],
       Diplomacy: ['Cultural Liaison', 'Negotiator', 'Community Relations'],
-      Medicine: [
-        'Chief Medical Officer',
-        'Health Coordinator',
-        'Medical Specialist',
-      ],
-      Navigation: [
-        'Navigation Officer',
-        'Stellar Cartographer',
-        'Pilot Coordinator',
-      ],
-      Trade: [
-        'Resource Manager',
-        'Supply Chain Coordinator',
-        'Economic Advisor',
-      ],
-      Leadership: [
-        'Department Head',
-        'Council Member',
-        'Administrative Officer',
-      ],
+      Medicine: ['Chief Medical Officer', 'Health Coordinator', 'Medical Specialist'],
+      Navigation: ['Navigation Officer', 'Stellar Cartographer', 'Pilot Coordinator'],
+      Trade: ['Resource Manager', 'Supply Chain Coordinator', 'Economic Advisor'],
+      Leadership: ['Department Head', 'Council Member', 'Administrative Officer'],
     };
 
-    const roleOptions = roles[specialization] || [
-      'Specialist',
-      'Coordinator',
-      'Officer',
-    ];
+    const roleOptions = roles[specialization] || ['Specialist', 'Coordinator', 'Officer'];
     return roleOptions[Math.floor(Math.random() * roleOptions.length)];
   }
 
@@ -352,18 +284,15 @@ export class DynastyService {
 
     // Specialization challenge
     const challenges: Record<string, string> = {
-      Engineering:
-        'The Great Breakdown - Can they keep the ship systems running?',
+      Engineering: 'The Great Breakdown - Can they keep the ship systems running?',
       Agriculture: 'The Hunger Crisis - Will they solve the food shortage?',
       Research: 'The Unknown Discovery - What secrets will they uncover?',
       Security: 'The Silent Threat - Can they protect the mission?',
-      Leadership:
-        'The Unity Challenge - Will they hold the community together?',
+      Leadership: 'The Unity Challenge - Will they hold the community together?',
     };
 
     const challenge =
-      challenges[specialization] ||
-      'The Professional Challenge - Will they excel in their field?';
+      challenges[specialization] || 'The Professional Challenge - Will they excel in their field?';
 
     threads.push({
       id: `story_challenge_${Date.now()}`,
@@ -377,10 +306,7 @@ export class DynastyService {
   }
 
   // AI Decision Making for Dynasty Management
-  static makeAutomatedDecision(
-    dynasty: Dynasty,
-    context: DynastyDecisionContext
-  ): AIDecision {
+  static makeAutomatedDecision(dynasty: Dynasty, context: DynastyDecisionContext): AIDecision {
     const decision = this.evaluateDecisionOptions(dynasty, context);
 
     const aiDecision: AIDecision = {
@@ -521,16 +447,12 @@ export class DynastyService {
       );
 
       if (relevantDynasty) {
-        const leaderEffectiveness =
-          relevantDynasty.currentLeader.skills.leadership / 10;
+        const leaderEffectiveness = relevantDynasty.currentLeader.skills.leadership / 10;
         const influenceBonus = relevantDynasty.influence / 100;
 
         return {
           ...cohort,
-          effectiveness: Math.min(
-            1.0,
-            cohort.effectiveness + leaderEffectiveness + influenceBonus
-          ),
+          effectiveness: Math.min(1.0, cohort.effectiveness + leaderEffectiveness + influenceBonus),
         };
       }
 

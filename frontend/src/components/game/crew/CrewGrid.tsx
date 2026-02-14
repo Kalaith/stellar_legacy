@@ -55,23 +55,15 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
     []
   );
 
-  const getSkillBarWidth = useMemo(
-    () => (level: number) => `${(level / 10) * 100}%`,
-    []
-  );
+  const getSkillBarWidth = useMemo(() => (level: number) => `${(level / 10) * 100}%`, []);
 
-  const skillEntries = useMemo(
-    () => Object.entries(member.skills),
-    [member.skills]
-  );
+  const skillEntries = useMemo(() => Object.entries(member.skills), [member.skills]);
 
   return (
     <div
       className={`${uiConstants.COLORS.BG_SECONDARY} rounded-lg p-4 border ${uiConstants.COLORS.BORDER}`}
     >
-      <div
-        className={`flex items-center justify-between ${uiConstants.SPACING.SECTION_MARGIN_SM}`}
-      >
+      <div className={`flex items-center justify-between ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
         <div className="flex items-center space-x-3">
           <div
             className={`w-10 h-10 ${uiConstants.COLORS.BG_TERTIARY} rounded-full flex items-center justify-center`}
@@ -79,9 +71,7 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
             <span className="text-lg">👤</span>
           </div>
           <div>
-            <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>
-              {member.name}
-            </h4>
+            <h4 className={`${uiConstants.COLORS.TEXT_PRIMARY} font-semibold`}>{member.name}</h4>
             <p className={`${uiConstants.COLORS.TEXT_MUTED} text-sm`}>
               {member.role} • Age {member.age}
             </p>
@@ -99,9 +89,7 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
       <div className={`space-y-2 ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
         {skillEntries.map(([skill, level]) => (
           <div key={skill} className="flex items-center justify-between">
-            <span
-              className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm capitalize w-20`}
-            >
+            <span className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm capitalize w-20`}>
               {skill}
             </span>
             <div className="flex-1 mx-2">
@@ -120,33 +108,23 @@ const CrewCard: React.FC<CrewCardProps> = React.memo(({ member }) => {
                 />
               </div>
             </div>
-            <span
-              className={`${uiConstants.COLORS.TEXT_PRIMARY} text-sm w-6 text-right`}
-            >
+            <span className={`${uiConstants.COLORS.TEXT_PRIMARY} text-sm w-6 text-right`}>
               {level}
             </span>
           </div>
         ))}
       </div>
 
-      <div
-        className={`flex items-center justify-between ${uiConstants.SPACING.SECTION_MARGIN_SM}`}
-      >
-        <span className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm`}>
-          Morale
-        </span>
+      <div className={`flex items-center justify-between ${uiConstants.SPACING.SECTION_MARGIN_SM}`}>
+        <span className={`${uiConstants.COLORS.TEXT_SECONDARY} text-sm`}>Morale</span>
         <div className="flex items-center space-x-2">
-          <div
-            className={`w-20 ${uiConstants.COLORS.BG_TERTIARY} rounded-full h-2`}
-          >
+          <div className={`w-20 ${uiConstants.COLORS.BG_TERTIARY} rounded-full h-2`}>
             <div
               className={`h-2 rounded-full transition-all duration-300 ${getMoraleColor(member.morale)}`}
               style={{ width: `${member.morale}%` }}
             />
           </div>
-          <span
-            className={`${uiConstants.COLORS.TEXT_PRIMARY} text-sm w-8 text-right`}
-          >
+          <span className={`${uiConstants.COLORS.TEXT_PRIMARY} text-sm w-8 text-right`}>
             {member.morale}
           </span>
         </div>

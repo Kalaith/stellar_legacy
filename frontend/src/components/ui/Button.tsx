@@ -9,13 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const Button: React.FC<ButtonProps> = React.memo(
-  ({
-    variant = 'primary',
-    size = 'md',
-    children,
-    className = '',
-    ...props
-  }) => {
+  ({ variant = 'primary', size = 'md', children, className = '', ...props }) => {
     const baseClasses = uiConstants.BUTTONS.BASE_CLASSES;
 
     const variantClasses = {

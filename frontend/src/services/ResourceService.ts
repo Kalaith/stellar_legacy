@@ -11,15 +11,9 @@ export class ResourceService {
   }
 
   static deductCost(resources: Resources, cost: ComponentCost): Resources {
-    const validation = ValidationService.validateResourceOperation(
-      resources,
-      'subtract',
-      cost
-    );
+    const validation = ValidationService.validateResourceOperation(resources, 'subtract', cost);
     if (!validation.isValid) {
-      throw new Error(
-        `Resource deduction would violate constraints: ${validation.message}`
-      );
+      throw new Error(`Resource deduction would violate constraints: ${validation.message}`);
     }
 
     const newResources = { ...resources };
@@ -32,19 +26,10 @@ export class ResourceService {
     return newResources;
   }
 
-  static addResources(
-    resources: Resources,
-    addition: Partial<Resources>
-  ): Resources {
-    const validation = ValidationService.validateResourceOperation(
-      resources,
-      'add',
-      addition
-    );
+  static addResources(resources: Resources, addition: Partial<Resources>): Resources {
+    const validation = ValidationService.validateResourceOperation(resources, 'add', addition);
     if (!validation.isValid) {
-      throw new Error(
-        `Resource addition would violate constraints: ${validation.message}`
-      );
+      throw new Error(`Resource addition would violate constraints: ${validation.message}`);
     }
 
     const newResources = { ...resources };
@@ -111,27 +96,16 @@ export class ResourceService {
     return newResources;
   }
 
-  static generateResources(
-    resources: Resources,
-    rates: Partial<Resources>
-  ): Resources {
-    const validation = ValidationService.validateResourceOperation(
-      resources,
-      'add',
-      rates
-    );
+  static generateResources(resources: Resources, rates: Partial<Resources>): Resources {
+    const validation = ValidationService.validateResourceOperation(resources, 'add', rates);
     if (!validation.isValid) {
       // For generation, we cap at max instead of throwing
       const newResources = { ...resources };
       Object.entries(rates).forEach(([resource, rate]) => {
         const resourceKey = resource as keyof Resources;
         if (rate && newResources[resourceKey] !== undefined) {
-          const constraints =
-            ValidationService.resourceConstraints[resourceKey];
-          newResources[resourceKey] = Math.min(
-            constraints.max,
-            newResources[resourceKey] + rate
-          );
+          const constraints = ValidationService.resourceConstraints[resourceKey];
+          newResources[resourceKey] = Math.min(constraints.max, newResources[resourceKey] + rate);
         }
       });
       return newResources;

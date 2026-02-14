@@ -22,12 +22,10 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
   playerLegacyAffinity,
   onLegacyAction,
 }) => {
-  const [selectedLegacy, setSelectedLegacy] = useState<LegacyTypeType | null>(
-    null
+  const [selectedLegacy, setSelectedLegacy] = useState<LegacyTypeType | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'diplomacy' | 'trade' | 'threats'>(
+    'overview'
   );
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'diplomacy' | 'trade' | 'threats'
-  >('overview');
 
   const legacyInfo = {
     preservers: {
@@ -36,11 +34,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
       color: 'text-blue-400',
       bgColor: 'bg-blue-900',
       philosophy: 'Maintain baseline humanity at all costs',
-      strengths: [
-        'Cultural Unity',
-        'Traditional Knowledge',
-        'Social Stability',
-      ],
+      strengths: ['Cultural Unity', 'Traditional Knowledge', 'Social Stability'],
       weaknesses: ['Technological Stagnation', 'Adaptation Resistance'],
     },
     adaptors: {
@@ -95,11 +89,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
               >
                 <TerminalWindow
                   title={info.name.toUpperCase()}
-                  statusLine={
-                    legacy === playerLegacy
-                      ? 'YOUR LEGACY'
-                      : status.text.toUpperCase()
-                  }
+                  statusLine={legacy === playerLegacy ? 'YOUR LEGACY' : status.text.toUpperCase()}
                   className={`hover:border-terminal-primary transition-colors ${
                     legacy === playerLegacy ? 'border-terminal-warning' : ''
                   }`}
@@ -113,9 +103,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
                     {legacy !== playerLegacy && (
                       <div className="border-t border-terminal-border pt-2">
                         <div className="terminal-flex between">
-                          <TerminalText variant="dim">
-                            RELATIONSHIP:
-                          </TerminalText>
+                          <TerminalText variant="dim">RELATIONSHIP:</TerminalText>
                           <TerminalText
                             variant={
                               relationshipValue > 50
@@ -130,16 +118,10 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
                         </div>
 
                         <div className="terminal-flex between">
-                          <TerminalText variant="dim">
-                            YOUR AFFINITY:
-                          </TerminalText>
+                          <TerminalText variant="dim">YOUR AFFINITY:</TerminalText>
                           <TerminalText
                             variant={
-                              affinity > 50
-                                ? 'success'
-                                : affinity > 25
-                                  ? 'warning'
-                                  : 'error'
+                              affinity > 50 ? 'success' : affinity > 25 ? 'warning' : 'error'
                             }
                           >
                             {affinity}%
@@ -178,29 +160,23 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
               legacyInfo[l as LegacyTypeType].name.split(' ')[1].toUpperCase()
             ),
           ]}
-          rows={(Object.keys(legacyInfo) as LegacyTypeType[]).map(
-            fromLegacy => [
-              legacyInfo[fromLegacy].name.split(' ')[1].toUpperCase(),
-              ...(Object.keys(legacyInfo) as LegacyTypeType[]).map(toLegacy => {
-                if (fromLegacy === toLegacy) {
-                  return <TerminalText variant="dim">—</TerminalText>;
-                }
-                const relation = legacyRelations.find(
-                  r => r.fromLegacy === fromLegacy && r.toLegacy === toLegacy
-                );
-                const value = relation?.relationship || 0;
-                return (
-                  <TerminalText
-                    variant={
-                      value > 0 ? 'success' : value < 0 ? 'error' : 'warning'
-                    }
-                  >
-                    {value}
-                  </TerminalText>
-                );
-              }),
-            ]
-          )}
+          rows={(Object.keys(legacyInfo) as LegacyTypeType[]).map(fromLegacy => [
+            legacyInfo[fromLegacy].name.split(' ')[1].toUpperCase(),
+            ...(Object.keys(legacyInfo) as LegacyTypeType[]).map(toLegacy => {
+              if (fromLegacy === toLegacy) {
+                return <TerminalText variant="dim">—</TerminalText>;
+              }
+              const relation = legacyRelations.find(
+                r => r.fromLegacy === fromLegacy && r.toLegacy === toLegacy
+              );
+              const value = relation?.relationship || 0;
+              return (
+                <TerminalText variant={value > 0 ? 'success' : value < 0 ? 'error' : 'warning'}>
+                  {value}
+                </TerminalText>
+              );
+            }),
+          ])}
         />
       </TerminalWindow>
     </div>
@@ -230,10 +206,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
               {info.description.toUpperCase()}
             </TerminalText>
           </div>
-          <div
-            className="cursor-pointer hover:opacity-80"
-            onClick={() => setSelectedLegacy(null)}
-          >
+          <div className="cursor-pointer hover:opacity-80" onClick={() => setSelectedLegacy(null)}>
             <TerminalText variant="warning">[X] CLOSE</TerminalText>
           </div>
         </div>
@@ -249,27 +222,19 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
               }`}
               onClick={() => setActiveTab(tab)}
             >
-              <TerminalText
-                variant={activeTab === tab ? 'primary' : 'dim'}
-                className="uppercase"
-              >
+              <TerminalText variant={activeTab === tab ? 'primary' : 'dim'} className="uppercase">
                 [{tab}]
               </TerminalText>
             </div>
           ))}
         </div>
 
-        <div className="terminal-content">
-          {renderLegacyTabContent(selectedLegacy, relation)}
-        </div>
+        <div className="terminal-content">{renderLegacyTabContent(selectedLegacy, relation)}</div>
       </TerminalWindow>
     );
   };
 
-  const renderLegacyTabContent = (
-    legacy: LegacyTypeType,
-    relation?: LegacyRelation
-  ) => {
+  const renderLegacyTabContent = (legacy: LegacyTypeType, relation?: LegacyRelation) => {
     const info = legacyInfo[legacy];
 
     switch (activeTab) {
@@ -278,9 +243,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <TerminalWindow title="PHILOSOPHY" statusLine="IDEOLOGY">
-                <TerminalText className="text-cyan-400 italic">
-                  {info.philosophy}
-                </TerminalText>
+                <TerminalText className="text-cyan-400 italic">{info.philosophy}</TerminalText>
               </TerminalWindow>
 
               <TerminalWindow title="STRENGTHS" statusLine="ASSETS">
@@ -304,10 +267,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
               </TerminalWindow>
 
               {relation && (
-                <TerminalWindow
-                  title="CURRENT RELATIONS"
-                  statusLine="DIPLOMATIC"
-                >
+                <TerminalWindow title="CURRENT RELATIONS" statusLine="DIPLOMATIC">
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <TerminalText className="text-xs">STATUS:</TerminalText>
@@ -344,10 +304,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
               <TerminalWindow title="RECENT EVENTS" statusLine="HISTORY">
                 <div className="space-y-2">
                   {relation.recentEvents.slice(0, 3).map((event, index) => (
-                    <TerminalText
-                      key={index}
-                      className="text-xs border-l-2 border-purple-500 pl-3"
-                    >
+                    <TerminalText key={index} className="text-xs border-l-2 border-purple-500 pl-3">
                       ▶ {event}
                     </TerminalText>
                   ))}
@@ -371,10 +328,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
     }
   };
 
-  const renderDiplomacyTab = (
-    legacy: LegacyTypeType,
-    relation?: LegacyRelation
-  ) => {
+  const renderDiplomacyTab = (legacy: LegacyTypeType, relation?: LegacyRelation) => {
     if (legacy === playerLegacy) {
       return (
         <TerminalWindow title="INTERNAL AFFAIRS" statusLine="RESTRICTED">
@@ -394,14 +348,11 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
           {relation && (
             <div className="space-y-3">
               <div className="flex justify-between">
-                <TerminalText className="text-xs">
-                  CURRENT RELATIONSHIP:
-                </TerminalText>
+                <TerminalText className="text-xs">CURRENT RELATIONSHIP:</TerminalText>
                 <TerminalText
                   className={`text-xs ${getRelationshipStatus(relation.relationship).color}`}
                 >
-                  {getRelationshipStatus(relation.relationship).text} (
-                  {relation.relationship})
+                  {getRelationshipStatus(relation.relationship).text} ({relation.relationship})
                 </TerminalText>
               </div>
               <TerminalProgress
@@ -458,10 +409,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
           {relation?.recentEvents && relation.recentEvents.length > 0 ? (
             <div className="space-y-1">
               {relation.recentEvents.map((event, index) => (
-                <TerminalText
-                  key={index}
-                  className="text-xs border-l-2 border-yellow-500 pl-3"
-                >
+                <TerminalText key={index} className="text-xs border-l-2 border-yellow-500 pl-3">
                   ▶ {event}
                 </TerminalText>
               ))}
@@ -476,10 +424,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
     );
   };
 
-  const renderTradeTab = (
-    legacy: LegacyTypeType,
-    relation?: LegacyRelation
-  ) => (
+  const renderTradeTab = (legacy: LegacyTypeType, relation?: LegacyRelation) => (
     <div className="space-y-4">
       <TerminalWindow title="ACTIVE TRADE AGREEMENTS" statusLine="COMMERCE">
         {relation?.tradeAgreements && relation.tradeAgreements.length > 0 ? (
@@ -512,9 +457,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
             ))}
           </div>
         ) : (
-          <TerminalText className="text-xs text-gray-400">
-            No active trade agreements
-          </TerminalText>
+          <TerminalText className="text-xs text-gray-400">No active trade agreements</TerminalText>
         )}
       </TerminalWindow>
 
@@ -522,36 +465,28 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
         <TerminalWindow title="TRADE ACTIONS" statusLine="AVAILABLE">
           <div className="grid grid-cols-2 gap-2">
             <TerminalButton
-              onClick={() =>
-                onLegacyAction && onLegacyAction(legacy, 'propose_trade')
-              }
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'propose_trade')}
               variant="success"
               className="text-xs"
             >
               PROPOSE TRADE DEAL
             </TerminalButton>
             <TerminalButton
-              onClick={() =>
-                onLegacyAction && onLegacyAction(legacy, 'resource_exchange')
-              }
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'resource_exchange')}
               variant="primary"
               className="text-xs"
             >
               RESOURCE EXCHANGE
             </TerminalButton>
             <TerminalButton
-              onClick={() =>
-                onLegacyAction && onLegacyAction(legacy, 'technology_share')
-              }
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'technology_share')}
               variant="primary"
               className="text-xs"
             >
               TECHNOLOGY SHARE
             </TerminalButton>
             <TerminalButton
-              onClick={() =>
-                onLegacyAction && onLegacyAction(legacy, 'trade_embargo')
-              }
+              onClick={() => onLegacyAction && onLegacyAction(legacy, 'trade_embargo')}
               variant="error"
               className="text-xs"
             >
@@ -644,22 +579,14 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
         <TerminalWindow title="EXISTENTIAL THREATS" statusLine="CRITICAL">
           <div className="space-y-3">
             {threats.map((threat, index) => (
-              <TerminalWindow
-                key={index}
-                title={threat.name.toUpperCase()}
-                className="bg-gray-800"
-              >
+              <TerminalWindow key={index} title={threat.name.toUpperCase()} className="bg-gray-800">
                 <div className="flex justify-between items-center mb-2">
                   <TerminalText className="text-xs">RISK LEVEL:</TerminalText>
-                  <TerminalText
-                    className={`text-xs font-mono ${getThreatColor(threat.level)}`}
-                  >
+                  <TerminalText className={`text-xs font-mono ${getThreatColor(threat.level)}`}>
                     {threat.level.toUpperCase()}
                   </TerminalText>
                 </div>
-                <TerminalText className="text-xs text-gray-300">
-                  {threat.description}
-                </TerminalText>
+                <TerminalText className="text-xs text-gray-300">{threat.description}</TerminalText>
               </TerminalWindow>
             ))}
           </div>
@@ -675,9 +602,7 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
                 <TerminalText className="text-xs">
                   ▶ Inter-generational dialogue programs
                 </TerminalText>
-                <TerminalText className="text-xs">
-                  ▶ Selective technology adoption
-                </TerminalText>
+                <TerminalText className="text-xs">▶ Selective technology adoption</TerminalText>
               </>
             )}
             {legacy === 'adaptors' && (
@@ -698,12 +623,8 @@ export const LegacyRelations: React.FC<LegacyRelationsProps> = ({
                 <TerminalText className="text-xs">
                   ▶ Fleet cohesion maintenance systems
                 </TerminalText>
-                <TerminalText className="text-xs">
-                  ▶ Resource sharing agreements
-                </TerminalText>
-                <TerminalText className="text-xs">
-                  ▶ Collective purpose reinforcement
-                </TerminalText>
+                <TerminalText className="text-xs">▶ Resource sharing agreements</TerminalText>
+                <TerminalText className="text-xs">▶ Collective purpose reinforcement</TerminalText>
               </>
             )}
           </div>

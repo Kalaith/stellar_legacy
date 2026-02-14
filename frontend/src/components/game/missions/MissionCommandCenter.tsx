@@ -13,10 +13,7 @@ import {
   TerminalProgress,
   TerminalTable,
 } from '../../ui/TerminalWindow';
-import type {
-  GenerationalMission,
-  MissionEvent,
-} from '../../../types/generationalMissions';
+import type { GenerationalMission, MissionEvent } from '../../../types/generationalMissions';
 import type {
   LegacyTypeType,
   MissionObjectiveType,
@@ -39,9 +36,7 @@ interface NewMissionConfig {
   populationSize: number;
 }
 
-export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({
-  className = '',
-}) => {
+export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({ className = '' }) => {
   const {
     missions,
     activeMissions,
@@ -68,9 +63,7 @@ export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({
     populationSize: 25000,
   });
 
-  const activeMissionsList = missions.filter(m =>
-    activeMissions.includes(m.id)
-  );
+  const activeMissionsList = missions.filter(m => activeMissions.includes(m.id));
   const selectedEvent = activeEvents.find(e => e.id === selectedEventId);
 
   const handleCreateMission = () => {
@@ -92,20 +85,11 @@ export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({
   };
 
   return (
-    <TerminalWindow
-      title="MISSION COMMAND CENTER"
-      statusLine="OPERATIONAL"
-      className={className}
-    >
+    <TerminalWindow title="MISSION COMMAND CENTER" statusLine="OPERATIONAL" className={className}>
       {/* Header */}
       <div className="terminal-flex between mb-6">
-        <TerminalText variant="bright">
-          GENERATIONAL OPERATIONS CONTROL
-        </TerminalText>
-        <TerminalButton
-          onClick={() => setShowCreateMission(true)}
-          variant="success"
-        >
+        <TerminalText variant="bright">GENERATIONAL OPERATIONS CONTROL</TerminalText>
+        <TerminalButton onClick={() => setShowCreateMission(true)} variant="success">
           LAUNCH NEW MISSION
         </TerminalButton>
       </div>
@@ -138,23 +122,16 @@ export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({
           statusLine={selectedMission ? 'ANALYZING' : 'STANDBY'}
         >
           {selectedMission ? (
-            <TerminalMissionDetails
-              mission={selectedMission}
-              onAdvanceTime={handleAdvanceTime}
-            />
+            <TerminalMissionDetails mission={selectedMission} onAdvanceTime={handleAdvanceTime} />
           ) : (
-            <TerminalText variant="dim">
-              SELECT A MISSION TO VIEW DETAILS
-            </TerminalText>
+            <TerminalText variant="dim">SELECT A MISSION TO VIEW DETAILS</TerminalText>
           )}
         </TerminalWindow>
 
         {/* Events & Actions */}
         <TerminalWindow
           title="EVENTS & ACTIONS"
-          statusLine={
-            activeEvents.length > 0 ? 'ATTENTION REQUIRED' : 'MONITORING'
-          }
+          statusLine={activeEvents.length > 0 ? 'ATTENTION REQUIRED' : 'MONITORING'}
         >
           {selectedMission ? (
             <TerminalEventsPanel
@@ -165,9 +142,7 @@ export const MissionCommandCenter: React.FC<MissionCommandCenterProps> = ({
               onResolveEvent={handleResolveEvent}
             />
           ) : (
-            <TerminalText variant="dim">
-              SELECT A MISSION TO MANAGE EVENTS
-            </TerminalText>
+            <TerminalText variant="dim">SELECT A MISSION TO MANAGE EVENTS</TerminalText>
           )}
         </TerminalWindow>
       </div>
@@ -191,11 +166,8 @@ const TerminalMissionCard: React.FC<{
   isSelected: boolean;
   onSelect: () => void;
 }> = ({ mission, isSelected, onSelect }) => {
-  const progressPercentage =
-    (mission.currentYear / mission.estimatedDuration) * 100;
-  const hasUrgentEvents = mission.activeEvents.some(
-    e => e.requiresPlayerDecision
-  );
+  const progressPercentage = (mission.currentYear / mission.estimatedDuration) * 100;
+  const hasUrgentEvents = mission.activeEvents.some(e => e.requiresPlayerDecision);
 
   return (
     <div
@@ -224,12 +196,7 @@ const TerminalMissionCard: React.FC<{
           </div>
 
           {/* Progress Bar */}
-          <TerminalProgress
-            value={progressPercentage}
-            max={100}
-            ascii
-            variant="primary"
-          />
+          <TerminalProgress value={progressPercentage} max={100} ascii variant="primary" />
         </div>
 
         {hasUrgentEvents && (
@@ -247,8 +214,7 @@ const TerminalMissionDetails: React.FC<{
   mission: GenerationalMission;
   onAdvanceTime: (years: number) => void;
 }> = ({ mission, onAdvanceTime }) => {
-  const populationSurvivalRate =
-    (mission.population.total / mission.ship.populationCapacity) * 100;
+  const populationSurvivalRate = (mission.population.total / mission.ship.populationCapacity) * 100;
 
   return (
     <div className="terminal-space-y">
@@ -284,11 +250,7 @@ const TerminalMissionDetails: React.FC<{
               'DURATION',
               `${mission.currentYear}/${mission.estimatedDuration}`,
               <TerminalText variant="primary">
-                {(
-                  (mission.currentYear / mission.estimatedDuration) *
-                  100
-                ).toFixed(1)}
-                % COMPLETE
+                {((mission.currentYear / mission.estimatedDuration) * 100).toFixed(1)}% COMPLETE
               </TerminalText>,
             ],
           ]}
@@ -441,11 +403,7 @@ const TerminalEventsPanel: React.FC<{
             >
               <div className="terminal-flex between">
                 <div className="flex-1">
-                  <TerminalText
-                    variant={
-                      selectedEvent?.id === event.id ? 'bright' : 'primary'
-                    }
-                  >
+                  <TerminalText variant={selectedEvent?.id === event.id ? 'bright' : 'primary'}>
                     {event.title.toUpperCase()}
                   </TerminalText>
                   <div className="terminal-text dim">
@@ -471,12 +429,8 @@ const TerminalEventsPanel: React.FC<{
             padding: '1rem',
           }}
         >
-          <TerminalText variant="bright">
-            {selectedEvent.title.toUpperCase()}
-          </TerminalText>
-          <div className="terminal-text mt-2 mb-4">
-            {selectedEvent.description}
-          </div>
+          <TerminalText variant="bright">{selectedEvent.title.toUpperCase()}</TerminalText>
+          <div className="terminal-text mt-2 mb-4">{selectedEvent.description}</div>
 
           {selectedEvent.requiresPlayerDecision && (
             <div className="terminal-space-y">
@@ -489,12 +443,8 @@ const TerminalEventsPanel: React.FC<{
                   fullWidth
                 >
                   <div>
-                    <div className="font-bold">
-                      {outcome.title.toUpperCase()}
-                    </div>
-                    <div className="text-sm opacity-75">
-                      {outcome.description}
-                    </div>
+                    <div className="font-bold">{outcome.title.toUpperCase()}</div>
+                    <div className="text-sm opacity-75">{outcome.description}</div>
                   </div>
                 </TerminalButton>
               ))}
@@ -535,9 +485,7 @@ const TerminalCreateMission: React.FC<{
             <TerminalText variant="bright">LEGACY ASSIGNMENT:</TerminalText>
             <TerminalSelect
               value={config.legacy}
-              onChange={value =>
-                onChange({ ...config, legacy: value as LegacyTypeType })
-              }
+              onChange={value => onChange({ ...config, legacy: value as LegacyTypeType })}
               options={[
                 { value: 'preservers', label: 'PRESERVERS' },
                 { value: 'adaptors', label: 'ADAPTORS' },
@@ -570,9 +518,7 @@ const TerminalCreateMission: React.FC<{
               <TerminalText variant="bright">VESSEL SIZE:</TerminalText>
               <TerminalSelect
                 value={config.shipSize}
-                onChange={value =>
-                  onChange({ ...config, shipSize: value as ShipSizeType })
-                }
+                onChange={value => onChange({ ...config, shipSize: value as ShipSizeType })}
                 options={[
                   { value: 'medium', label: 'MEDIUM (15K)' },
                   { value: 'large', label: 'LARGE (30K)' },
@@ -603,12 +549,7 @@ const TerminalCreateMission: React.FC<{
           <TerminalButton onClick={onCancel} variant="error" fullWidth>
             ABORT
           </TerminalButton>
-          <TerminalButton
-            onClick={onConfirm}
-            disabled={!config.name}
-            variant="success"
-            fullWidth
-          >
+          <TerminalButton onClick={onConfirm} disabled={!config.name} variant="success" fullWidth>
             LAUNCH MISSION
           </TerminalButton>
         </div>

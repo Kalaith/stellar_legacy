@@ -103,17 +103,13 @@ export interface DecisionAnalytics {
 }
 
 export class DecisionTrackingService {
-  private static readonly DECISION_STORAGE_KEY =
-    'stellar-legacy-decision-ledger';
+  private static readonly DECISION_STORAGE_KEY = 'stellar-legacy-decision-ledger';
   private static currentLedger: DecisionLedger | null = null;
 
   /**
    * Record a new decision made by the player
    */
-  static recordDecision(
-    decision: DecisionInput,
-    mission: GenerationalMission
-  ): DecisionEntry {
+  static recordDecision(decision: DecisionInput, mission: GenerationalMission): DecisionEntry {
     try {
       const chronicleDecision: ChronicleDecision = {
         id: this.generateDecisionId(),
@@ -143,12 +139,8 @@ export class DecisionTrackingService {
         decision: chronicleDecision,
         context: this.generateDecisionContext(decision, mission),
         alternativeChoices: decision.alternatives,
-        immediateConsequences: decision.immediateConsequences.map(
-          c => c.description
-        ),
-        resourceChanges: this.extractResourceChanges(
-          decision.immediateConsequences
-        ),
+        immediateConsequences: decision.immediateConsequences.map(c => c.description),
+        resourceChanges: this.extractResourceChanges(decision.immediateConsequences),
         longTermConsequences: [],
         chronicleImpact: chronicleDecision.chronicleWeight,
       };
@@ -196,9 +188,7 @@ export class DecisionTrackingService {
       entry.longTermConsequences.push(consequence);
 
       // Update consequence chain
-      const chain = ledger.consequenceChains.find(
-        c => c.originDecisionId === decisionId
-      );
+      const chain = ledger.consequenceChains.find(c => c.originDecisionId === decisionId);
       if (chain) {
         chain.chainEvents.push({
           year: mission.currentYear,
@@ -240,28 +230,21 @@ export class DecisionTrackingService {
 
       // Apply filters
       if (filters.categories?.length) {
-        entries = entries.filter(entry =>
-          filters.categories!.includes(entry.decision.category)
-        );
+        entries = entries.filter(entry => filters.categories!.includes(entry.decision.category));
       }
 
       if (filters.urgencyLevels?.length) {
-        entries = entries.filter(entry =>
-          filters.urgencyLevels!.includes(entry.decision.urgency)
-        );
+        entries = entries.filter(entry => filters.urgencyLevels!.includes(entry.decision.urgency));
       }
 
       if (filters.scopes?.length) {
-        entries = entries.filter(entry =>
-          filters.scopes!.includes(entry.decision.scope)
-        );
+        entries = entries.filter(entry => filters.scopes!.includes(entry.decision.scope));
       }
 
       if (filters.timeRange) {
         entries = entries.filter(
           entry =>
-            entry.year >= filters.timeRange!.startYear &&
-            entry.year <= filters.timeRange!.endYear
+            entry.year >= filters.timeRange!.startYear && entry.year <= filters.timeRange!.endYear
         );
       }
 
@@ -276,9 +259,7 @@ export class DecisionTrackingService {
       }
 
       if (filters.impactThreshold !== undefined) {
-        entries = entries.filter(
-          entry => entry.chronicleImpact >= filters.impactThreshold!
-        );
+        entries = entries.filter(entry => entry.chronicleImpact >= filters.impactThreshold!);
       }
 
       if (filters.textSearch) {
@@ -397,14 +378,11 @@ export class DecisionTrackingService {
         if (predictedCount > 0) {
           totalPredictions += predictedCount;
           // Simple accuracy check - in reality would be more sophisticated
-          const matchingPredictions =
-            entry.decision.predictedLongTermEffects.filter(prediction =>
-              entry.longTermConsequences.some(actual =>
-                actual.description
-                  .toLowerCase()
-                  .includes(prediction.toLowerCase())
-              )
-            ).length;
+          const matchingPredictions = entry.decision.predictedLongTermEffects.filter(prediction =>
+            entry.longTermConsequences.some(actual =>
+              actual.description.toLowerCase().includes(prediction.toLowerCase())
+            )
+          ).length;
           correctPredictions += matchingPredictions;
         }
       });
@@ -424,11 +402,9 @@ export class DecisionTrackingService {
         decisionsByUrgency,
         decisionsByScope,
         averageImpact: totalImpact / entries.length,
-        averageSatisfaction:
-          satisfactionCount > 0 ? totalSatisfaction / satisfactionCount : 0,
+        averageSatisfaction: satisfactionCount > 0 ? totalSatisfaction / satisfactionCount : 0,
         commonPatterns,
-        consequenceAccuracy:
-          totalPredictions > 0 ? correctPredictions / totalPredictions : 0,
+        consequenceAccuracy: totalPredictions > 0 ? correctPredictions / totalPredictions : 0,
       };
     } catch (error) {
       Logger.error('Failed to analyze decision patterns', error);
@@ -445,10 +421,7 @@ export class DecisionTrackingService {
   ): string[] {
     try {
       const ledger = this.getLedger();
-      const relevantDecisions = this.findRelevantDecisions(
-        currentContext,
-        ledger.entries
-      );
+      const relevantDecisions = this.findRelevantDecisions(currentContext, ledger.entries);
 
       return relevantDecisions.map(entry => {
         const timeAgo = mission.currentYear - entry.year;
@@ -474,11 +447,7 @@ export class DecisionTrackingService {
   static getConsequenceChain(decisionId: string): ConsequenceChain | null {
     try {
       const ledger = this.getLedger();
-      return (
-        ledger.consequenceChains.find(
-          chain => chain.originDecisionId === decisionId
-        ) || null
-      );
+      return ledger.consequenceChains.find(chain => chain.originDecisionId === decisionId) || null;
     } catch (error) {
       Logger.error('Failed to get consequence chain', error);
       return null;
@@ -562,14 +531,11 @@ export class DecisionTrackingService {
     // Find decisions in the same category within recent years
     const recentDecisions = ledger.entries.filter(
       entry =>
-        entry.decision.category === decision.category &&
-        mission.currentYear - entry.year <= 50 // Within 50 years
+        entry.decision.category === decision.category && mission.currentYear - entry.year <= 50 // Within 50 years
     );
 
     // Add the most impactful recent decision as a reference
-    const mostImpactful = recentDecisions.sort(
-      (a, b) => b.chronicleImpact - a.chronicleImpact
-    )[0];
+    const mostImpactful = recentDecisions.sort((a, b) => b.chronicleImpact - a.chronicleImpact)[0];
     if (mostImpactful) {
       references.push(mostImpactful.id);
     }
@@ -706,10 +672,7 @@ export class DecisionTrackingService {
     this.saveLedger(ledger);
   }
 
-  private static updateChronicleWeight(
-    entry: DecisionEntry,
-    consequence: LongTermEffect
-  ): void {
+  private static updateChronicleWeight(entry: DecisionEntry, consequence: LongTermEffect): void {
     // Increase chronicle weight based on the severity of actual consequences
     const weightIncrease = {
       minor: 0.05,
@@ -718,16 +681,11 @@ export class DecisionTrackingService {
       'civilization-defining': 0.4,
     }[consequence.severity];
 
-    entry.chronicleImpact = Math.min(
-      1.0,
-      entry.chronicleImpact + weightIncrease
-    );
+    entry.chronicleImpact = Math.min(1.0, entry.chronicleImpact + weightIncrease);
     entry.decision.chronicleWeight = entry.chronicleImpact;
   }
 
-  private static identifyDecisionPatterns(
-    entries: DecisionEntry[]
-  ): DecisionPattern[] {
+  private static identifyDecisionPatterns(entries: DecisionEntry[]): DecisionPattern[] {
     const patterns: Map<string, DecisionPattern> = new Map();
 
     entries.forEach(entry => {
@@ -760,28 +718,21 @@ export class DecisionTrackingService {
       .sort((a, b) => b.frequency - a.frequency);
   }
 
-  private static findRelevantDecisions(
-    context: string,
-    entries: DecisionEntry[]
-  ): DecisionEntry[] {
+  private static findRelevantDecisions(context: string, entries: DecisionEntry[]): DecisionEntry[] {
     const contextLower = context.toLowerCase();
 
     // Find decisions with similar context or category keywords
     const relevant = entries.filter(entry => {
       const entryContext =
         `${entry.decision.title} ${entry.decision.description} ${entry.decision.category}`.toLowerCase();
-      return entryContext
-        .split(' ')
-        .some(word => contextLower.includes(word) && word.length > 3);
+      return entryContext.split(' ').some(word => contextLower.includes(word) && word.length > 3);
     });
 
     // Sort by impact and recency
     return relevant
       .sort(
         (a, b) =>
-          b.chronicleImpact +
-          (100 - b.year) / 1000 -
-          (a.chronicleImpact + (100 - a.year) / 1000)
+          b.chronicleImpact + (100 - b.year) / 1000 - (a.chronicleImpact + (100 - a.year) / 1000)
       )
       .slice(0, 3); // Return top 3 most relevant
   }

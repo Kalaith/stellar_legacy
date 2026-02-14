@@ -142,9 +142,7 @@ describe('useGameStore', () => {
         result.current.clearNotification(notificationId);
       });
 
-      expect(
-        result.current.notifications.find(n => n.id === notificationId)
-      ).toBeUndefined();
+      expect(result.current.notifications.find(n => n.id === notificationId)).toBeUndefined();
     });
   });
 

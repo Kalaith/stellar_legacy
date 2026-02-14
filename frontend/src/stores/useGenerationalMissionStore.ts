@@ -44,15 +44,8 @@ interface GenerationalMissionStore {
   forceEventGeneration: (missionId: string, category?: string) => void;
 
   // Actions - Automation Management
-  updateAutomationConfig: (
-    missionId: string,
-    config: Partial<AutomationConfig>
-  ) => void;
-  overrideAIDecision: (
-    missionId: string,
-    decisionId: string,
-    override: unknown
-  ) => void;
+  updateAutomationConfig: (missionId: string, config: Partial<AutomationConfig>) => void;
+  overrideAIDecision: (missionId: string, decisionId: string, override: unknown) => void;
 
   // Actions - Legacy Management
   processLegacyDilemma: (
@@ -78,9 +71,7 @@ interface GenerationalMissionStore {
 
   // Utility Actions
   getAllActiveMissions: () => GenerationalMission[];
-  getMissionsByObjective: (
-    objective: MissionObjectiveType
-  ) => GenerationalMission[];
+  getMissionsByObjective: (objective: MissionObjectiveType) => GenerationalMission[];
   getMissionsByLegacy: (legacy: LegacyTypeType) => GenerationalMission[];
 }
 
@@ -161,9 +152,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       },
 
       selectMission: (missionId: string | null) => {
-        const mission = missionId
-          ? get().missions.find(m => m.id === missionId) || null
-          : null;
+        const mission = missionId ? get().missions.find(m => m.id === missionId) || null : null;
         set({ selectedMission: mission, selectedEventId: null });
       },
 
@@ -172,19 +161,12 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         if (!mission) return;
 
         try {
-          const result = MissionService.processMissionTurn(
-            mission,
-            yearsElapsed
-          );
+          const result = MissionService.processMissionTurn(mission, yearsElapsed);
 
           set(state => ({
-            missions: state.missions.map(m =>
-              m.id === missionId ? result.mission : m
-            ),
+            missions: state.missions.map(m => (m.id === missionId ? result.mission : m)),
             selectedMission:
-              state.selectedMission?.id === missionId
-                ? result.mission
-                : state.selectedMission,
+              state.selectedMission?.id === missionId ? result.mission : state.selectedMission,
           }));
 
           // Show notification if requires attention
@@ -203,10 +185,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
 
         set(state => ({
           activeMissions: state.activeMissions.filter(id => id !== missionId),
-          selectedMission:
-            state.selectedMission?.id === missionId
-              ? null
-              : state.selectedMission,
+          selectedMission: state.selectedMission?.id === missionId ? null : state.selectedMission,
         }));
 
         // Update legacy affinity based on success
@@ -219,11 +198,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
                 ? 5
                 : -10;
 
-        get().updateLegacyRelations(
-          mission.legacy,
-          mission.legacy,
-          affinityChange
-        );
+        get().updateLegacyRelations(mission.legacy, mission.legacy, affinityChange);
 
         Logger.info(`Completed mission: ${mission.name}`, {
           successLevel: mission.successLevel,
@@ -242,27 +217,17 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         if (!mission || !event) return;
 
         try {
-          const resolution = EventService.resolveEventWithChoice(
-            event,
-            outcomeId,
-            mission
-          );
+          const resolution = EventService.resolveEventWithChoice(event, outcomeId, mission);
 
           if (resolution.success) {
             // Move event to history
             mission.eventHistory.push(event);
-            mission.activeEvents = mission.activeEvents.filter(
-              e => e.id !== eventId
-            );
+            mission.activeEvents = mission.activeEvents.filter(e => e.id !== eventId);
 
             set(state => ({
-              missions: state.missions.map(m =>
-                m.id === missionId ? mission : m
-              ),
+              missions: state.missions.map(m => (m.id === missionId ? mission : m)),
               selectedMission:
-                state.selectedMission?.id === missionId
-                  ? mission
-                  : state.selectedMission,
+                state.selectedMission?.id === missionId ? mission : state.selectedMission,
               selectedEventId: null,
             }));
 
@@ -287,22 +252,15 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           mission.activeEvents.push(event);
 
           set(state => ({
-            missions: state.missions.map(m =>
-              m.id === missionId ? mission : m
-            ),
+            missions: state.missions.map(m => (m.id === missionId ? mission : m)),
             selectedMission:
-              state.selectedMission?.id === missionId
-                ? mission
-                : state.selectedMission,
+              state.selectedMission?.id === missionId ? mission : state.selectedMission,
           }));
         }
       },
 
       // Automation Management Actions
-      updateAutomationConfig: (
-        missionId: string,
-        config: Partial<AutomationConfig>
-      ) => {
+      updateAutomationConfig: (missionId: string, config: Partial<AutomationConfig>) => {
         set(state => ({
           missions: state.missions.map(mission => {
             if (mission.id === missionId) {
@@ -316,11 +274,7 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
         }));
       },
 
-      overrideAIDecision: (
-        targetMissionId: string,
-        decisionId: string,
-        overrideData: unknown
-      ) => {
+      overrideAIDecision: (targetMissionId: string, decisionId: string, overrideData: unknown) => {
         // Implementation for overriding AI decisions
         Logger.info(`Override AI decision: ${decisionId}`, {
           targetMissionId,
@@ -373,22 +327,18 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
           }
 
           // Apply results to mission
-          (
-            Object.keys(result.resourceChanges) as Array<
-              keyof ExtendedResources
-            >
-          ).forEach(resource => {
-            const change = result.resourceChanges[resource];
-            if (typeof change === 'number') {
-              mission.resources[resource] += change;
+          (Object.keys(result.resourceChanges) as Array<keyof ExtendedResources>).forEach(
+            resource => {
+              const change = result.resourceChanges[resource];
+              if (typeof change === 'number') {
+                mission.resources[resource] += change;
+              }
             }
-          });
+          );
 
           // Apply population effects
           result.populationEffects.forEach((effect: PopulationEffect) => {
-            const cohort = mission.population.cohorts.find(
-              c => c.type === effect.cohortType
-            );
+            const cohort = mission.population.cohorts.find(c => c.type === effect.cohortType);
             if (cohort) {
               switch (effect.effectType) {
                 case 'count':
@@ -401,23 +351,16 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
                   );
                   break;
                 case 'morale':
-                  cohort.morale = Math.max(
-                    0,
-                    Math.min(100, cohort.morale + effect.magnitude)
-                  );
+                  cohort.morale = Math.max(0, Math.min(100, cohort.morale + effect.magnitude));
                   break;
               }
             }
           });
 
           set(state => ({
-            missions: state.missions.map(m =>
-              m.id === missionId ? mission : m
-            ),
+            missions: state.missions.map(m => (m.id === missionId ? mission : m)),
             selectedMission:
-              state.selectedMission?.id === missionId
-                ? mission
-                : state.selectedMission,
+              state.selectedMission?.id === missionId ? mission : state.selectedMission,
           }));
 
           Logger.info(`Processed legacy dilemma for ${mission.legacy}`, {
@@ -436,16 +379,10 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
       ) => {
         set(state => ({
           legacyRelations: state.legacyRelations.map(relation => {
-            if (
-              relation.fromLegacy === fromLegacy &&
-              relation.toLegacy === toLegacy
-            ) {
+            if (relation.fromLegacy === fromLegacy && relation.toLegacy === toLegacy) {
               return {
                 ...relation,
-                relationship: Math.max(
-                  -100,
-                  Math.min(100, relation.relationship + change)
-                ),
+                relationship: Math.max(-100, Math.min(100, relation.relationship + change)),
               };
             }
             return relation;
@@ -462,15 +399,11 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
 
       // Utility Actions
       getAllActiveMissions: () => {
-        return get().missions.filter(mission =>
-          get().activeMissions.includes(mission.id)
-        );
+        return get().missions.filter(mission => get().activeMissions.includes(mission.id));
       },
 
       getMissionsByObjective: (objective: MissionObjectiveType) => {
-        return get().missions.filter(
-          mission => mission.objective === objective
-        );
+        return get().missions.filter(mission => mission.objective === objective);
       },
 
       getMissionsByLegacy: (legacy: LegacyTypeType) => {
@@ -492,26 +425,20 @@ export const useGenerationalMissionStore = create<GenerationalMissionStore>()(
 
 // Helper hook for current mission data
 export const useCurrentMission = () => {
-  const selectedMission = useGenerationalMissionStore(
-    state => state.selectedMission
-  );
+  const selectedMission = useGenerationalMissionStore(state => state.selectedMission);
   return selectedMission;
 };
 
 // Helper hook for active events
 export const useActiveEvents = () => {
-  const selectedMission = useGenerationalMissionStore(
-    state => state.selectedMission
-  );
+  const selectedMission = useGenerationalMissionStore(state => state.selectedMission);
   return selectedMission?.activeEvents || [];
 };
 
 // Helper hook for mission status
 export const useMissionStatus = (missionId?: string) => {
   const missions = useGenerationalMissionStore(state => state.missions);
-  const activeMissions = useGenerationalMissionStore(
-    state => state.activeMissions
-  );
+  const activeMissions = useGenerationalMissionStore(state => state.activeMissions);
 
   if (!missionId) return null;
 
@@ -521,7 +448,6 @@ export const useMissionStatus = (missionId?: string) => {
   return {
     mission,
     isActive,
-    requiresAttention:
-      mission?.activeEvents.some(e => e.requiresPlayerDecision) || false,
+    requiresAttention: mission?.activeEvents.some(e => e.requiresPlayerDecision) || false,
   };
 };

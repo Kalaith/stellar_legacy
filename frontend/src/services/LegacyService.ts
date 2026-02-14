@@ -77,15 +77,12 @@ export class LegacyService {
           longTermConsequences: [
             'Permanent cultural shift',
             'Improved adaptability',
-            preserverMetrics.traditionSupport > 0.6
-              ? 'Traditional faction forms resistance'
-              : '',
+            preserverMetrics.traditionSupport > 0.6 ? 'Traditional faction forms resistance' : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             traditionPoints: -15,
             adaptationPressure: -10,
-            culturalSchismRisk:
-              preserverMetrics.traditionSupport > 0.6 ? 25 : 5,
+            culturalSchismRisk: preserverMetrics.traditionSupport > 0.6 ? 25 : 5,
           },
         };
 
@@ -143,16 +140,11 @@ export class LegacyService {
               cohortType: 'general',
               effectType: 'effectiveness',
               magnitude: geneticSuccess ? 0.15 : -0.1,
-              description: geneticSuccess
-                ? 'Enhanced capabilities'
-                : 'Genetic complications',
+              description: geneticSuccess ? 'Enhanced capabilities' : 'Genetic complications',
             },
           ],
           longTermConsequences: geneticSuccess
-            ? [
-                'Population gains genetic enhancements',
-                'Increased adaptation to space environment',
-              ]
+            ? ['Population gains genetic enhancements', 'Increased adaptation to space environment']
             : [
                 'Genetic instability in population',
                 'Fear of future modifications',
@@ -186,10 +178,7 @@ export class LegacyService {
             },
           ],
           longTermConsequences: cyberneticSuccess
-            ? [
-                'Enhanced human-machine interface',
-                'Improved ship system integration',
-              ]
+            ? ['Enhanced human-machine interface', 'Improved ship system integration']
             : ['Cybernetic rejection syndrome', 'Technology dependency issues'],
           legacySpecificEffects: {
             cyberneticIntegration: cyberneticSuccess ? 20 : -10,
@@ -246,9 +235,7 @@ export class LegacyService {
           ],
           longTermConsequences: [
             'Delayed adaptation progress',
-            adaptorMetrics.enhancementPressure > 0.7
-              ? 'Rogue enhancement groups may form'
-              : '',
+            adaptorMetrics.enhancementPressure > 0.7 ? 'Rogue enhancement groups may form' : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             enhancementPressure: 15,
@@ -295,9 +282,7 @@ export class LegacyService {
             ? [
                 'Reputation as raiders spreads',
                 'Other vessels become more hostile',
-                raidSeverity > 0.7
-                  ? 'Severe diplomatic consequences'
-                  : 'Minor diplomatic impact',
+                raidSeverity > 0.7 ? 'Severe diplomatic consequences' : 'Minor diplomatic impact',
               ]
             : [
                 'Failed raid weakens position',
@@ -313,8 +298,7 @@ export class LegacyService {
       }
 
       case 'trade': {
-        const tradeSuccess =
-          Math.random() > 0.3 + wandererMetrics.piracyReputation * 0.01; // Reputation affects trade
+        const tradeSuccess = Math.random() > 0.3 + wandererMetrics.piracyReputation * 0.01; // Reputation affects trade
 
         return {
           resourceChanges: {
@@ -328,17 +312,12 @@ export class LegacyService {
               cohortType: 'general',
               effectType: 'morale',
               magnitude: tradeSuccess ? 5 : -5,
-              description: tradeSuccess
-                ? 'Successful peaceful exchange'
-                : 'Trade rejection',
+              description: tradeSuccess ? 'Successful peaceful exchange' : 'Trade rejection',
             },
           ],
           longTermConsequences: tradeSuccess
             ? ['Improved relations with traders', 'Trade route opportunities']
-            : [
-                'Decreased trust from trading partners',
-                'Limited future trade options',
-              ],
+            : ['Decreased trust from trading partners', 'Limited future trade options'],
           legacySpecificEffects: {
             tradeReputation: tradeSuccess ? 5 : -3,
             moralCode: tradeSuccess ? 2 : -1,
@@ -395,9 +374,7 @@ export class LegacyService {
           longTermConsequences: [
             'Extended operational range',
             'Improved resource efficiency',
-            wandererMetrics.existentialDread > 50
-              ? 'Growing despair over endless journey'
-              : '',
+            wandererMetrics.existentialDread > 50 ? 'Growing despair over endless journey' : '',
           ].filter(Boolean),
           legacySpecificEffects: {
             resourceConservation: 5,
@@ -412,9 +389,7 @@ export class LegacyService {
   }
 
   // Get Preservers Specific Metrics
-  private static getPreserverMetrics(
-    mission: GenerationalMission
-  ): PreserverMetrics {
+  private static getPreserverMetrics(mission: GenerationalMission): PreserverMetrics {
     const culturalDrift = mission.resources.culturalDrift || 0;
 
     return {
@@ -432,9 +407,7 @@ export class LegacyService {
   }
 
   // Get Adaptors Specific Metrics
-  private static getAdaptorMetrics(
-    mission: GenerationalMission
-  ): AdaptorMetrics {
+  private static getAdaptorMetrics(mission: GenerationalMission): AdaptorMetrics {
     const adaptationLevel = mission.resources.adaptationLevel || 0;
     const technology = mission.resources.technology || 0;
 
@@ -450,25 +423,18 @@ export class LegacyService {
   }
 
   // Get Wanderers Specific Metrics
-  private static getWandererMetrics(
-    mission: GenerationalMission
-  ): WandererMetrics {
+  private static getWandererMetrics(mission: GenerationalMission): WandererMetrics {
     // These would be stored as legacy-specific resources in a full implementation
     return {
       resourceScarcity: this.calculateResourceScarcity(mission.resources),
       piracyReputation: 20, // Would be tracked over time
       existentialDread: Math.min(100, mission.currentYear / 10), // Increases with time
-      fleetCohesion: Math.max(
-        0,
-        1 - (mission.currentYear / mission.estimatedDuration) * 0.3
-      ),
+      fleetCohesion: Math.max(0, 1 - (mission.currentYear / mission.estimatedDuration) * 0.3),
     };
   }
 
   // Calculate Resource Scarcity
-  private static calculateResourceScarcity(
-    resources: ExtendedResources
-  ): number {
+  private static calculateResourceScarcity(resources: ExtendedResources): number {
     const criticalResources = [
       resources.fuel / 1000,
       resources.food / 1000,
@@ -477,15 +443,12 @@ export class LegacyService {
     ];
 
     const avgScarcity =
-      criticalResources.reduce((sum, val) => sum + Math.min(1, val), 0) /
-      criticalResources.length;
+      criticalResources.reduce((sum, val) => sum + Math.min(1, val), 0) / criticalResources.length;
     return Math.max(0, 1 - avgScarcity);
   }
 
   // Apply Legacy-Specific Failure Conditions
-  static checkLegacyFailureConditions(
-    mission: GenerationalMission
-  ): LegacyFailureCheck {
+  static checkLegacyFailureConditions(mission: GenerationalMission): LegacyFailureCheck {
     switch (mission.legacy) {
       case 'preservers':
         return this.checkPreserversFailure(mission);
@@ -499,9 +462,7 @@ export class LegacyService {
   }
 
   // Check Preservers Failure: Cultural Collapse
-  private static checkPreserversFailure(
-    mission: GenerationalMission
-  ): LegacyFailureCheck {
+  private static checkPreserversFailure(mission: GenerationalMission): LegacyFailureCheck {
     const culturalDrift = mission.resources.culturalDrift || 0;
     const unity = mission.resources.unity || 0.5;
     const traditionPoints = 50; // Would be tracked in legacy-specific data
@@ -528,9 +489,7 @@ export class LegacyService {
     const warnings = [];
 
     if (riskLevel > 30) {
-      warnings.push(
-        'Cultural collapse warning: Society losing traditional identity'
-      );
+      warnings.push('Cultural collapse warning: Society losing traditional identity');
     }
     if (riskLevel > 60) {
       warnings.push('CRITICAL: Cultural fragmentation imminent');
@@ -540,9 +499,7 @@ export class LegacyService {
   }
 
   // Check Adaptors Failure: Humanity Loss
-  private static checkAdaptorsFailure(
-    mission: GenerationalMission
-  ): LegacyFailureCheck {
+  private static checkAdaptorsFailure(mission: GenerationalMission): LegacyFailureCheck {
     const adaptationLevel = mission.resources.adaptationLevel || 0;
     const unity = mission.resources.unity || 0.5;
     const bodyHorrorEvents = 2; // Would be tracked
@@ -569,9 +526,7 @@ export class LegacyService {
     const warnings = [];
 
     if (riskLevel > 30) {
-      warnings.push(
-        'Humanity loss warning: Population becoming unrecognizably altered'
-      );
+      warnings.push('Humanity loss warning: Population becoming unrecognizably altered');
     }
     if (riskLevel > 60) {
       warnings.push('CRITICAL: Imminent speciation event - civil war likely');
@@ -581,9 +536,7 @@ export class LegacyService {
   }
 
   // Check Wanderers Failure: Fleet Dissolution
-  private static checkWanderersFailure(
-    mission: GenerationalMission
-  ): LegacyFailureCheck {
+  private static checkWanderersFailure(mission: GenerationalMission): LegacyFailureCheck {
     const fuel = mission.resources.fuel || 0;
     const unity = mission.resources.unity || 0.5;
     const existentialDread = 40; // Would be tracked
@@ -616,9 +569,7 @@ export class LegacyService {
     const warnings = [];
 
     if (riskLevel > 30) {
-      warnings.push(
-        'Fleet dissolution warning: Ships may separate permanently'
-      );
+      warnings.push('Fleet dissolution warning: Ships may separate permanently');
     }
     if (riskLevel > 60) {
       warnings.push('CRITICAL: Fleet breakup imminent - ships going rogue');
@@ -628,10 +579,7 @@ export class LegacyService {
   }
 
   // Get Legacy-Specific Event Modifiers
-  static getLegacyEventModifiers(
-    legacy: LegacyTypeType,
-    eventCategory: string
-  ): number {
+  static getLegacyEventModifiers(legacy: LegacyTypeType, eventCategory: string): number {
     const modifiers: Record<LegacyTypeType, Record<string, number>> = {
       preservers: {
         cultural: 0.3,

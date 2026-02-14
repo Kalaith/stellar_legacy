@@ -17,11 +17,7 @@ import type {
   CardTier,
   CardType,
 } from '../types/legacyDecks';
-import type {
-  ChronicleEntry,
-  ChronicleDecision,
-  ChronicleArtifact,
-} from '../types/chronicle';
+import type { ChronicleEntry, ChronicleDecision, ChronicleArtifact } from '../types/chronicle';
 import type { GenerationalMission } from '../types/generationalMissions';
 import Logger from '../utils/logger';
 
@@ -32,9 +28,7 @@ export class LegacyDeckService {
   /**
    * Generate legacy cards from a chronicle entry
    */
-  static generateCardsFromChronicle(
-    entry: ChronicleEntry
-  ): LegacyCardTemplate[] {
+  static generateCardsFromChronicle(entry: ChronicleEntry): LegacyCardTemplate[] {
     const templates: LegacyCardTemplate[] = [];
 
     try {
@@ -89,10 +83,7 @@ export class LegacyDeckService {
   /**
    * Check if any cards should trigger based on current game state
    */
-  static checkCardTriggers(
-    deck: LegacyDeck,
-    gameState: GenerationalMission
-  ): CardTriggerResult[] {
+  static checkCardTriggers(deck: LegacyDeck, gameState: GenerationalMission): CardTriggerResult[] {
     const triggeredCards: CardTriggerResult[] = [];
 
     try {
@@ -191,19 +182,13 @@ export class LegacyDeckService {
         }
 
         // Increase weight of underused but well-rated cards
-        if (
-          card.timesPlayed < analytics.averageUsage * 0.5 &&
-          card.playerRating > 3.5
-        ) {
+        if (card.timesPlayed < analytics.averageUsage * 0.5 && card.playerRating > 3.5) {
           adjustedCard.weight = Math.min(1.0, card.weight * 1.2);
         }
 
         // Adjust based on player rating
         const ratingMultiplier = card.playerRating / 3; // 1-5 rating becomes 0.33-1.67 multiplier
-        adjustedCard.weight = Math.max(
-          0.1,
-          Math.min(1.0, card.weight * ratingMultiplier)
-        );
+        adjustedCard.weight = Math.max(0.1, Math.min(1.0, card.weight * ratingMultiplier));
 
         return adjustedCard;
       });
@@ -364,20 +349,14 @@ export class LegacyDeckService {
         case 'modify':
           if (value && Array.isArray(value)) {
             const modifications = value as CardModification[];
-            const modifiedCard = this.applyModifications(
-              newDeck.cards[cardIndex],
-              modifications
-            );
+            const modifiedCard = this.applyModifications(newDeck.cards[cardIndex], modifications);
             newDeck.cards[cardIndex] = modifiedCard;
           }
           break;
 
         case 'favorite':
           // Increase weight of favorite cards
-          newDeck.cards[cardIndex].weight = Math.min(
-            1.0,
-            newDeck.cards[cardIndex].weight * 1.5
-          );
+          newDeck.cards[cardIndex].weight = Math.min(1.0, newDeck.cards[cardIndex].weight * 1.5);
           break;
 
         case 'report':
@@ -500,26 +479,15 @@ export class LegacyDeckService {
 
       switch (condition.type) {
         case 'resource': {
-          const resources = gameState.resources as unknown as Record<
-            string,
-            unknown
-          >;
+          const resources = gameState.resources as unknown as Record<string, unknown>;
           const rawValue = resources[condition.target];
           const resourceValue = typeof rawValue === 'number' ? rawValue : 0;
-          return this.evaluateComparison(
-            resourceValue,
-            condition.operator,
-            condition.value
-          );
+          return this.evaluateComparison(resourceValue, condition.operator, condition.value);
         }
 
         case 'population': {
           const popValue = gameState.population.total;
-          return this.evaluateComparison(
-            popValue,
-            condition.operator,
-            condition.value
-          );
+          return this.evaluateComparison(popValue, condition.operator, condition.value);
         }
 
         case 'year':
@@ -538,11 +506,7 @@ export class LegacyDeckService {
     }
   }
 
-  private static evaluateComparison(
-    actual: unknown,
-    operator: string,
-    expected: unknown
-  ): boolean {
+  private static evaluateComparison(actual: unknown, operator: string, expected: unknown): boolean {
     const aNum = typeof actual === 'number' ? actual : NaN;
     const eNum = typeof expected === 'number' ? expected : NaN;
 
@@ -562,18 +526,12 @@ export class LegacyDeckService {
     }
   }
 
-  private static applyCardEffect(
-    effect: CardEffect,
-    gameState: GenerationalMission
-  ): void {
+  private static applyCardEffect(effect: CardEffect, gameState: GenerationalMission): void {
     try {
       switch (effect.type) {
         case 'resource':
           if (gameState.resources) {
-            const resources = gameState.resources as unknown as Record<
-              string,
-              unknown
-            >;
+            const resources = gameState.resources as unknown as Record<string, unknown>;
             const current =
               typeof resources[effect.target] === 'number'
                 ? (resources[effect.target] as number)
@@ -595,10 +553,7 @@ export class LegacyDeckService {
     }
   }
 
-  private static calculateCardPriority(
-    card: LegacyCard,
-    _gameState: GenerationalMission
-  ): number {
+  private static calculateCardPriority(card: LegacyCard, _gameState: GenerationalMission): number {
     // Calculate priority based on multiple factors
     let priority = card.weight;
 
@@ -621,10 +576,7 @@ export class LegacyDeckService {
     return priority;
   }
 
-  private static updateCardStatistics(
-    card: LegacyCard,
-    choice: CardChoice
-  ): void {
+  private static updateCardStatistics(card: LegacyCard, choice: CardChoice): void {
     card.timesPlayed++;
 
     // Update choice statistics
@@ -639,17 +591,11 @@ export class LegacyDeckService {
 
   private static calculateCardEffectiveness(card: LegacyCard): number {
     // Calculate effectiveness based on choice outcomes and player ratings
-    const totalChoices = Object.values(card.playerChoices).reduce(
-      (sum, count) => sum + count,
-      0
-    );
+    const totalChoices = Object.values(card.playerChoices).reduce((sum, count) => sum + count, 0);
     if (totalChoices === 0) return 0.5;
 
     // Simple effectiveness calculation - could be more sophisticated
-    return Math.min(
-      1.0,
-      (card.playerRating / 5) * (totalChoices / (card.timesPlayed || 1))
-    );
+    return Math.min(1.0, (card.playerRating / 5) * (totalChoices / (card.timesPlayed || 1)));
   }
 
   private static calculateDeckBalance(deck: LegacyDeck): number {
@@ -659,21 +605,14 @@ export class LegacyDeckService {
     const tierBalance = this.calculateTierBalance(analytics.tierDistribution);
     const typeBalance = this.calculateTypeBalance(analytics.typeDistribution);
     const satisfactionScore =
-      Object.values(analytics.playerSatisfactionScores).reduce(
-        (sum, rating) => sum + rating,
-        0
-      ) / Object.keys(analytics.playerSatisfactionScores).length;
+      Object.values(analytics.playerSatisfactionScores).reduce((sum, rating) => sum + rating, 0) /
+      Object.keys(analytics.playerSatisfactionScores).length;
 
     return (tierBalance + typeBalance + satisfactionScore / 5) / 3;
   }
 
-  private static calculateTierBalance(
-    distribution: Record<CardTier, number>
-  ): number {
-    const total = Object.values(distribution).reduce(
-      (sum, count) => sum + count,
-      0
-    );
+  private static calculateTierBalance(distribution: Record<CardTier, number>): number {
+    const total = Object.values(distribution).reduce((sum, count) => sum + count, 0);
     if (total === 0) return 0;
 
     // Ideal distribution: more common cards, fewer legendary
@@ -694,13 +633,8 @@ export class LegacyDeckService {
     return Math.max(0, 1 - deviation);
   }
 
-  private static calculateTypeBalance(
-    distribution: Record<CardType, number>
-  ): number {
-    const total = Object.values(distribution).reduce(
-      (sum, count) => sum + count,
-      0
-    );
+  private static calculateTypeBalance(distribution: Record<CardType, number>): number {
+    const total = Object.values(distribution).reduce((sum, count) => sum + count, 0);
     if (total === 0) return 0;
 
     // Calculate how evenly distributed the types are
@@ -736,10 +670,7 @@ export class LegacyDeckService {
       }
 
       // Check for underused cards
-      if (
-        card.timesPlayed < metrics.averageUsage * 0.2 &&
-        card.playerRating < 2
-      ) {
+      if (card.timesPlayed < metrics.averageUsage * 0.2 && card.playerRating < 2) {
         issues.push({
           type: 'underpowered',
           cardId: card.id,
@@ -767,13 +698,9 @@ export class LegacyDeckService {
   }
 
   private static calculateOverallBalance(analytics: DeckAnalytics): number {
-    const issueScore =
-      1 - analytics.balanceIssues.length / analytics.totalCards;
+    const issueScore = 1 - analytics.balanceIssues.length / analytics.totalCards;
     const satisfactionScore =
-      Object.values(analytics.playerSatisfactionScores).reduce(
-        (sum, rating) => sum + rating,
-        0
-      ) /
+      Object.values(analytics.playerSatisfactionScores).reduce((sum, rating) => sum + rating, 0) /
       (Object.keys(analytics.playerSatisfactionScores).length * 5);
 
     return (issueScore + satisfactionScore) / 2;
@@ -794,54 +721,39 @@ export class LegacyDeckService {
 
     return Object.keys(tierPowers).map(tier => {
       const powers = tierPowers[tier as CardTier];
-      return powers.length > 0
-        ? powers.reduce((sum, p) => sum + p, 0) / powers.length
-        : 0;
+      return powers.length > 0 ? powers.reduce((sum, p) => sum + p, 0) / powers.length : 0;
     });
   }
 
   private static calculateDiversityScore(analytics: DeckAnalytics): number {
-    const typeCount = Object.values(analytics.typeDistribution).filter(
-      count => count > 0
-    ).length;
+    const typeCount = Object.values(analytics.typeDistribution).filter(count => count > 0).length;
     const maxTypes = Object.keys(analytics.typeDistribution).length;
     return typeCount / maxTypes;
   }
 
   private static calculatePlayerEngagement(deck: LegacyDeck): number {
     const avgRating =
-      deck.cards.reduce((sum, card) => sum + card.playerRating, 0) /
-      deck.cards.length;
+      deck.cards.reduce((sum, card) => sum + card.playerRating, 0) / deck.cards.length;
     return avgRating / 5; // Convert 1-5 rating to 0-1 score
   }
 
-  private static generateBalanceRecommendations(
-    analytics: DeckAnalytics
-  ): string[] {
+  private static generateBalanceRecommendations(analytics: DeckAnalytics): string[] {
     const recommendations: string[] = [];
 
     if (analytics.balanceIssues.length > analytics.totalCards * 0.2) {
-      recommendations.push(
-        'Consider rebalancing multiple cards to improve overall deck health'
-      );
+      recommendations.push('Consider rebalancing multiple cards to improve overall deck health');
     }
 
     const avgSatisfaction =
-      Object.values(analytics.playerSatisfactionScores).reduce(
-        (sum, rating) => sum + rating,
-        0
-      ) / Object.keys(analytics.playerSatisfactionScores).length;
+      Object.values(analytics.playerSatisfactionScores).reduce((sum, rating) => sum + rating, 0) /
+      Object.keys(analytics.playerSatisfactionScores).length;
 
     if (avgSatisfaction < 3) {
-      recommendations.push(
-        'Player satisfaction is low - review card design and effects'
-      );
+      recommendations.push('Player satisfaction is low - review card design and effects');
     }
 
     if (analytics.tierDistribution.legendary > analytics.totalCards * 0.1) {
-      recommendations.push(
-        'Too many legendary cards may reduce their special feeling'
-      );
+      recommendations.push('Too many legendary cards may reduce their special feeling');
     }
 
     return recommendations;
@@ -874,10 +786,7 @@ export class LegacyDeckService {
   }
 
   // Utility methods
-  private static generateTriggerContext(
-    card: LegacyCard,
-    gameState: GenerationalMission
-  ): string {
+  private static generateTriggerContext(card: LegacyCard, gameState: GenerationalMission): string {
     return `${card.title} has been triggered during ${gameState.currentPhase} phase of year ${gameState.currentYear}`;
   }
 
@@ -889,9 +798,7 @@ export class LegacyDeckService {
     return 'common';
   }
 
-  private static calculateMaxPowerFromDecision(
-    decision: ChronicleDecision
-  ): number {
+  private static calculateMaxPowerFromDecision(decision: ChronicleDecision): number {
     return Math.min(1.0, decision.chronicleWeight * 1.2);
   }
 

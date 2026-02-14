@@ -19,12 +19,10 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   currentGeneration,
   onCulturalAction,
 }) => {
-  const [selectedLegacy, setSelectedLegacy] = useState<LegacyTypeType | null>(
-    null
+  const [selectedLegacy, setSelectedLegacy] = useState<LegacyTypeType | null>(null);
+  const [activeTab, setActiveTab] = useState<'timeline' | 'trends' | 'analysis' | 'decisions'>(
+    'timeline'
   );
-  const [activeTab, setActiveTab] = useState<
-    'timeline' | 'trends' | 'analysis' | 'decisions'
-  >('timeline');
 
   const legacyInfo = {
     preservers: {
@@ -77,9 +75,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
         {culturalEvolution.map(evolution => {
           const info = legacyInfo[evolution.legacy];
           const totalChanges = evolution.majorChanges.length;
-          const permanentChanges = evolution.majorChanges.filter(
-            c => c.isPermanent
-          ).length;
+          const permanentChanges = evolution.majorChanges.filter(c => c.isPermanent).length;
 
           return (
             <div
@@ -87,19 +83,12 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
               className="cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => setSelectedLegacy(evolution.legacy)}
             >
-              <TerminalWindow
-                title={`${info.name} - GEN ${currentGeneration}`}
-                className="h-full"
-              >
-                <TerminalText className="mb-2 text-xs">
-                  ┌ BASELINE: {info.baseline}
-                </TerminalText>
+              <TerminalWindow title={`${info.name} - GEN ${currentGeneration}`} className="h-full">
+                <TerminalText className="mb-2 text-xs">┌ BASELINE: {info.baseline}</TerminalText>
 
                 <div className="mb-3">
                   <div className="flex justify-between mb-1">
-                    <TerminalText className="text-xs">
-                      CULTURAL DRIFT:
-                    </TerminalText>
+                    <TerminalText className="text-xs">CULTURAL DRIFT:</TerminalText>
                     <TerminalText
                       className={`text-xs font-mono ${getDeviationColor(evolution.baselineDeviation)}`}
                     >
@@ -122,17 +111,13 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
 
                 <div className="space-y-1 mb-3">
                   <div className="flex justify-between">
-                    <TerminalText className="text-xs">
-                      ├ TOTAL CHANGES:
-                    </TerminalText>
+                    <TerminalText className="text-xs">├ TOTAL CHANGES:</TerminalText>
                     <TerminalText className="text-xs font-mono text-amber-400">
                       {totalChanges}
                     </TerminalText>
                   </div>
                   <div className="flex justify-between">
-                    <TerminalText className="text-xs">
-                      ├ PERMANENT:
-                    </TerminalText>
+                    <TerminalText className="text-xs">├ PERMANENT:</TerminalText>
                     <TerminalText className="text-xs font-mono text-green-400">
                       {permanentChanges}
                     </TerminalText>
@@ -159,37 +144,24 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
         <div className="grid grid-cols-3 gap-6 text-center">
           <div>
             <TerminalText className="text-xl font-mono text-cyan-400">
-              {culturalEvolution.reduce(
-                (sum, e) => sum + e.majorChanges.length,
-                0
-              )}
+              {culturalEvolution.reduce((sum, e) => sum + e.majorChanges.length, 0)}
             </TerminalText>
-            <TerminalText className="text-xs text-gray-400">
-              TOTAL CHANGES
-            </TerminalText>
+            <TerminalText className="text-xs text-gray-400">TOTAL CHANGES</TerminalText>
           </div>
           <div>
             <TerminalText className="text-xl font-mono text-green-400">
               {culturalEvolution.reduce(
-                (sum, e) =>
-                  sum + e.majorChanges.filter(c => c.isPermanent).length,
+                (sum, e) => sum + e.majorChanges.filter(c => c.isPermanent).length,
                 0
               )}
             </TerminalText>
-            <TerminalText className="text-xs text-gray-400">
-              PERMANENT ADAPTATIONS
-            </TerminalText>
+            <TerminalText className="text-xs text-gray-400">PERMANENT ADAPTATIONS</TerminalText>
           </div>
           <div>
             <TerminalText className="text-xl font-mono text-amber-400">
-              {culturalEvolution.reduce(
-                (sum, e) => sum + e.currentTrends.length,
-                0
-              )}
+              {culturalEvolution.reduce((sum, e) => sum + e.currentTrends.length, 0)}
             </TerminalText>
-            <TerminalText className="text-xs text-gray-400">
-              ACTIVE TRENDS
-            </TerminalText>
+            <TerminalText className="text-xs text-gray-400">ACTIVE TRENDS</TerminalText>
           </div>
         </div>
       </TerminalWindow>
@@ -207,9 +179,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
     return (
       <TerminalWindow title={`${info.name} - CULTURAL EVOLUTION ANALYSIS`}>
         <div className="flex items-center justify-between mb-4">
-          <TerminalText className="text-cyan-400">
-            DETAILED ANALYSIS
-          </TerminalText>
+          <TerminalText className="text-cyan-400">DETAILED ANALYSIS</TerminalText>
           <TerminalButton
             onClick={() => setSelectedLegacy(null)}
             variant="warning"
@@ -220,18 +190,16 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
         </div>
 
         <div className="flex space-x-2 mb-6">
-          {(['timeline', 'trends', 'analysis', 'decisions'] as const).map(
-            tab => (
-              <TerminalButton
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                variant={activeTab === tab ? 'primary' : 'error'}
-                className="uppercase text-xs"
-              >
-                {tab}
-              </TerminalButton>
-            )
-          )}
+          {(['timeline', 'trends', 'analysis', 'decisions'] as const).map(tab => (
+            <TerminalButton
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              variant={activeTab === tab ? 'primary' : 'error'}
+              className="uppercase text-xs"
+            >
+              {tab}
+            </TerminalButton>
+          ))}
         </div>
 
         <div className="terminal-content">{renderTabContent(evolution)}</div>
@@ -255,18 +223,12 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   };
 
   const renderTimelineTab = (evolution: CulturalEvolution) => (
-    <TerminalWindow
-      title="CULTURAL TIMELINE"
-      statusLine="CHRONOLOGICAL ANALYSIS"
-    >
+    <TerminalWindow title="CULTURAL TIMELINE" statusLine="CHRONOLOGICAL ANALYSIS">
       <div className="space-y-3">
         {evolution.majorChanges
           .sort((a, b) => a.generation - b.generation)
           .map(change => (
-            <div
-              key={change.id}
-              className="border-l-2 border-terminal-secondary pl-4 relative"
-            >
+            <div key={change.id} className="border-l-2 border-terminal-secondary pl-4 relative">
               <div className="absolute -left-2 top-1 w-3 h-3 bg-terminal-secondary rounded-full" />
               <div className="mb-2">
                 <div className="flex items-center justify-between">
@@ -277,9 +239,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
                     <TerminalText variant="dim" className="text-xs">
                       GEN {change.generation}
                     </TerminalText>
-                    <TerminalText className="text-lg">
-                      {getImpactIcon(change.impact)}
-                    </TerminalText>
+                    <TerminalText className="text-lg">{getImpactIcon(change.impact)}</TerminalText>
                     {change.isPermanent && (
                       <TerminalText
                         variant="success"
@@ -315,10 +275,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
         {evolution.currentTrends.length > 0 ? (
           <div className="space-y-3">
             {evolution.currentTrends.map((trend, index) => (
-              <div
-                key={index}
-                className="border-l-4 border-terminal-success pl-3"
-              >
+              <div key={index} className="border-l-4 border-terminal-success pl-3">
                 <TerminalText variant="primary" className="font-mono mb-1">
                   ▶ {trend.toUpperCase()}
                 </TerminalText>
@@ -329,16 +286,11 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
             ))}
           </div>
         ) : (
-          <TerminalText variant="dim">
-            NO MAJOR CULTURAL TRENDS DETECTED
-          </TerminalText>
+          <TerminalText variant="dim">NO MAJOR CULTURAL TRENDS DETECTED</TerminalText>
         )}
       </TerminalWindow>
 
-      <TerminalWindow
-        title="TREND PREDICTIONS"
-        statusLine="PROBABILITY ANALYSIS"
-      >
+      <TerminalWindow title="TREND PREDICTIONS" statusLine="PROBABILITY ANALYSIS">
         <div className="space-y-3">
           <div className="border border-terminal-border p-3">
             <TerminalText variant="primary" className="font-mono mb-1">
@@ -387,38 +339,27 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
       0
     );
     const averageImpact =
-      evolution.majorChanges.length > 0
-        ? totalImpact / evolution.majorChanges.length
-        : 0;
+      evolution.majorChanges.length > 0 ? totalImpact / evolution.majorChanges.length : 0;
 
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <TerminalWindow
-            title="CULTURAL METRICS"
-            statusLine="STATISTICAL ANALYSIS"
-          >
+          <TerminalWindow title="CULTURAL METRICS" statusLine="STATISTICAL ANALYSIS">
             <div className="space-y-2">
               <div className="flex justify-between">
                 <TerminalText variant="dim">BASELINE DEVIATION:</TerminalText>
-                <TerminalText
-                  className={getDeviationColor(evolution.baselineDeviation)}
-                >
+                <TerminalText className={getDeviationColor(evolution.baselineDeviation)}>
                   {evolution.baselineDeviation > 0 ? '+' : ''}
                   {evolution.baselineDeviation}%
                 </TerminalText>
               </div>
               <div className="flex justify-between">
                 <TerminalText variant="dim">TOTAL CHANGES:</TerminalText>
-                <TerminalText variant="primary">
-                  {evolution.majorChanges.length}
-                </TerminalText>
+                <TerminalText variant="primary">{evolution.majorChanges.length}</TerminalText>
               </div>
               <div className="flex justify-between">
                 <TerminalText variant="dim">AVERAGE IMPACT:</TerminalText>
-                <TerminalText variant="primary">
-                  {averageImpact.toFixed(1)}%
-                </TerminalText>
+                <TerminalText variant="primary">{averageImpact.toFixed(1)}%</TerminalText>
               </div>
               <div className="flex justify-between">
                 <TerminalText variant="dim">PERMANENT SHIFTS:</TerminalText>
@@ -429,10 +370,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
             </div>
           </TerminalWindow>
 
-          <TerminalWindow
-            title="CULTURAL HEALTH"
-            statusLine="STABILITY MONITOR"
-          >
+          <TerminalWindow title="CULTURAL HEALTH" statusLine="STABILITY MONITOR">
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between mb-1">
@@ -454,10 +392,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
                   </TerminalText>
                 </div>
                 <TerminalProgress
-                  value={Math.min(
-                    100,
-                    100 - Math.abs(evolution.baselineDeviation)
-                  )}
+                  value={Math.min(100, 100 - Math.abs(evolution.baselineDeviation))}
                   max={100}
                   variant={
                     Math.abs(evolution.baselineDeviation) < 25
@@ -488,8 +423,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
                   [CRITICAL] CULTURAL DRIFT
                 </TerminalText>
                 <TerminalText variant="secondary" className="text-sm">
-                  CULTURE HAS DEVIATED SIGNIFICANTLY FROM BASELINE. RISK OF
-                  IDENTITY CRISIS.
+                  CULTURE HAS DEVIATED SIGNIFICANTLY FROM BASELINE. RISK OF IDENTITY CRISIS.
                 </TerminalText>
               </div>
             )}
@@ -499,8 +433,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
                   [WARNING] CULTURAL INSTABILITY
                 </TerminalText>
                 <TerminalText variant="secondary" className="text-sm">
-                  MULTIPLE TEMPORARY CHANGES SUGGEST UNCERTAINTY. CONSIDER
-                  STABILIZING MEASURES.
+                  MULTIPLE TEMPORARY CHANGES SUGGEST UNCERTAINTY. CONSIDER STABILIZING MEASURES.
                 </TerminalText>
               </div>
             )}
@@ -510,8 +443,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
                   [INFO] CULTURAL STAGNATION
                 </TerminalText>
                 <TerminalText variant="secondary" className="text-sm">
-                  NO ACTIVE CULTURAL TRENDS. SOCIETY MAY BENEFIT FROM CULTURAL
-                  INITIATIVES.
+                  NO ACTIVE CULTURAL TRENDS. SOCIETY MAY BENEFIT FROM CULTURAL INITIATIVES.
                 </TerminalText>
               </div>
             )}
@@ -524,10 +456,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   const renderDecisionsTab = (evolution: CulturalEvolution) => {
     if (!onCulturalAction) {
       return (
-        <TerminalWindow
-          title="CULTURAL DECISIONS"
-          statusLine="SYSTEM UNAVAILABLE"
-        >
+        <TerminalWindow title="CULTURAL DECISIONS" statusLine="SYSTEM UNAVAILABLE">
           <TerminalText variant="dim" className="text-center py-4">
             CULTURAL DECISION SYSTEM NOT AVAILABLE
           </TerminalText>
@@ -537,13 +466,9 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
 
     return (
       <div className="space-y-4">
-        <TerminalWindow
-          title="CULTURAL GUIDANCE"
-          statusLine="POLICY MANAGEMENT"
-        >
+        <TerminalWindow title="CULTURAL GUIDANCE" statusLine="POLICY MANAGEMENT">
           <TerminalText variant="secondary" className="mb-4">
-            SHAPE THE CULTURAL EVOLUTION OF YOUR CIVILIZATION THROUGH DELIBERATE
-            ACTIONS
+            SHAPE THE CULTURAL EVOLUTION OF YOUR CIVILIZATION THROUGH DELIBERATE ACTIONS
           </TerminalText>
           <div className="grid grid-cols-2 gap-3">
             <TerminalButton
@@ -589,10 +514,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
           </div>
         </TerminalWindow>
 
-        <TerminalWindow
-          title="STABILIZATION ACTIONS"
-          statusLine="CULTURAL CONTROL"
-        >
+        <TerminalWindow title="STABILIZATION ACTIONS" statusLine="CULTURAL CONTROL">
           <div className="space-y-3">
             <div
               className="border border-terminal-border p-3 cursor-pointer hover:border-terminal-primary transition-colors"
@@ -649,8 +571,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
             className="border-terminal-error"
           >
             <TerminalText variant="error" className="mb-3 text-sm">
-              HIGH CULTURAL DEVIATION DETECTED. CONSIDER EMERGENCY STABILIZATION
-              MEASURES.
+              HIGH CULTURAL DEVIATION DETECTED. CONSIDER EMERGENCY STABILIZATION MEASURES.
             </TerminalText>
             <div className="space-y-3">
               <div
@@ -693,8 +614,7 @@ export const CulturalEvolutionComponent: React.FC<CulturalEvolutionProps> = ({
   return (
     <TerminalWindow title="⟡ CULTURAL EVOLUTION">
       <TerminalText className="mb-4">
-        Track how your civilization's culture evolves and adapts across
-        generations of space travel.
+        Track how your civilization's culture evolves and adapts across generations of space travel.
       </TerminalText>
 
       {selectedLegacy ? renderLegacyDetail() : renderOverview()}
