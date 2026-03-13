@@ -16,6 +16,7 @@ import CulturalEvolution from './components/game/CulturalEvolution';
 import { ChronicleViewer } from './components/chronicle/ChronicleViewer';
 import { HeritageSelector } from './components/chronicle/HeritageSelector';
 import { TimeController } from './components/pacing/TimeController';
+import Phase1VerticalSlice from './components/game/Phase1VerticalSlice';
 import NotificationSystem from './components/ui/NotificationSystem';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import './styles/terminal.css';
@@ -98,6 +99,8 @@ const App: React.FC = () => {
             onCulturalAction={culturalAction}
           />
         );
+      case 'phase1-slice':
+        return <Phase1VerticalSlice />;
       case 'chronicle':
         return (
           <div className="space-y-6">
