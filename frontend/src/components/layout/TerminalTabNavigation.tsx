@@ -18,6 +18,7 @@ const tabIcons = {
   'legacy-relations': '◎', // Legacy Relations
   'cultural-evolution': '⟡', // Culture
   chronicle: '⟬', // Chronicle/History
+  'phase1-slice': '◉', // Phase 1 Vertical Slice
 } as const;
 
 const TerminalTabNavigation: React.FC = React.memo(() => {
