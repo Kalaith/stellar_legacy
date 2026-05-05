@@ -48,6 +48,11 @@ const createTabDefinitions = (activeMissionCount: number): TabDefinition[] => [
     label: 'CHRONICLE',
     category: 'GENERATIONAL',
   },
+  {
+    id: 'phase1-slice' as TabIdType,
+    label: 'PHASE 1 SLICE',
+    category: 'GENERATIONAL',
+  },
 ];
 
 export const useTabNavigation = () => {
