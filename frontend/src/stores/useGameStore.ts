@@ -1,6 +1,7 @@
 // stores/useGameStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { webhatcheryGameApi, type WebHatcheryGameState } from '../api/webhatcheryGameApi';
 import type {
   GameState,
   GameData,
@@ -39,6 +40,7 @@ import { ValidationService } from '../services/ValidationService';
 import gameConfig from '../config/gameConfig';
 import Logger from '../utils/logger';
 import { GameEngine } from '../services/GameEngine';
+import { useWebHatcherySessionStore } from './webhatcherySessionStore';
 
 const initialGameData: GameData = {
   resources: {
@@ -270,6 +272,7 @@ interface GameStore extends GameState {
   pendingCardChoices: CardTriggerResult[];
 
   // Actions
+  loadBackendState: () => Promise<void>;
   initializeGame: () => void;
   switchTab: (tabName: TabIdType) => void;
   updateDisplay: () => void;
@@ -332,6 +335,59 @@ interface GameStore extends GameState {
   // Internal state
   resourceIntervalId: number | null;
 }
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const loadOrCreateBackendGame = async (): Promise<WebHatcheryGameState> => {
+  const sessionStore = useWebHatcherySessionStore.getState();
+  try {
+    return await sessionStore.loadGame();
+  } catch {
+    return sessionStore.continueAsGuest();
+  }
+};
+
+const syncSessionState = (gameState: WebHatcheryGameState): void => {
+  useWebHatcherySessionStore.setState({
+    gameState,
+    user: gameState.user,
+    isLoading: false,
+    error: null,
+  });
+};
+
+const toBackendSnapshot = (state: GameStore): Record<string, unknown> => {
+  const snapshot: Record<string, unknown> = {};
+
+  Object.entries(state).forEach(([key, value]) => {
+    if (typeof value === 'function' || key === 'resourceIntervalId') {
+      return;
+    }
+
+    snapshot[key] = key === 'notifications' ? [] : value;
+  });
+
+  snapshot.resourceIntervalId = null;
+  return snapshot;
+};
+
+let backendSyncTimer: ReturnType<typeof setTimeout> | null = null;
+
+const syncBackendSnapshot = (intent: string, snapshot: Record<string, unknown>): void => {
+  if (backendSyncTimer) {
+    clearTimeout(backendSyncTimer);
+  }
+
+  backendSyncTimer = setTimeout(() => {
+    void webhatcheryGameApi
+      .applyIntent(intent, { state: snapshot })
+      .then(syncSessionState)
+      .catch(error => {
+        Logger.error('Failed to sync Stellar Legacy backend state', error);
+      });
+  }, 250);
+};
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -464,6 +520,21 @@ export const useGameStore = create<GameStore>()(
       },
       activeCards: [],
       pendingCardChoices: [],
+
+      loadBackendState: async () => {
+        const gameState = await loadOrCreateBackendGame();
+        syncSessionState(gameState);
+        const backendState = gameState.save.state;
+        if (!isRecord(backendState) || !isRecord(backendState.gameState)) {
+          return;
+        }
+
+        set({
+          ...(backendState.gameState as Partial<GameStore>),
+          notifications: [],
+          resourceIntervalId: null,
+        });
+      },
 
       initializeGame: () => {
         Logger.info('Initializing game store');
@@ -1322,3 +1393,20 @@ export const useGameStore = create<GameStore>()(
 export const cleanupGameStore = () => {
   useGameStore.getState().cleanup();
 };
+
+useGameStore.subscribe((state, previousState) => {
+  const previous = previousState as unknown as Record<string, unknown>;
+  const hasPersistentChange = Object.entries(state).some(([key, value]) => {
+    if (typeof value === 'function' || key === 'resourceIntervalId' || key === 'notifications') {
+      return false;
+    }
+
+    return !Object.is(value, previous[key]);
+  });
+
+  if (!hasPersistentChange) {
+    return;
+  }
+
+  syncBackendSnapshot('state_updated', toBackendSnapshot(state));
+});

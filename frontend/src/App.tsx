@@ -24,6 +24,7 @@ import './styles/terminal.css';
 const App: React.FC = () => {
   const {
     currentTab,
+    loadBackendState,
     initializeGame,
     dynasties,
     dynastyAction,
@@ -50,19 +51,32 @@ const App: React.FC = () => {
   } = useGameStore();
 
   useEffect(() => {
-    initializeGame();
-    loadChronicle(); // Load chronicle on startup
+    let cancelled = false;
 
-    // Initialize dynasties if none exist
-    if (dynasties.length === 0) {
-      initializeDynasties('preservers'); // Default to preservers legacy
-    }
+    const bootGame = async () => {
+      await loadBackendState().catch(error => {
+        console.error('Failed to load Stellar Legacy backend state:', error);
+      });
+
+      if (cancelled) {
+        return;
+      }
+
+      initializeGame();
+      loadChronicle();
+
+      if (useGameStore.getState().dynasties.length === 0) {
+        initializeDynasties('preservers');
+      }
+    };
+
+    void bootGame();
 
     return () => {
-      // Cleanup on unmount
+      cancelled = true;
       useGameStore.getState().cleanup();
     };
-  }, [initializeGame, dynasties.length, initializeDynasties, loadChronicle]);
+  }, [initializeGame, initializeDynasties, loadBackendState, loadChronicle]);
 
   const renderCurrentTab = () => {
     switch (currentTab) {
