@@ -333,7 +333,7 @@ interface GameStore extends GameState {
   cleanup: () => void;
 
   // Internal state
-  resourceIntervalId: number | null;
+  resourceIntervalId: ReturnType<typeof setInterval> | null;
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
